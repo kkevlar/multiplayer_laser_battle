@@ -1,4 +1,4 @@
-//RECV COMPAT BY KEVIN KELLAR
+// RECV COMPAT BY KEVIN KELLAR
 
 #pragma once
 
@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 
-size_t compat_recv_waitall(int sockfd, void* buf, size_t len);
+    size_t compat_recv_waitall(int sockfd, void* buf, size_t len);
 
 #ifdef __cplusplus
 }

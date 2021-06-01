@@ -6,7 +6,7 @@
 
 #ifdef __cplusplus
 #error
-#endif 
+#endif
 
 size_t compat_recv_waitall(int sockfd, void* buf, size_t len)
 {
