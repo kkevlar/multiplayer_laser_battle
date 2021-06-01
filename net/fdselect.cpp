@@ -64,3 +64,5 @@ bool FDSelector::testPostSelectMembership(int fd)
 {
     return (FD_ISSET(fd, &this->internal->set));
 }
+
+// Kevin Kellar's FD Selector - 2021
