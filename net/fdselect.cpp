@@ -2,13 +2,14 @@
 
 #include "fdselect.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <iostream>
-#include <stdlib.h>
 
 struct FDSelectorInternal
 {
@@ -31,7 +32,7 @@ void FDSelector::clearFds()
     if (!this->internal)
     {
         std::cerr << "Bad0" << std::endl;
-    exit(99);
+        exit(99);
     }
     FD_ZERO(&this->internal->set);
     this->internal->max_fd = 0;
@@ -42,7 +43,7 @@ void FDSelector::addFd(int fd)
     if (!this->internal)
     {
         std::cerr << "Bad1" << std::endl;
-    exit(99);
+        exit(99);
     }
     FD_SET(fd, &this->internal->set);
 
@@ -57,7 +58,7 @@ bool FDSelector::performSelect(long timeout_ms)
     if (!this->internal)
     {
         std::cerr << "Bad2" << std::endl;
-    exit(99);
+        exit(99);
     }
     struct timeval time;
     struct timeval* time_ptr = &time;
@@ -82,7 +83,7 @@ bool FDSelector::testPostSelectMembership(int fd)
     if (!this->internal)
     {
         std::cerr << "Bad3" << std::endl;
-    exit(99);
+        exit(99);
     }
     return (FD_ISSET(fd, &this->internal->set));
 }

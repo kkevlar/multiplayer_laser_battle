@@ -8,9 +8,9 @@
 #include "byte_order.h"
 #include "handle.h"
 #include "message.h"
+#include "netcontext.h"
 #include "packet.h"
 #include "string.h"
-#include "netcontext.h"
 
 #define DEBUG_FLAG 0
 
