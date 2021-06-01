@@ -1,0 +1,12 @@
+BasedOnStyle: Google
+IndentWidth: 4
+Language: Cpp
+BreakBeforeBraces: Allman
+ColumnLimit: 120 
+DerivePointerAlignment: false
+PointerAlignment: Left
+BinPackArguments: false
+BinPackParameters: false
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AllowShortFunctionsOnASingleLine: false

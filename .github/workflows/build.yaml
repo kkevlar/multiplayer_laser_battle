@@ -1,0 +1,32 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+
+      - name: Install Dependencies
+        run: |
+          sudo apt install -y libglfw3-dev libglm-dev
+
+      - name: Build Network
+        run: |
+          cd net
+          make clean
+          make -j8
+          cp simple_ll_netlib.a ..
+
+      - name: Build App
+        run: |
+          rm -rf build
+          mkdir -p build
+          cd build
+          cmake ..
+          make -j8
+ 
+        

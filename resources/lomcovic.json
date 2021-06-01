@@ -1,0 +1,197 @@
+{
+    "keyframelist" : [
+        {
+            "time" : 0,
+            "look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 0.0,
+                "z" : 1.0
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 1.0,
+                "z" : 0.0
+            },
+            "position" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 20.0,
+                "z" : 40.0
+            }
+        },
+        {
+            "time" : 1.5,
+        "look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 2.7236784e-1,
+                "z" : 0.9621932
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 0.9621932,
+                "z" : -2.7236784e-1
+            },
+            "position" : {
+                "ignore" : false,
+                "x" : 2.0,
+                "y" : 15,
+                "z" : 0.0
+            }
+        },
+     
+        {
+            "time" : 3.0,
+            "look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 0.0,
+                "z" : 1.0
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 1.0,
+                "z" : 0.0
+            },
+            "position" : {
+                "ignore" : false,
+                "x" : 5.0,
+                "y" : 5,
+                "z" : -30
+            }
+        },
+        {
+            "time" : 4.0,
+            "look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : -2.0668276e-1,
+                "z" : 9.7840804e-1
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : -0.9639979,
+                "y" : -0.2601684,
+                "z" : -5.495899e-2
+            },
+            "position" : {
+                "ignore" : false,
+                "x" : 10.0,
+                "y" : 20,
+                "z" : -60
+            }
+        },
+        {
+            "time" : 4.5,
+    "look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : -9.776228e-2,
+                "z" : 9.9520975e-1
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : -5.200037e-3,
+                "y" : -9.9519634e-1,
+                "z" : -9.776096e-2
+            },
+            "position" : {
+                "ignore" : false,
+                "x" : 0,
+                "y" : 25.0,
+                "z" : -80
+            }
+        },
+        {
+            "time" : 5.0,
+ "look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 3.955205e-2,
+                "z" : 0.9992175
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : 0.9999805,
+                "y" : -6.234479e-3,
+                "z" : 2.4677956e-4
+            },
+            
+            "position" : {
+                "ignore" : false,
+                "x" : -10.0,
+                "y" : 10.000001,
+                "z" : -120
+            }
+        },
+        {
+            "time" : 5.5,
+"look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 2.520329e-2,
+                "z" : 9.9968237e-1
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : 3.683527e-2,
+                "y" : 9.9900395e-1,
+                "z" : -2.5186185e-2
+            },
+         
+            "position" : {
+                "ignore" : false,
+                "x" : 0,
+                "y" : 7.000001,
+                "z" : -160
+            }
+        },
+        {
+            "time" : 6.0,
+            "look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 0.0,
+                "z" : 1.0
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 1.0,
+                "z" : 0.0
+            },
+            "position" : {
+                "ignore" : false,
+                "x" : 0,
+                "y" : 10.000001,
+                "z" : -200
+            }
+        },
+        {
+            "time" : 7.0,
+            "look" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 0.0,
+                "z" : 1.0
+            },
+            "up" : {
+                "ignore" : false,
+                "x" : 0.0,
+                "y" : 1.0,
+                "z" : 0.0
+            },
+            "position" : {
+                "ignore" : false,
+                "x" : 0,
+                "y" : 20.000001,
+                "z" : -220
+            }
+        }
+       
+    ]
+}

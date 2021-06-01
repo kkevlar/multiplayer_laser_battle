@@ -1,0 +1,7 @@
+server
+cclient
+*.o
+*.o
+*.a
+/.vscode/
+hundreds_client

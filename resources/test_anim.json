@@ -1,0 +1,65 @@
+[
+    {
+        "time" : 666.0,
+        "look" : {
+            "ignore" : false,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        },
+        "up" : {
+            "ignore" : false,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        },
+        "position" : {
+            "ignore" : false,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        }
+    },
+    {
+        "time" : 777.0,
+        "look" : {
+            "ignore" : false,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        },
+        "up" : {
+            "ignore" : false,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        },
+        "position" : {
+            "ignore" : false,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        }
+    },
+    {
+        "time" : 888.0,
+        "look" : {
+            "ignore" : false,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        },
+        "up" : {
+            "ignore" : false,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        },
+        "position" : {
+            "ignore" : true,
+            "x" : 0.0,
+            "y" : 0.0,
+            "z" : 0.0
+        }
+    }
+]
