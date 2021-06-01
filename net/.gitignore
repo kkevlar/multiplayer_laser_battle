@@ -5,3 +5,4 @@ cclient
 *.a
 /.vscode/
 hundreds_client
+/copy/

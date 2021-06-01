@@ -56,7 +56,7 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
     return true;
 }
 
-__attribute__((warn_unused_result)) bool publicClientPollSelectForMessages(NetworksHandle* handle)
+CHECK_RETURN_VAL bool publicClientPollSelectForMessages(NetworksHandle* handle)
 {
     int socketNum = handle->net_context->socketNum;
 
@@ -81,7 +81,7 @@ again:
     return true;
 }
 
-__attribute__((warn_unused_result)) bool publicBroadcastOutgoing(NetworksHandle* handle,
+CHECK_RETURN_VAL bool publicBroadcastOutgoing(NetworksHandle* handle,
                                                                  uint8_t* data,
                                                                  size_t data_size)
 {

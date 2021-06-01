@@ -24,13 +24,13 @@ server: main_server.cpp incoming.o networks.o gethostbyname6.o handle.o compat.o
 %.o: %.c %.h
 	$(CC) -c $(CFLAGS) $< -o $@ $(LIBS)
 
-%.cpp: ../src/%.cpp
+%.cpp: copy/%.cpp
 	cp $< $@
 
-%.c: ../src/%.c
+%.c: copy/%.c
 	cp $< $@
 
-%.h: ../src/%.h
+%.h: copy/%.h
 	cp $< $@
 
 cleano:
