@@ -16,6 +16,10 @@ net/message.cpp
 net/data_structure.h
 net/incoming.cpp
 net/incoming.h
+net/compat.c
+net/compat.h
+net/fdselect.cpp
+net/fdselect.h
 net/fromserver_client.cpp
 net/fromserver_client.h
 net/simple_ll_netlib_client.h

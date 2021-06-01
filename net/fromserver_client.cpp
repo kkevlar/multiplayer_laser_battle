@@ -5,9 +5,9 @@
 
 #include <iostream>
 
+#include "byte_order.h"
 #include "handle.h"
 #include "message.h"
-#include "byte_order.h"
 #include "packet.h"
 #include "string.h"
 

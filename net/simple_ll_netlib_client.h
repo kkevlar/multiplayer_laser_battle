@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "fdselect.h"
+
 typedef bool (*NetworksCallback)(void*, std::string, const uint8_t*, size_t);
 
 typedef struct
@@ -10,6 +12,7 @@ typedef struct
     int socketNum;
     void* caller_context;
     NetworksCallback callback;
+    FDSelector selector;
 } NetworksContext;
 
 typedef struct

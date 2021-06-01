@@ -3,12 +3,7 @@
 
 #include "simple_ll_netlib_client.h"
 
-#include <fcntl.h>
 #include <string.h>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include <iostream>
 #include <list>
@@ -61,24 +56,19 @@ __attribute__((warn_unused_result)) bool publicClientPollSelectForMessages(Netwo
 {
     int socketNum = handle->net_context->socketNum;
 
-    fd_set fds;
-
 again:
-    FD_ZERO(&fds);
-    FD_SET(socketNum, &fds);
-    FD_SET(STDIN_FILENO, &fds);
+    handle->net_context->selector.clearFds();
+    handle->net_context->selector.addFd(socketNum);
+
     int max = socketNum;
-    struct timeval zero_time;
 
-    memset(&zero_time, 0, sizeof(zero_time));
-
-    if (select(max + 1, &fds, NULL, NULL, &zero_time) < 0)
+    if (!handle->net_context->selector.performSelect(0))
     {
         perror("Select owie");
         exit(20);
     }
 
-    if (FD_ISSET(socketNum, &fds))
+    if (handle->net_context->selector.testPostSelectMembership(socketNum))
     {
         if (!clientProcessServer(handle->net_context))
         {
