@@ -60,8 +60,6 @@ again:
     handle->net_context->selector.clearFds();
     handle->net_context->selector.addFd(socketNum);
 
-    int max = socketNum;
-
     if (!handle->net_context->selector.performSelect(0))
     {
         perror("Select owie");

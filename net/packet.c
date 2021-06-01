@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "compat.h"
+#include "byte_order.h"
 
 #define PACKET_DEBUG 0
 

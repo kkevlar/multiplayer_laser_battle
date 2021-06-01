@@ -15,10 +15,10 @@ all: $(BINARY_TARGETS)
 %.o: %.cpp %.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $< $(LIBS)
 
-simple_ll_netlib.a: simple_ll_netlib_client.o fromserver_client.o networks.o gethostbyname6.o handle.o packet.o message.o compat.o fdselect.o
+simple_ll_netlib.a: simple_ll_netlib_client.o fromserver_client.o networks.o gethostbyname6.o handle.o compat.o packet.o message.o fdselect.o
 	ar rcs $@ $^ 
 
-server: main_server.cpp incoming.o networks.o gethostbyname6.o handle.o packet.o message.o data_structure.o
+server: main_server.cpp incoming.o networks.o gethostbyname6.o handle.o compat.o packet.o message.o data_structure.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c %.h

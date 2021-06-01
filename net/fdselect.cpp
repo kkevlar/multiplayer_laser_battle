@@ -55,7 +55,7 @@ bool FDSelector::performSelect(long timeout_ms)
         time_ptr = NULL;
     }
 
-    return select(this->internal->max_fd, &this->internal->set, NULL, NULL, time_ptr) >= 0;
+    return select(this->internal->max_fd + 1, &this->internal->set, NULL, NULL, time_ptr) >= 0;
 }
 
 bool FDSelector::testPostSelectMembership(int fd)
