@@ -2,22 +2,12 @@
 
 #include <string>
 
-#include "fdselect.h"
-
 typedef bool (*NetworksCallback)(void*, std::string, const uint8_t*, size_t);
 
+struct NetworksContext;
 typedef struct
 {
-    std::string handle;
-    int socketNum;
-    void* caller_context;
-    NetworksCallback callback;
-    FDSelector selector;
-} NetworksContext;
-
-typedef struct
-{
-    NetworksContext* net_context;
+struct    NetworksContext* net_context;
 } NetworksHandle;
 
 __attribute__((warn_unused_result)) bool publicClientInitialize(const char* handle_AKA_name,

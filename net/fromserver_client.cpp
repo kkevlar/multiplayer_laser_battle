@@ -10,6 +10,7 @@
 #include "message.h"
 #include "packet.h"
 #include "string.h"
+#include "netcontext.h"
 
 #define DEBUG_FLAG 0
 

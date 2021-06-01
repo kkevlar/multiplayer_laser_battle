@@ -13,8 +13,11 @@
 #include "handle.h"
 #include "message.h"
 #include "networks.h"
+#include "fdselect.h"
+#include "netcontext.h"
 
 #define DEBUG_FLAG 0
+
 
 static __attribute__((warn_unused_result)) bool clientProcessServer(NetworksContext* context);
 static __attribute__((warn_unused_result)) std::string checkThenSetupHandle(const char* handle, int socketNum);
