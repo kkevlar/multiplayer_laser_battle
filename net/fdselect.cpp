@@ -1,3 +1,5 @@
+// Kevin Kellar's FD Selector - 2021
+
 #include "fdselect.h"
 
 #include <string.h>

@@ -1,3 +1,4 @@
+// Kevin Kellar's FD Selector - 2021
 #pragma once
 
 struct FDSelectorInternal;
@@ -19,3 +20,4 @@ class FDSelector
 
     bool testPostSelectMembership(int fd);
 };
+// Kevin Kellar's FD Selector - 2021
