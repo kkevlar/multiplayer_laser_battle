@@ -3,20 +3,17 @@
 
 #include "simple_ll_netlib_client.h"
 
-#include <fcntl.h>
 #include <string.h>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include <iostream>
 #include <list>
 #include <string>
 
+#include "fdselect.h"
 #include "fromserver_client.h"
 #include "handle.h"
 #include "message.h"
+#include "netcontext.h"
 #include "networks.h"
 
 #define DEBUG_FLAG 0
@@ -48,6 +45,7 @@ __attribute__((warn_unused_result)) bool publicClientInitialize(const char* hand
 
     std::string myhandle = checkThenSetupHandle(handle_AKA_name, socketNum);
 
+    give_to_caller_handle->net_context->selector = FDSelector{};
     give_to_caller_handle->net_context->callback = callback;
     give_to_caller_handle->net_context->caller_context = caller_context;
     give_to_caller_handle->net_context->handle = myhandle;
@@ -61,24 +59,17 @@ __attribute__((warn_unused_result)) bool publicClientPollSelectForMessages(Netwo
 {
     int socketNum = handle->net_context->socketNum;
 
-    fd_set fds;
-
 again:
-    FD_ZERO(&fds);
-    FD_SET(socketNum, &fds);
-    FD_SET(STDIN_FILENO, &fds);
-    int max = socketNum;
-    struct timeval zero_time;
+    handle->net_context->selector.clearFds();
+    handle->net_context->selector.addFd(socketNum);
 
-    memset(&zero_time, 0, sizeof(zero_time));
-
-    if (select(max + 1, &fds, NULL, NULL, &zero_time) < 0)
+    if (!handle->net_context->selector.performSelect(0))
     {
         perror("Select owie");
         exit(20);
     }
 
-    if (FD_ISSET(socketNum, &fds))
+    if (handle->net_context->selector.testPostSelectMembership(socketNum))
     {
         if (!clientProcessServer(handle->net_context))
         {

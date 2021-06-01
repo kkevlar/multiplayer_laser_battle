@@ -3,10 +3,10 @@
 
 #include "packet.h"
 
-#include <arpa/inet.h>
 #include <stdio.h>
-#include <sys/socket.h>
-#include <sys/types.h>
+
+#include "byte_order.h"
+#include "compat.h"
 
 #define PACKET_DEBUG 0
 
@@ -30,7 +30,7 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(int socket_fd, uint8_t* buf, si
         exit(2);
     }
 
-    if ((bytes_read = recv(socket_fd, buf, bytes_requested, MSG_WAITALL)) < 0)
+    if ((bytes_read = compat_recv_waitall(socket_fd, buf, bytes_requested)) < 0)
     {
         perror("recv call errored");
         fprintf(stderr, "GONNA JUST PRENTEND IT DIDNT FAIL\n");
@@ -56,7 +56,7 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(int socket_fd, uint8_t* buf, si
 #if PACKET_DEBUG == 1
         fprintf(stderr, "Gonna block on getting %lu more bytes of data \n", bytes_requested);
 #endif
-        if ((bytes_read = recv(socket_fd, PACKET_PDU_DATA_SEGMENT(header), bytes_requested, MSG_WAITALL)) < 0)
+        if ((bytes_read = compat_recv_waitall(socket_fd, PACKET_PDU_DATA_SEGMENT(header), bytes_requested)) < 0)
         {
             perror("recv call2 errored");
             fprintf(stderr, "GONNA JUST PRENTEND IT DIDNT FAIL\n");

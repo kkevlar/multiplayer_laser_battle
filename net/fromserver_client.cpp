@@ -3,13 +3,12 @@
 
 #include "fromserver_client.h"
 
-#include <arpa/inet.h>
-#include <unistd.h>
-
 #include <iostream>
 
+#include "byte_order.h"
 #include "handle.h"
 #include "message.h"
+#include "netcontext.h"
 #include "packet.h"
 #include "string.h"
 
@@ -17,15 +16,6 @@
 
 static __attribute__((warn_unused_result)) bool fromServerProcessBroadcastPacket(const LibPacketHeader* const header,
                                                                                  NetworksContext* context);
-
-void serverPermittedExit(int clientSockFd)
-{
-    if (close(clientSockFd) < 0)
-    {
-        std::cerr << "Failed to close the server socket when cleanly exiting" << std::endl;
-    }
-    exit(0);
-}
 
 bool fromServerProcessPacket(const LibPacketHeader* const header, NetworksContext* context)
 {
