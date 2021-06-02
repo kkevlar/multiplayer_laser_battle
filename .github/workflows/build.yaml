@@ -16,10 +16,9 @@ jobs:
 
       - name: Build Network
         run: |
-          cp -rf src net/copy
           cd net
           make clean
-          make -j16
+          sh -e buildserver.sh
 
       - name: Build App
         run: |
