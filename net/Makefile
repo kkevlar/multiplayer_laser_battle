@@ -32,11 +32,20 @@ server: log.h main_server.cpp $(SERVOBJS) $(PROBLEMHDRS)
 %.h: copy/%.h
 	cp $< $@
 
+%.cpp: serversrc/%.cpp 
+	cp $< $@
+
+%.c: serversrc/%.c
+	cp $< $@
+
+%.h: serversrc/%.h
+	cp $< $@
+
 cleano:
 	rm -f *.o *.a 
 
 clean: cleano
-	rm -f $(BINARY_TARGETS) 
+	rm -rf $(BINARY_TARGETS) copy *.h *.c *.cpp
 
 
 # Kevin Kellar's Makefile

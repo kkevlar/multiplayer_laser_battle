@@ -2,8 +2,9 @@ server
 *.o
 *.o
 *.a
-*.h
-*.c
 *.cpp
 /.vscode/
 /copy/
+*.h
+*.c
+!/serversrc/*
