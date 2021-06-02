@@ -20,46 +20,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ext\glad\src\glad.c" />
-    <ClCompile Include="AnimTextureBillboard.cpp" />
-    <ClCompile Include="compat.c" />
-    <ClCompile Include="fdselect.cpp" />
-    <ClCompile Include="fromserver_client.cpp" />
     <ClCompile Include="GLSL.cpp" />
-    <ClCompile Include="handle.cpp" />
-    <ClCompile Include="LaserManager.cpp" />
-    <ClCompile Include="log.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="message.cpp" />
-    <ClCompile Include="packet.c" />
-    <ClCompile Include="PlanesNetworked.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Shape.cpp" />
-    <ClCompile Include="simple_ll_netlib_client.cpp" />
     <ClCompile Include="WindowManager.cpp" />
-    <ClCompile Include="windows_tcp_client.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimTextureBillboard.h" />
-    <ClInclude Include="byte_order.h" />
-    <ClInclude Include="compat.h" />
-    <ClInclude Include="fdselect.h" />
-    <ClInclude Include="fromserver_client.h" />
     <ClInclude Include="GLSL.h" />
-    <ClInclude Include="handle.h" />
-    <ClInclude Include="LaserManager.h" />
-    <ClInclude Include="log.h" />
-    <ClInclude Include="message.h" />
-    <ClInclude Include="netcontext.h" />
-    <ClInclude Include="packet.h" />
-    <ClInclude Include="PlanesNetworked.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="Shape.h" />
-    <ClInclude Include="simple_ll_netlib_client.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="WindowManager.h" />
-    <ClInclude Include="windows_net_stuff.h" />
-    <ClInclude Include="windows_tcp_client.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\resources\geometry.glsl" />
