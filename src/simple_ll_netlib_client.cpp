@@ -13,16 +13,22 @@
 #include "fromserver_client.h"
 #include "handle.h"
 #include "message.h"
+#include "packet.h"
 #include "netcontext.h"
+
+#ifdef _MSC_VER
+#include "windows_tcp_client.h"
+#else
 #include "networks.h"
+#endif
 
 #define DEBUG_FLAG 0
 
-static __attribute__((warn_unused_result)) bool clientProcessServer(NetworksContext* context);
-static __attribute__((warn_unused_result)) std::string checkThenSetupHandle(const char* handle, int socketNum);
-static __attribute__((warn_unused_result)) bool setupHandle(std::string handle, int fd);
+static CHECK_RETURN_VAL bool clientProcessServer(NetworksContext* context);
+static CHECK_RETURN_VAL std::string checkThenSetupHandle(const char* handle, int socketNum);
+static CHECK_RETURN_VAL bool setupHandle(std::string handle, int fd);
 
-__attribute__((warn_unused_result)) bool publicClientInitialize(const char* handle_AKA_name,
+CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
                                                                 const char* host_name,
                                                                 const char* port_num,
                                                                 void* caller_context,
@@ -36,7 +42,11 @@ __attribute__((warn_unused_result)) bool publicClientInitialize(const char* hand
     give_to_caller_handle->net_context = (NetworksContext*)malloc(sizeof(NetworksContext));
 
     /* set up the TCP Client socket  */
+#ifdef _MSC_VER
+    socketNum = winTcpClientSetup(host_name, port_num);
+#else
     socketNum = tcpClientSetup(host_name, port_num, DEBUG_FLAG);
+#endif
 
     if (socketNum <= 0)
     {
@@ -49,13 +59,13 @@ __attribute__((warn_unused_result)) bool publicClientInitialize(const char* hand
     give_to_caller_handle->net_context->callback = callback;
     give_to_caller_handle->net_context->caller_context = caller_context;
     give_to_caller_handle->net_context->handle = myhandle;
-    give_to_caller_handle->net_context->socketNum = socketNum;
+    give_to_caller_handle->net_context->socketNum = (int) socketNum;
 
     *out_handle = give_to_caller_handle;
     return true;
 }
 
-__attribute__((warn_unused_result)) bool publicClientPollSelectForMessages(NetworksHandle* handle)
+CHECK_RETURN_VAL bool publicClientPollSelectForMessages(NetworksHandle* handle)
 {
     int socketNum = handle->net_context->socketNum;
 
@@ -80,7 +90,7 @@ again:
     return true;
 }
 
-__attribute__((warn_unused_result)) bool publicBroadcastOutgoing(NetworksHandle* handle,
+CHECK_RETURN_VAL bool publicBroadcastOutgoing(NetworksHandle* handle,
                                                                  uint8_t* data,
                                                                  size_t data_size)
 {

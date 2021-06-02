@@ -17,7 +17,7 @@ typedef struct
 struct LaserManagerInternal
 {
     std::vector<LaserInfoWithValid> lasers;
-    bool has_invalid;
+    bool has_invalid =0;
 };
 
 LaserManager::LaserManager()

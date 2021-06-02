@@ -43,8 +43,6 @@ if(NOT WIN32)
     #Link the Linux OpenGL library
     target_link_libraries(${CMAKE_PROJECT_NAME} "GL" "dl")
   endif()
-
-  target_link_libraries(${CMAKE_PROJECT_NAME} ${CMAKE_SOURCE_DIR}/simple_ll_netlib.a)
 else()
 
   # Link OpenGL on Windows

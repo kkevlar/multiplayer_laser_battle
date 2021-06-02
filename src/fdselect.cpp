@@ -2,12 +2,20 @@
 
 #include "fdselect.h"
 
-#include <stdlib.h>
-#include <string.h>
+#ifdef _MSC_VER
+#include <winsock2.h>
+
+#else
 #include <sys/select.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <unistd.h>
+
+#endif
+
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+
 
 #include <iostream>
 

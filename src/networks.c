@@ -1,6 +1,9 @@
 
 // Provided by professor 
 
+// NOT ALLOWED ON WINDOWS
+#ifndef _MSC_VER
+
 #include "networks.h"
 
 #include <fcntl.h>
@@ -140,3 +143,5 @@ int tcpClientSetup(const char* serverName, const char* port, int debugFlag)
 
     return socket_num;
 }
+
+#endif

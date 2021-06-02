@@ -83,3 +83,11 @@ extern "C"
     }
 
 #endif
+
+
+#ifdef _MSC_VER
+#define CHECK_RETURN_VAL
+#else
+#define CHECK_RETURN_VAL __attribute__((warn_unused_result))
+#endif
+

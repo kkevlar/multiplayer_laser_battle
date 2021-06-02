@@ -7,22 +7,30 @@ FLAGS= -g -Wall -O2 -Werror
 CFLAGS= $(FLAGS) -std=gnu99 
 CXXFLAGS= $(FLAGS) -std=gnu++11 
 LIBS = 
+SERVOBJS= log.o incoming.o networks.o gethostbyname6.o handle.o compat.o packet.o message.o data_structure.o 
+PROBLEMHDRS= byte_order.h log.h compat.h packet.h handle.h message.h
 
-BINARY_TARGETS = simple_ll_netlib.a server
+BINARY_TARGETS = server
 
 all: $(BINARY_TARGETS) 
 
-%.o: %.cpp %.h
+%.o: %.cpp %.h $(PROBLEMHDRS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $< $(LIBS)
 
-simple_ll_netlib.a: simple_ll_netlib_client.o fromserver_client.o networks.o gethostbyname6.o handle.o compat.o packet.o message.o fdselect.o
-	ar rcs $@ $^ 
+server: log.h main_server.cpp $(SERVOBJS) $(PROBLEMHDRS)
+	$(CXX) $(CXXFLAGS) -o $@ main_server.cpp $(SERVOBJS) $(LIBS)
 
-server: main_server.cpp incoming.o networks.o gethostbyname6.o handle.o compat.o packet.o message.o data_structure.o
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
-
-%.o: %.c %.h
+%.o: %.c %.h $(PROBLEMHDRS)
 	$(CC) -c $(CFLAGS) $< -o $@ $(LIBS)
+
+%.cpp: copy/%.cpp 
+	cp $< $@
+
+%.c: copy/%.c
+	cp $< $@
+
+%.h: copy/%.h
+	cp $< $@
 
 cleano:
 	rm -f *.o *.a 

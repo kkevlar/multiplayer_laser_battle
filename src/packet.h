@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "log.h"
 
 #define MAKE_POINTER_AT_OFFSET(base, offset) (((uintptr_t)base) + ((uintptr_t)offset))
 
@@ -26,24 +27,25 @@ typedef enum
 } PacketFlag;
 COMPILER_ASSERT(FLAG_BROADCAST_MESSAGE == 4, flags);
 
-typedef struct __attribute__((packed))
+typedef struct 
 {
     uint16_t pdu_size_check_endianness;
     uint8_t flag;
+    uint8_t pad;
 } LibPacketHeader;
-COMPILER_ASSERT(sizeof(LibPacketHeader) == 3, LibPacketHeader);
+COMPILER_ASSERT(sizeof(LibPacketHeader) == 4, LibPacketHeader);
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-    __attribute__((warn_unused_result)) LibPacketHeader* packetFillIncomingUsingDualRecv(int socket_fd,
+    CHECK_RETURN_VAL LibPacketHeader* packetFillIncomingUsingDualRecv(int socket_fd,
                                                                                          uint8_t* buffer,
                                                                                          size_t buf_size);
     size_t packetFillOutgoingHeader(size_t pdu_size, PacketFlag flag, uint8_t* buf, size_t buf_size);
     void packetSend(int fd, uint8_t* buf, size_t buf_size);
-    __attribute__((warn_unused_result)) bool packetFillSendHeaderOnlyPacket(int fd, PacketFlag flag);
+    CHECK_RETURN_VAL bool packetFillSendHeaderOnlyPacket(int fd, PacketFlag flag);
 
 #ifdef __cplusplus
 }

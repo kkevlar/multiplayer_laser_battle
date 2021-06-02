@@ -1,7 +1,9 @@
 server
-cclient
 *.o
 *.o
 *.a
+*.h
+*.c
+*.cpp
 /.vscode/
-hundreds_client
+/copy/
