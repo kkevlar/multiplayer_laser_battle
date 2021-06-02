@@ -2,13 +2,14 @@
 
 #include <string>
 #include "fdselect.h"
+#include "compat.h"
 
 #include "simple_ll_netlib_client.h"
 
 struct NetworksContext
 {
     std::string handle;
-    int socketNum;
+    CompatSocket socketNum;
     void* caller_context;
     NetworksCallback callback;
     FDSelector selector;

@@ -70,7 +70,8 @@ bool incomingClientHandleProposal(const LibPacketHeader* const header, int clien
     if (clientMapCheckHandleExistence(handle))
     {
         cout << "Client fd=" << clientSockFd << " proposed a duplicate handle. Sending rejection packet." << endl;
-        if (!packetFillSendHeaderOnlyPacket(clientSockFd, FLAG_SERVER_HANDLE_PROPOSAL_REJECTION))
+        CompatSocket sock = {clientSockFd};
+        if (!packetFillSendHeaderOnlyPacket(sock, FLAG_SERVER_HANDLE_PROPOSAL_REJECTION))
         {
             cerr << "Creative failure message 04" << endl;
             return false;
@@ -81,7 +82,8 @@ bool incomingClientHandleProposal(const LibPacketHeader* const header, int clien
         clientMapAddHandle(handle, clientSockFd);
         cout << "Client fd=" << clientSockFd << " successfully bound it's handle to be \""
              << clientMapFindByFD(clientSockFd) << "\"" << endl;
-        if (!packetFillSendHeaderOnlyPacket(clientSockFd, FLAG_SERVER_HANDLE_PROPOSAL_OK))
+        CompatSocket sock = {clientSockFd};
+        if (!packetFillSendHeaderOnlyPacket(sock, FLAG_SERVER_HANDLE_PROPOSAL_OK))
         {
             cerr << "Creative failure message 05" << endl;
             return false;
@@ -102,7 +104,8 @@ static bool incomingBroadcast(const LibPacketHeader* const header, int clientSoc
     {
         if (fd != clientSockFd)
         {
-            packetSend(fd, (uint8_t*)header, ntohs(header->pdu_size_check_endianness));
+            CompatSocket sock = {clientSockFd};
+            packetSend(sock, (uint8_t*)header, ntohs(header->pdu_size_check_endianness));
         }
     }
 

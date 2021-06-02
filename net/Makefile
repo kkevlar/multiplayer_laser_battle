@@ -8,7 +8,7 @@ CFLAGS= $(FLAGS) -std=gnu99
 CXXFLAGS= $(FLAGS) -std=gnu++11 
 LIBS = 
 SERVOBJS= log.o incoming.o networks.o gethostbyname6.o handle.o compat.o packet.o message.o data_structure.o 
-PROBLEMHDRS= byte_order.h log.h compat.h packet.h handle.h message.h
+PROBLEMHDRS= networks.h data_structure.h byte_order.h log.h compat.h packet.h handle.h message.h
 
 BINARY_TARGETS = server
 
@@ -32,11 +32,20 @@ server: log.h main_server.cpp $(SERVOBJS) $(PROBLEMHDRS)
 %.h: copy/%.h
 	cp $< $@
 
+%.cpp: serversrc/%.cpp 
+	cp $< $@
+
+%.c: serversrc/%.c
+	cp $< $@
+
+%.h: serversrc/%.h
+	cp $< $@
+
 cleano:
 	rm -f *.o *.a 
 
 clean: cleano
-	rm -f $(BINARY_TARGETS) 
+	rm -rf $(BINARY_TARGETS) copy *.h *.c *.cpp
 
 
 # Kevin Kellar's Makefile

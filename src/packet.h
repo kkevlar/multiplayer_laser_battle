@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "log.h"
+#include "compat.h"
 
 #define MAKE_POINTER_AT_OFFSET(base, offset) (((uintptr_t)base) + ((uintptr_t)offset))
 
@@ -40,12 +41,12 @@ extern "C"
 {
 #endif
 
-    CHECK_RETURN_VAL LibPacketHeader* packetFillIncomingUsingDualRecv(int socket_fd,
+    CHECK_RETURN_VAL LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock,
                                                                                          uint8_t* buffer,
                                                                                          size_t buf_size);
     size_t packetFillOutgoingHeader(size_t pdu_size, PacketFlag flag, uint8_t* buf, size_t buf_size);
-    void packetSend(int fd, uint8_t* buf, size_t buf_size);
-    CHECK_RETURN_VAL bool packetFillSendHeaderOnlyPacket(int fd, PacketFlag flag);
+    void packetSend(CompatSocket sock, uint8_t* buf, size_t buf_size);
+    CHECK_RETURN_VAL bool packetFillSendHeaderOnlyPacket(CompatSocket socket, PacketFlag flag);
 
 #ifdef __cplusplus
 }

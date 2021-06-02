@@ -16,6 +16,7 @@
 #include "incoming.h"
 #include "networks.h"
 #include "packet.h"
+#include "compat.h"
 
 #define DEBUG_FLAG (0)
 
@@ -93,7 +94,8 @@ static void selectSetCheckOnClientSockets(fd_set* fds)
         if (sock >= 0 && FD_ISSET(sock, fds))
         {
             uint8_t buf[20000];
-            LibPacketHeader* header = packetFillIncomingUsingDualRecv(sock, buf, sizeof(buf));
+            CompatSocket comps = {sock};
+            LibPacketHeader* header = packetFillIncomingUsingDualRecv(comps, buf, sizeof(buf));
             if (!header)
             {
                 socksToRemove.push_back(sock);
