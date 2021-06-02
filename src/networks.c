@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <stdbool.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -21,6 +22,7 @@
 #include <unistd.h>
 
 #include "gethostbyname6.h"
+#include "compat.h"
 
 /* This function sets the server socket.  It lets the system
 determine the port number.  The function returns the server
@@ -96,7 +98,7 @@ int tcpAccept(int server_socket, int debugFlag)
     return (client_socket);
 }
 
-int tcpClientSetup(const char* serverName, const char* port, int debugFlag)
+bool tcpClientSetup(const char* serverName, const char* port, int debugFlag, CompatSocket* out_compat_sock)
 {
     // This is used by the client to connect to a server using TCP
 
@@ -141,7 +143,14 @@ int tcpClientSetup(const char* serverName, const char* port, int debugFlag)
                atoi(port));
     }
 
-    return socket_num;
+    if(socket_num <= 0)
+    {
+        return false;
+    }
+
+    CompatSocket cs = {socket_num};
+    memcpy(out_compat_sock ,& cs, sizeof(CompatSocket));
+    return true;
 }
 
 #endif

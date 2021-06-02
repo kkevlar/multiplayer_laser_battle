@@ -1,5 +1,8 @@
-#ifndef __NETWORKS_H__
-#define __NETWORKS_H__
+#pragma once
+
+#include "compat.h"
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -12,10 +15,9 @@ extern "C"
     int tcpAccept(int server_socket, int debugFlag);
 
     // for the client side
-    int tcpClientSetup(const char* serverName, const char* port, int debugFlag);
+    bool tcpClientSetup(const char* serverName, const char* port, int debugFlag, CompatSocket* out_compat_sock);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif

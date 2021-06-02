@@ -10,7 +10,7 @@
 
 #define PACKET_DEBUG 0
 
-LibPacketHeader* packetFillIncomingUsingDualRecv(int socket_fd, uint8_t* buf, size_t buf_size)
+LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock, uint8_t* buf, size_t buf_size)
 {
     if (!buf)
     {
@@ -30,7 +30,7 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(int socket_fd, uint8_t* buf, si
         exit(2);
     }
 
-    if ((bytes_read = compat_recv_waitall(socket_fd, buf, bytes_requested)) < 0)
+    if ((bytes_read = compat_recv_waitall(sock, buf, bytes_requested)) < 0)
     {
         perror("recv call errored");
         fprintf(stderr, "GONNA JUST PRENTEND IT DIDNT FAIL\n");
@@ -56,7 +56,7 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(int socket_fd, uint8_t* buf, si
 #if PACKET_DEBUG == 1
         fprintf(stderr, "Gonna block on getting %lu more bytes of data \n", bytes_requested);
 #endif
-        if ((bytes_read = compat_recv_waitall(socket_fd, PACKET_PDU_DATA_SEGMENT(header), bytes_requested)) < 0)
+        if ((bytes_read = compat_recv_waitall(sock, PACKET_PDU_DATA_SEGMENT(header), bytes_requested)) < 0)
         {
             perror("recv call2 errored");
             fprintf(stderr, "GONNA JUST PRENTEND IT DIDNT FAIL\n");
@@ -107,7 +107,7 @@ size_t packetFillOutgoingHeader(size_t pdu_size, PacketFlag flag, uint8_t* buf, 
     return sizeof(LibPacketHeader);
 }
 
-void packetSend(int fd, uint8_t* buf, size_t buf_size)
+void packetSend(CompatSocket sock, uint8_t* buf, size_t buf_size)
 {
 #if PACKET_DEBUG == 1
     fprintf(stderr, "Outgoing: ");
@@ -118,18 +118,18 @@ void packetSend(int fd, uint8_t* buf, size_t buf_size)
     fprintf(stderr, "\n");
 #endif
 
-    if (send(fd, buf, buf_size, 0) < 0)
+    if (compat_send_noflags(sock, buf, buf_size) < 0)
     {
         perror("send failed");
         fprintf(stderr, "GONNA JUST PRENTEND IT DIDNT FAIL\n");
     }
 }
 
-bool packetFillSendHeaderOnlyPacket(int fd, PacketFlag flag)
+bool packetFillSendHeaderOnlyPacket(CompatSocket sock, PacketFlag flag)
 {
     uint8_t buf[64];
     packetFillOutgoingHeader(sizeof(LibPacketHeader), flag, buf, sizeof(buf));
-    packetSend(fd, buf, sizeof(LibPacketHeader));
+    packetSend(sock, buf, sizeof(LibPacketHeader));
     return true;
 }
 

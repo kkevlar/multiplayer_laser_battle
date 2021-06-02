@@ -46,19 +46,31 @@ void FDSelector::clearFds()
     this->internal->max_fd = 0;
 }
 
-void FDSelector::addFd(int fd)
+void FDSelector::addFd(CompatSocket fd)
 {
     if (!this->internal)
     {
         std::cerr << "Bad1" << std::endl;
         exit(99);
     }
-    FD_SET(fd, &this->internal->set);
+#ifdef _MSC_VER
+#error
+    return (FD_ISSET(fd, &this->internal->set));
+#else
+    FD_SET(fd.unix_socket, &this->internal->set);
 
-    if (fd > this->internal->max_fd)
+#endif
+
+#ifdef _MSC_VER
+#error
+this->internal->max_fd = 100;
+#else
+    if (fd.unix_socket > this->internal->max_fd)
     {
-        this->internal->max_fd = fd;
+        this->internal->max_fd = fd.unix_socket;
     }
+
+#endif
 }
 
 bool FDSelector::performSelect(long timeout_ms)
@@ -86,14 +98,20 @@ bool FDSelector::performSelect(long timeout_ms)
     return select(this->internal->max_fd + 1, &this->internal->set, NULL, NULL, time_ptr) >= 0;
 }
 
-bool FDSelector::testPostSelectMembership(int fd)
+bool FDSelector::testPostSelectMembership(CompatSocket fd)
 {
     if (!this->internal)
     {
         std::cerr << "Bad3" << std::endl;
         exit(99);
     }
+#ifdef _MSC_VER
+#error
     return (FD_ISSET(fd, &this->internal->set));
+#else
+    return (FD_ISSET(fd.unix_socket, &this->internal->set));
+
+#endif
 }
 
 // Kevin Kellar's FD Selector - 2021
