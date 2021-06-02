@@ -13,9 +13,9 @@
 #include "fromserver_client.h"
 #include "handle.h"
 #include "message.h"
+#include "packet.h"
 #include "netcontext.h"
 #include "networks.h"
-#include "Header.h"
 
 #define DEBUG_FLAG 0
 
@@ -23,6 +23,7 @@ static CHECK_RETURN_VAL bool clientProcessServer(NetworksContext* context);
 static CHECK_RETURN_VAL std::string checkThenSetupHandle(const char* handle, int socketNum);
 static CHECK_RETURN_VAL bool setupHandle(std::string handle, int fd);
 
+#include "windows_tcp_client.h"
 CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
                                                                 const char* host_name,
                                                                 const char* port_num,
@@ -37,7 +38,7 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
     give_to_caller_handle->net_context = (NetworksContext*)malloc(sizeof(NetworksContext));
 
     /* set up the TCP Client socket  */
-    socketNum = tcpClientSetup(host_name, port_num, DEBUG_FLAG);
+    socketNum = winTcpClientSetup(host_name, port_num);
 
     if (socketNum <= 0)
     {
@@ -50,7 +51,7 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
     give_to_caller_handle->net_context->callback = callback;
     give_to_caller_handle->net_context->caller_context = caller_context;
     give_to_caller_handle->net_context->handle = myhandle;
-    give_to_caller_handle->net_context->socketNum = socketNum;
+    give_to_caller_handle->net_context->socketNum = (int) socketNum;
 
     *out_handle = give_to_caller_handle;
     return true;

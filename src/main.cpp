@@ -15,8 +15,6 @@
 // value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <thread>
 
 using namespace std;
@@ -674,7 +672,7 @@ class Application : public EventCallbacks
         for (const auto& estimate : estimates)
         {
             translate_plane = translate(mat4(1), estimate.pos);
-            plane_overall_rot = mat4(estimate.rot);
+            plane_overall_rot = mat4(quat(estimate.rot));
 
             M = translate_plane * plane_overall_rot * scale_plane;
             glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
@@ -735,7 +733,7 @@ class Application : public EventCallbacks
 int main(int argc, char** argv)
 {
     std::string resourceDir = "../resources";  // Where the resources are loaded from
-    const char* my_username = (const char*)"INVALID";
+    const char* my_username = (const char*)"Buster2";
     const char* hostname = (const char*)"localhost";
     if (argc >= 2)
     {

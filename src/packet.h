@@ -27,12 +27,13 @@ typedef enum
 } PacketFlag;
 COMPILER_ASSERT(FLAG_BROADCAST_MESSAGE == 4, flags);
 
-typedef struct __attribute__((packed))
+typedef struct 
 {
     uint16_t pdu_size_check_endianness;
     uint8_t flag;
+    uint8_t pad;
 } LibPacketHeader;
-COMPILER_ASSERT(sizeof(LibPacketHeader) == 3, LibPacketHeader);
+COMPILER_ASSERT(sizeof(LibPacketHeader) == 4, LibPacketHeader);
 
 #ifdef __cplusplus
 extern "C"

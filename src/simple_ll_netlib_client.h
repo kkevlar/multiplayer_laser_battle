@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "Header.h"
+#include "log.h"
 typedef bool (*NetworksCallback)(void*, std::string, const uint8_t*, size_t);
 
 struct NetworksContext;
