@@ -1,0 +1,25 @@
+/* Written by Prof*/
+/* replacement code for gethostbyname for IPv6 */
+/* gives either IPv6 address or IPv4 mapped IPv6 address */
+/* Use with socket family AF_INET6                        */
+
+#ifndef GETHOSTBYNAME6_H
+#define GETHOSTBYNAME6_H
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include <netinet/in.h>
+#include <stdint.h>
+
+    uint8_t* gethostbyname6(const char* hostName);
+    char* getIPAddressString(uint8_t* ipAddress);
+    uint8_t* getIPAddress6(const char* hostName,
+                           struct sockaddr_in6* aSockaddr);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
