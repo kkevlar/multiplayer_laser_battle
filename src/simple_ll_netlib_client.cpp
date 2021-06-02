@@ -132,7 +132,10 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
 
     /* set up the TCP Client socket  */
 #ifdef _MSC_VER
-    socketNum = winTcpClientSetup(host_name, port_num);
+    if(!
+    winTcpClientSetup(host_name, port_num, &myCompatSocket))
+{return false;
+    }
 #else
     if(!tcpClientSetup(host_name, port_num, DEBUG_FLAG, &myCompatSocket))
 {return false;

@@ -3,10 +3,13 @@
 #pragma once
 
 #include <stdlib.h>
+#ifdef _MSC_VER
+#include "windows_net_stuff.h"  
+    #endif
 
 typedef struct {
 #ifdef _MSC_VER
-void* ms_socket;
+SOCKET ms_socket;
 #else
     int unix_socket;
     #endif
