@@ -5,6 +5,7 @@
 
 
 #include "windows_net_stuff.h"
+#include "windows_tcp_client.h"
 
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
@@ -13,8 +14,7 @@
 #pragma comment (lib, "AdvApi32.lib")
 
 
-
-int winTcpClientSetup(const char* serverName, const char* port)
+bool winTcpClientSetup(const char* serverName, const char* port, CompatSocket* compat)
 {
     WSADATA wsaData;
     SOCKET ConnectSocket = INVALID_SOCKET;
@@ -27,7 +27,7 @@ int winTcpClientSetup(const char* serverName, const char* port)
     iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (iResult != 0) {
         printf("WSAStartup failed with error: %d\n", iResult);
-        return 1;
+        return false;
     }
 
     ZeroMemory( &hints, sizeof(hints) );
@@ -40,7 +40,7 @@ int winTcpClientSetup(const char* serverName, const char* port)
     if ( iResult != 0 ) {
         printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
-        return 1;
+        return false;
     }
 
     // Attempt to connect to an address until one succeeds
@@ -52,7 +52,7 @@ int winTcpClientSetup(const char* serverName, const char* port)
         if (ConnectSocket == INVALID_SOCKET) {
             printf("socket failed with error: %ld\n", WSAGetLastError());
             WSACleanup();
-            return 1;
+            return false;
         }
 
         // Connect to server.
@@ -70,10 +70,17 @@ int winTcpClientSetup(const char* serverName, const char* port)
     if (ConnectSocket == INVALID_SOCKET) {
         printf("Unable to connect to server!\n");
         WSACleanup();
-        return 1;
+        return false;
     }
+    CompatSocket s;
+    s.ms_socket = ConnectSocket;
 
-    return ConnectSocket;
+    memcpy(compat, &s, sizeof(CompatSocket));
+    return true;
+
+
+
+
 
     // // Send an initial buffer
     // iResult = send( ConnectSocket, sendbuf, (int)strlen(sendbuf), 0 );

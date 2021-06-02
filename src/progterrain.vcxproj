@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\ext\glad\src\glad.c" />
     <ClCompile Include="AnimTextureBillboard.cpp" />
-    <ClCompile Include="compat.c" />
+    <ClCompile Include="compat.cpp" />
     <ClCompile Include="fdselect.cpp" />
     <ClCompile Include="fromserver_client.cpp" />
     <ClCompile Include="GLSL.cpp" />
@@ -30,6 +30,7 @@
     <ClCompile Include="log.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="message.cpp" />
+    <ClCompile Include="networks.c" />
     <ClCompile Include="packet.c" />
     <ClCompile Include="PlanesNetworked.cpp" />
     <ClCompile Include="Program.cpp" />
@@ -46,10 +47,12 @@
     <ClInclude Include="fromserver_client.h" />
     <ClInclude Include="GLSL.h" />
     <ClInclude Include="handle.h" />
+    <ClInclude Include="json_struct.h" />
     <ClInclude Include="LaserManager.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="netcontext.h" />
+    <ClInclude Include="networks.h" />
     <ClInclude Include="packet.h" />
     <ClInclude Include="PlanesNetworked.h" />
     <ClInclude Include="Program.h" />
@@ -65,13 +68,20 @@
     <None Include="..\resources\geometry.glsl" />
     <None Include="..\resources\height_frag.glsl" />
     <None Include="..\resources\height_vertex.glsl" />
+    <None Include="..\resources\laser_fragment.glsl" />
+    <None Include="..\resources\laser_vertex.glsl" />
     <None Include="..\resources\lines_geometry.glsl" />
     <None Include="..\resources\lines_height_frag.glsl" />
     <None Include="..\resources\lines_height_vertex.glsl" />
+    <None Include="..\resources\plane_frag.glsl" />
+    <None Include="..\resources\plane_vertex.glsl" />
     <None Include="..\resources\shader_fragment.glsl" />
     <None Include="..\resources\shader_vertex.glsl" />
     <None Include="..\resources\sky_fragment.glsl" />
     <None Include="..\resources\sky_vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="pathinfo.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
