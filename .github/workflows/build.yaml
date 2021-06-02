@@ -16,10 +16,10 @@ jobs:
 
       - name: Build Network
         run: |
+          cp -rf src net/copy
           cd net
           make clean
-          make -j8
-          cp simple_ll_netlib.a ..
+          make -j16
 
       - name: Build App
         run: |
