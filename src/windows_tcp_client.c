@@ -1,5 +1,8 @@
 
+
+#ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
+
 
 #include "windows_net_stuff.h"
 
@@ -111,3 +114,4 @@ int winTcpClientSetup(const char* serverName, const char* port)
 
     return 0;
 }
+#endif

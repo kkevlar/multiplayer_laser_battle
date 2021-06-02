@@ -15,7 +15,12 @@
 #include "message.h"
 #include "packet.h"
 #include "netcontext.h"
+
+#ifdef _MSC_VER
+#include "windows_tcp_client.h"
+#else
 #include "networks.h"
+#endif
 
 #define DEBUG_FLAG 0
 
@@ -23,7 +28,6 @@ static CHECK_RETURN_VAL bool clientProcessServer(NetworksContext* context);
 static CHECK_RETURN_VAL std::string checkThenSetupHandle(const char* handle, int socketNum);
 static CHECK_RETURN_VAL bool setupHandle(std::string handle, int fd);
 
-#include "windows_tcp_client.h"
 CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
                                                                 const char* host_name,
                                                                 const char* port_num,
@@ -38,7 +42,11 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
     give_to_caller_handle->net_context = (NetworksContext*)malloc(sizeof(NetworksContext));
 
     /* set up the TCP Client socket  */
+#ifdef _MSC_VER
     socketNum = winTcpClientSetup(host_name, port_num);
+#else
+    socketNum = tcpClientSetup(host_name, port_num, DEBUG_FLAG);
+#endif
 
     if (socketNum <= 0)
     {

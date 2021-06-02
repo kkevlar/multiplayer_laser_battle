@@ -9,7 +9,7 @@
 #include "log.h"
 #include "simple_ll_netlib_client.h"
 
-#define NETWORK_PORT "44444"
+#define NETWORK_PORT "55555"
 #define FASTEST_BROADCAST_FREQ_ALLOWED_HZ (10.0f)
 #define PLANES_BIG_MAGIC_VALUE (0x75)
 #define PLANES_POS_MAGIC_VALUE1 (0x9b)

@@ -8,7 +8,7 @@ CFLAGS= $(FLAGS) -std=gnu99
 CXXFLAGS= $(FLAGS) -std=gnu++11 
 LIBS = 
 SERVOBJS= log.o incoming.o networks.o gethostbyname6.o handle.o compat.o packet.o message.o data_structure.o 
-PROBLEMHDRS= log.h compat.h packet.h handle.h message.h
+PROBLEMHDRS= byte_order.h log.h compat.h packet.h handle.h message.h
 
 BINARY_TARGETS = server
 
