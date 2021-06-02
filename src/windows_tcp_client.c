@@ -14,7 +14,7 @@
 
 
 
-int winTcpClientSetup(const char* serverName, const char* port)
+void* winTcpClientSetup(const char* serverName, const char* port)
 {
     WSADATA wsaData;
     SOCKET ConnectSocket = INVALID_SOCKET;

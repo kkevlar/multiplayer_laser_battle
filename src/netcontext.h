@@ -8,7 +8,7 @@
 struct NetworksContext
 {
     std::string handle;
-    int socketNum;
+    void* socketNum;
     void* caller_context;
     NetworksCallback callback;
     FDSelector selector;

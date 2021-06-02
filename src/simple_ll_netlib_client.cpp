@@ -35,7 +35,7 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
                                                                 NetworksCallback callback,
                                                                 NetworksHandle** out_handle)
 {
-    int socketNum = -1;
+    void* socketNum = NULL;
 
     // THIS IS NEVER FREED LOL
     NetworksHandle* give_to_caller_handle = (NetworksHandle*)malloc(sizeof(NetworksHandle));
@@ -59,7 +59,7 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
     give_to_caller_handle->net_context->callback = callback;
     give_to_caller_handle->net_context->caller_context = caller_context;
     give_to_caller_handle->net_context->handle = myhandle;
-    give_to_caller_handle->net_context->socketNum = (int) socketNum;
+    give_to_caller_handle->net_context->socketNum = socketNum;
 
     *out_handle = give_to_caller_handle;
     return true;
