@@ -4,6 +4,7 @@ in vec3 vertex_normal;
 in vec3 vertex_pos;
 in vec2 vertex_tex;
 uniform vec3 campos;
+uniform vec3 tint_color;
 
 uniform sampler2D tex;
 
@@ -25,8 +26,7 @@ vec4 tcol = texture(tex, vec2(vertex_tex.x,1-vertex_tex.y)); //the plane has rev
 
 color.rgb =  2.0f *tcol.rgb*diffuse_fact + vec3(1,1,1)*spec_fact + tcol.rbg * 0.2f;
 
-vec3 tint2 = vec3(-0.2,-0.2,1);
-vec3 tint = vec3(-0.0,1,-0.0);
+vec3 tint = tint_color;
 float tintfactor = 0.4f;
 float mymin = min(min(color.r, color.b), color.g);
 color.rgb += mymin * tintfactor * tint;
