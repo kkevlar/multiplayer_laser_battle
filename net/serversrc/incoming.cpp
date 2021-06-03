@@ -79,11 +79,24 @@ bool incomingClientHandleProposal(const LibPacketHeader* const header, int clien
     }
     else
     {
-        clientMapAddHandle(handle, clientSockFd);
+        PersistentInfo persist = clientMapAddHandle(handle, clientSockFd);
         cout << "Client fd=" << clientSockFd << " successfully bound it's handle to be \""
-             << clientMapFindByFD(clientSockFd) << "\"" << endl;
+             << clientMapFindByFD(clientSockFd) << "\". Its persist ucid is " << persist.unique_color_id << endl;
         CompatSocket sock = {clientSockFd};
-        if (!packetFillSendHeaderOnlyPacket(sock, FLAG_SERVER_HANDLE_PROPOSAL_OK))
+
+        uint8_t buf[ 128] ;
+
+        UCIDPayload* payload = (UCIDPayload*) MAKE_POINTER_AT_OFFSET(buf, sizeof(LibPacketHeader));
+        payload->magic1 = UCID_PAYLOAD_MAGIC_1;
+        payload->magic2 = UCID_PAYLOAD_MAGIC_2;
+        payload->ucid_check_endianness = htons(persist.unique_color_id);
+        //TODO TODO
+        payload->num_ms = 0;
+
+size_t pdu_size = sizeof(UCIDPayload) + sizeof(LibPacketHeader);
+        packetFillOutgoingHeader(pdu_size , FLAG_SERVER_HANDLE_PROPOSAL_OK_WITH_COLOR_ALLOCATION, buf, sizeof(buf));
+
+        if (!compat_send_noflags(sock, buf, pdu_size))
         {
             cerr << "Creative failure message 05" << endl;
             return false;
