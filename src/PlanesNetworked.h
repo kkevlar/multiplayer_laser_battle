@@ -22,7 +22,7 @@ class PlanesNetworked
     struct PlanesNetworkedInternal* internal;
     PlanesNetworked();
     ~PlanesNetworked();
-    void PlanesNetworkedSetup(const char* username, const char* hostname);
+void PlanesNetworkedSetup(const char* username, const char* hostname, uint16_t* out_ucid, uint32_t* out_ms_elapsed);
     void BroadcastSelfPosition(float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot);
     void BroadcastNewLaser(NewShotLaserInfo* laser);
     void PollIncoming(float time);

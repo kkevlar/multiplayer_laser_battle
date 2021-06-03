@@ -190,14 +190,17 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
     return false;
 }
 
-void PlanesNetworked::PlanesNetworkedSetup(const char* username, const char* hostname)
+void PlanesNetworked::PlanesNetworkedSetup(const char* username, const char* hostname, uint16_t* ucid, uint32_t* ms_elapsed)
 {
     NULLCHECK(this);
     NULLCHECK(this->internal);
     NULLCHECK(username);
     NULLCHECK(hostname);
     NULLCHECK(NETWORK_PORT);
-    if (!publicClientInitialize(username, hostname, NETWORK_PORT, this, internal_callback, &this->internal->net_handle))
+    NULLCHECK(ucid);
+    NULLCHECK(ms_elapsed);
+
+    if (!publicClientInitialize(username, hostname, NETWORK_PORT, this, internal_callback, &this->internal->net_handle, ucid, ms_elapsed))
     {
         exit(7);
     }
