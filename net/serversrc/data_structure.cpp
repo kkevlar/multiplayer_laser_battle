@@ -8,15 +8,19 @@
 
 using namespace std;
 
+
 typedef struct
 {
     int fd;
+    PersistentInfo persist;
 } ClientInfo;
 
 #define DATA_STRUCTURE_DEBUG 0
 
+static map<string, PersistentInfo> persistentMap{};
 static map<string, ClientInfo> handleMap{};
 static list<int> fdList{};
+static int max_unique_color_id_allocated = 0;
 
 void clientFDListAddFd(int fd)
 {
@@ -75,10 +79,27 @@ bool clientMapCheckHandleExistence(const string handle)
     return handleMap.find(handle) != handleMap.end();
 }
 
-void clientMapAddHandle(const string handle, int fd)
+static void allocateNewPersistentInfo(const string handle)
 {
-    ClientInfo info{fd};
+    PersistentInfo persist;
+    max_unique_color_id_allocated++;
+    persist.unique_color_id = max_unique_color_id_allocated;
+
+   persistentMap[handle] = persist;
+}
+
+PersistentInfo clientMapAddHandle(const string handle, int fd)
+{
+    if(persistentMap.find(handle) == persistentMap.end())
+    {
+       allocateNewPersistentInfo(handle); 
+    }
+
+PersistentInfo persist = persistentMap[handle];
+    ClientInfo info{fd, persist};
     handleMap[handle] = info;
+
+return persist;
 }
 
 bool clientMapDeleteHandle(const string handle)
