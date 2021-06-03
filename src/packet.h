@@ -41,7 +41,7 @@ typedef struct
     uint8_t magic1;
     uint8_t magic2;
     uint16_t ucid_check_endianness;
-    uint32_t num_ms;
+    uint32_t num_ms_check_endiannes;
 } UCIDPayload;
 COMPILER_ASSERT(sizeof(UCIDPayload) == 8, UCIDPayload);
 

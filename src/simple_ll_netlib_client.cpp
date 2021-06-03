@@ -17,6 +17,7 @@
 #include "message.h"
 #include "packet.h"
 #include "netcontext.h"
+#include "byte_order.h"
 
 #ifdef _MSC_VER
 #include "windows_tcp_client.h"
@@ -47,9 +48,10 @@ static bool clientProcessServer(NetworksHandle* handle)
     return true;
 }
 
-static CHECK_RETURN_VAL bool setupHandle(std::string handle, CompatSocket sock)
+static CHECK_RETURN_VAL bool setupHandle(std::string handle, CompatSocket sock, UCIDPayload* ucid)
 {
     using namespace std;
+NULLCHECK(ucid);
 
     uint8_t buf[200];
     size_t len;
@@ -98,8 +100,9 @@ static CHECK_RETURN_VAL bool setupHandle(std::string handle, CompatSocket sock)
     }
 }
 
-static CHECK_RETURN_VAL std::string checkThenSetupHandle(const char* handle, CompatSocket sock)
+static CHECK_RETURN_VAL std::string checkThenSetupHandle(const char* handle, CompatSocket sock, UCIDPayload* ucid)
 {
+    NULLCHECK(ucid);
     std::string myhandle = std::string{handle};
     if (!handleCheckValid(myhandle))
     {
@@ -107,7 +110,7 @@ static CHECK_RETURN_VAL std::string checkThenSetupHandle(const char* handle, Com
         exit(31);
     }
 
-    if (!setupHandle(myhandle, sock))
+    if (!setupHandle(myhandle, sock, ucid))
     {
         std::cerr << "Failed to setup handle. Terminating." << std::endl;
         exit(40);
@@ -125,8 +128,13 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
                                                                 void* caller_context,
                                                                 NetworksCallback callback,
                                                                 NetworksHandle* out_handle)
+                                                                NetworksHandle** out_handle,
+                                                                uint16_t* ucid,
+                                                                uint32_t* ms_elapsed)
 {
     NULLCHECK(out_handle);
+    NULLCHECK(ucid);
+    NULLCHECK(ms_elapsed);
     CompatSocket myCompatSocket;
 
     // THIS IS NEVER FREED LOL
@@ -145,13 +153,32 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
     }
 #endif
 
-    std::string myhandle = checkThenSetupHandle(handle_AKA_name, myCompatSocket);
+UCIDPayload payload;
+
+    std::string myhandle = checkThenSetupHandle(handle_AKA_name, myCompatSocket, &payload);
 
     out_handle->callback = callback;
     out_handle->caller_context = caller_context;
     assert(sizeof(out_handle->username) ==100);
     strncpy(out_handle->username, myhandle.c_str(), sizeof(out_handle->username-1));
     memcpy(&out_handle->socketNum ,&myCompatSocket, sizeof(myCompatSocket)) ;
+
+    *out_handle = give_to_caller_handle;
+
+using namespace std;
+    if(payload.magic1 != UCID_PAYLOAD_MAGIC_1)
+    {
+        cerr << "BAD MAGIC 1 UCID" << endl;
+        return false;
+    }
+    else if(payload.magic2 != UCID_PAYLOAD_MAGIC_2)
+    {
+        cerr << "BAD MAGIC 2 UCID" << endl;
+        return false;
+    }
+
+    *ucid = ntohs(payload.ucid_check_endianness);
+    *ms_elapsed = ntohl(payload.num_ms_check_endiannes);
 
     return true;
 }
@@ -201,4 +228,3 @@ CHECK_RETURN_VAL bool publicBroadcastOutgoing(NetworksHandle* handle,
 
 
 // Client library main file for use in online games
-// Author- Kevin Kellar - 2021
