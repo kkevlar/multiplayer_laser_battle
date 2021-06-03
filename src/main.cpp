@@ -64,6 +64,19 @@ mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
     return m1;
 }
 
+#define GLOBAL_COLOR_COUNT (8)
+static glm::vec3 global_plane_color_allocation[] = {
+
+    vec3(0,0,1),
+    vec3(1,0.4,0), //orange
+    vec3(1,0,0),
+    vec3(0,1, 0),
+    vec3(0,1, 1), //cyan
+    vec3(1,1,0), //yellow
+    vec3(1,0, 1), //magenta
+    vec3(0.4,0, 1), //purple
+};
+
 double get_last_elapsed_time()
 {
     static double lasttime = glfwGetTime();
@@ -206,6 +219,8 @@ class Application : public EventCallbacks
     AnimTextureBillboard laser;
     LaserManager laser_manager;
     PlanesNetworked network;
+
+    vec3 my_allocated_color_from_server = vec3(0,0,0);
 
     bool shoot;
 
@@ -551,6 +566,7 @@ class Application : public EventCallbacks
         pplane->addUniform("V");
         pplane->addUniform("M");
         pplane->addUniform("campos");
+        pplane->addUniform("tint_color");
         pplane->addAttribute("vertPos");
         pplane->addAttribute("vertNor");
         pplane->addAttribute("vertTex");
@@ -733,7 +749,7 @@ class Application : public EventCallbacks
 int main(int argc, char** argv)
 {
     std::string resourceDir = "../resources";  // Where the resources are loaded from
-    const char* my_username = (const char*)"Buster2";
+    const char* my_username = (const char*)"INVALID";
     const char* hostname = (const char*)"localhost";
     if (argc >= 2)
     {
@@ -761,7 +777,12 @@ int main(int argc, char** argv)
         return 96;
     }
 
-    application->network.PlanesNetworkedSetup(my_username, hostname);
+    uint16_t ucid_from_server;
+    uint32_t timediff_unused;
+    application->network.PlanesNetworkedSetup(my_username, hostname, &ucid_from_server, &timediff_unused);
+
+    application->my_allocated_color_from_server = global_plane_color_allocation[ucid_from_server % GLOBAL_COLOR_COUNT];
+
 
     /* your main will always include a similar set up to establish your window
             and GL context, etc. */

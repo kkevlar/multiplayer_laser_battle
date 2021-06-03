@@ -91,6 +91,7 @@ bool incomingClientHandleProposal(const LibPacketHeader* const header, int clien
         payload->magic2 = UCID_PAYLOAD_MAGIC_2;
         payload->ucid_check_endianness = htons(persist.unique_color_id);
         //TODO TODO
+        //TODO htonl
         payload->num_ms_check_endiannes = 0;
 
 size_t pdu_size = sizeof(UCIDPayload) + sizeof(LibPacketHeader);
