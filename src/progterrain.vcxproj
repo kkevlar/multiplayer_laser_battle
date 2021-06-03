@@ -68,9 +68,13 @@
     <None Include="..\resources\geometry.glsl" />
     <None Include="..\resources\height_frag.glsl" />
     <None Include="..\resources\height_vertex.glsl" />
+    <None Include="..\resources\laser_fragment.glsl" />
+    <None Include="..\resources\laser_vertex.glsl" />
     <None Include="..\resources\lines_geometry.glsl" />
     <None Include="..\resources\lines_height_frag.glsl" />
     <None Include="..\resources\lines_height_vertex.glsl" />
+    <None Include="..\resources\plane_frag.glsl" />
+    <None Include="..\resources\plane_vertex.glsl" />
     <None Include="..\resources\shader_fragment.glsl" />
     <None Include="..\resources\shader_vertex.glsl" />
     <None Include="..\resources\sky_fragment.glsl" />
