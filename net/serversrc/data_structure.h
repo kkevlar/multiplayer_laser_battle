@@ -6,6 +6,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include "log.h"
 
 typedef struct
 {
@@ -13,20 +14,20 @@ typedef struct
 } PersistentInfo;
 
 void clientFDListAddFd(int fd);
-__attribute__((warn_unused_result)) int clientFDListIndexof(int fd);
-__attribute__((warn_unused_result)) bool clientFDListCheckExistence(int fd);
-__attribute__((warn_unused_result)) bool clientFDListRemoveFd(int fd);
-__attribute__((warn_unused_result)) const std::list<int> clientFdListGetAll();
-__attribute__((warn_unused_result)) bool clientMapCheckHandleExistence(
+CHECK_RETURN_VAL int clientFDListIndexof(int fd);
+CHECK_RETURN_VAL bool clientFDListCheckExistence(int fd);
+CHECK_RETURN_VAL bool clientFDListRemoveFd(int fd);
+CHECK_RETURN_VAL const std::list<int> clientFdListGetAll();
+CHECK_RETURN_VAL bool clientMapCheckHandleExistence(
     const std::string handle);
-__attribute__((warn_unused_result)) PersistentInfo clientMapAddHandle(const std::string handle, int fd);
-__attribute__((warn_unused_result)) bool clientMapDeleteHandle(
+CHECK_RETURN_VAL PersistentInfo clientMapAddHandle(const std::string handle, int fd);
+CHECK_RETURN_VAL bool clientMapDeleteHandle(
     const std::string handle);
-__attribute__((warn_unused_result)) int clientMapFindByHandle(
+CHECK_RETURN_VAL int clientMapFindByHandle(
     const std::string handle);
-__attribute__((warn_unused_result)) bool clientMapDoesFdExist(int fd);
-__attribute__((warn_unused_result)) const std::string clientMapFindByFD(int fd);
-__attribute__((warn_unused_result)) const std::vector<std::string> clientMapGetAllHandles();
+CHECK_RETURN_VAL bool clientMapDoesFdExist(int fd);
+CHECK_RETURN_VAL const std::string clientMapFindByFD(int fd);
+CHECK_RETURN_VAL const std::vector<std::string> clientMapGetAllHandles();
 
 // Global dynamic datastructure for tracking clients on the server
 // Author- Kevin Kellar - 2021

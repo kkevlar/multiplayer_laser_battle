@@ -36,6 +36,18 @@ typedef struct
 } LibPacketHeader;
 COMPILER_ASSERT(sizeof(LibPacketHeader) == 4, LibPacketHeader);
 
+typedef struct 
+{
+    uint8_t magic1;
+    uint8_t magic2;
+    uint16_t ucid_check_endianness;
+    uint32_t num_ms;
+} UCIDPayload;
+COMPILER_ASSERT(sizeof(UCIDPayload) == 8, UCIDPayload);
+
+#define UCID_PAYLOAD_MAGIC_1 (0x19)
+#define UCID_PAYLOAD_MAGIC_2 (0xd3)
+
 #ifdef __cplusplus
 extern "C"
 {
