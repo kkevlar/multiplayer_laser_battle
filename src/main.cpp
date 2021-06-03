@@ -648,10 +648,6 @@ class Application : public EventCallbacks
         mat4 plane_overall_rot = rotate_plane * rotate_default_plane;
         M = translate_plane * plane_overall_rot * scale_plane;
 
-        static int countzz = 0;
-
-        if (countzz > 1000)
-        {
             quat q = quat(plane_overall_rot);
             network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q);
             network.PollIncoming(glfwGetTime());
@@ -662,9 +658,6 @@ class Application : public EventCallbacks
                 netlaser.start_time = glfwGetTime();
                 laser_manager.admitLaser(&netlaser);
             }
-            countzz = 0;
-        }
-        countzz++;
 
         pplane->bind();
         glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
