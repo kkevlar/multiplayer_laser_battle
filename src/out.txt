@@ -1,0 +1,9 @@
+OpenGL version: 4.1.0 - Build 20.19.15.4531
+GLSL version: 4.10 - Build 20.19.15.4531
+Shader InfoLog:
+ERROR: 0:20: 'half' : reserved word 
+ERROR: 0:20: 'half' : syntax error syntax error
+
+
+
+Error compiling fragment shader ../resources/plane_frag.glsl

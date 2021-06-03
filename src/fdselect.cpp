@@ -54,16 +54,15 @@ void FDSelector::addFd(CompatSocket fd)
         exit(99);
     }
 #ifdef _MSC_VER
-#error
-    return (FD_ISSET(fd, &this->internal->set));
+
+      FD_SET(fd.ms_socket, &this->internal->set);
 #else
     FD_SET(fd.unix_socket, &this->internal->set);
 
 #endif
 
 #ifdef _MSC_VER
-#error
-this->internal->max_fd = 100;
+this->internal->max_fd = 30;
 #else
     if (fd.unix_socket > this->internal->max_fd)
     {
@@ -106,8 +105,7 @@ bool FDSelector::testPostSelectMembership(CompatSocket fd)
         exit(99);
     }
 #ifdef _MSC_VER
-#error
-    return (FD_ISSET(fd, &this->internal->set));
+    return (FD_ISSET(fd.ms_socket, &this->internal->set));
 #else
     return (FD_ISSET(fd.unix_socket, &this->internal->set));
 

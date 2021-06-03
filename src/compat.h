@@ -21,7 +21,7 @@ extern "C"
 #endif
 
     size_t compat_recv_waitall(CompatSocket sockfd, void* buf, size_t len);
-size_t compat_send_noflags(CompatSocket, void* buf, size_t len);
+size_t compat_send_noflags(CompatSocket sock, void* buf, size_t len);
 
 #ifdef __cplusplus
 }

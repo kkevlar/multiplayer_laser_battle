@@ -11,6 +11,7 @@
 
 #include "fdselect.h"
 #include "fromserver_client.h"
+#include "compat.h"
 #include "handle.h"
 #include "message.h"
 #include "packet.h"
@@ -124,11 +125,15 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
                                                                 NetworksCallback callback,
                                                                 NetworksHandle** out_handle)
 {
+    NULLCHECK(out_handle);
     CompatSocket myCompatSocket;
 
     // THIS IS NEVER FREED LOL
-    NetworksHandle* give_to_caller_handle = (NetworksHandle*)malloc(sizeof(NetworksHandle));
-    give_to_caller_handle->net_context = (NetworksContext*)malloc(sizeof(NetworksContext));
+    NetworksHandle* give_to_caller_handle = (NetworksHandle*)calloc(sizeof(NetworksHandle), 1);
+    NULLCHECK(give_to_caller_handle);
+    give_to_caller_handle->net_context = (NetworksContext*)calloc(sizeof(struct NetworksContext), 1);
+    NULLCHECK(give_to_caller_handle->net_context);
+
 
     /* set up the TCP Client socket  */
 #ifdef _MSC_VER
@@ -145,11 +150,13 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
 
     std::string myhandle = checkThenSetupHandle(handle_AKA_name, myCompatSocket);
 
+      memset(&give_to_caller_handle->net_context->socketNum, 0, sizeof(CompatSocket));
+    memcpy(&give_to_caller_handle->net_context->socketNum, &myCompatSocket, sizeof(CompatSocket));
     give_to_caller_handle->net_context->selector = FDSelector{};
     give_to_caller_handle->net_context->callback = callback;
     give_to_caller_handle->net_context->caller_context = caller_context;
     give_to_caller_handle->net_context->handle = myhandle;
-    give_to_caller_handle->net_context->socketNum = myCompatSocket;
+  
 
     *out_handle = give_to_caller_handle;
     return true;

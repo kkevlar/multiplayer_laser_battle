@@ -1,6 +1,6 @@
 #pragma once
 
-#include "compat.c"
+#include "compat.h"
 #include <stdbool.h >
 
 #ifdef __cplusplus

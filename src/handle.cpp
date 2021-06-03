@@ -121,7 +121,7 @@ bool clientHandleFillDataFragment(const std::string handle, uint8_t* buf, size_t
         return false;
     }
     HandlePacket* packet = (HandlePacket*)MAKE_POINTER_AT_OFFSET(buf, 0);
-    packet->handle_len = handle.length();
+    packet->handle_len = (uint8_t)handle.length();
     memcpy(packet->handle, handle.c_str(), packet->handle_len);
     *filled_size = handle.length() + 1;
     return true;
