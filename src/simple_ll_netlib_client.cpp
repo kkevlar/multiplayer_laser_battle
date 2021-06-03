@@ -80,16 +80,18 @@ NULLCHECK(ucid);
              << endl;
         return false;
     }
-    if (TO_FLAG(header->flag) == FLAG_SERVER_HANDLE_PROPOSAL_OK)
+    if (TO_FLAG(header->flag) == FLAG_SERVER_HANDLE_PROPOSAL_OK_WITH_COLOR_ALLOCATION)
     {
-#if DEBUG_FLAG == 1
-        cerr << "Handle proposal approved by server." << endl;
-#endif
+        log_info("Handle proposal approved by server handle: \"%s\"", handle.c_str());
+
+        UCIDPayload* payload = (UCIDPayload*) PACKET_PDU_DATA_SEGMENT(header);
+        memcpy (ucid, payload, sizeof(UCIDPayload));
+
         return true;
     }
     else if (TO_FLAG(header->flag) == FLAG_SERVER_HANDLE_PROPOSAL_REJECTION)
     {
-        cerr << "Handle already in use: " << handle << endl;
+        log_error("Handle already in use!! \"%s\"", handle.c_str());
         return false;
     }
     else
