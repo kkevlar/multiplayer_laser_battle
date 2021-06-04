@@ -25,11 +25,14 @@ using namespace glm;
 
 typedef struct
 {
-    vec3 position;
-    uint8_t magic;
-    vec3 velocity;
-    uint8_t magic2;
+    vec4 position;
+    vec4 velocity;
     quat orientation;
+    vec4 color;
+    uint8_t magic;
+    uint8_t pad_unused1;
+    uint8_t pad_unused2;
+    uint8_t magic2;
 } PlanePositionInfoPDU;
 
 typedef struct
@@ -207,7 +210,7 @@ void PlanesNetworked::PlanesNetworkedSetup(const char* username, const char* hos
     NULLCHECK(this->internal->net_handle);
 }
 
-void PlanesNetworked::BroadcastSelfPosition(float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot)
+void PlanesNetworked::BroadcastSelfPosition(float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color)
 {
     NULLCHECK(this->internal);
     if (time - this->internal->last_broadcast_time > (1.0f / FASTEST_BROADCAST_FREQ_ALLOWED_HZ))
@@ -215,8 +218,9 @@ void PlanesNetworked::BroadcastSelfPosition(float time, glm::vec3 pos, glm::vec3
     {
         PlanePositionInfoPDU pp;
         pp.orientation = rot;
-        pp.position = pos;
-        pp.velocity = velocity;
+        pp.position = vec4(pos, 0);
+        pp.velocity = vec4(velocity, 0);
+        pp.color = vec4(color, 0);
         pp.magic = PLANES_POS_MAGIC_VALUE1;
         pp.magic2 = PLANES_POS_MAGIC_VALUE2;
 
@@ -270,6 +274,11 @@ void PlanesNetworked::PollIncoming(float time)
     }
 }
 
+static inline glm::vec3 trunc_v4(glm::vec4 four)
+{
+   return vec3(four.x, four.y, four.z); 
+}
+
 std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPlaneEstimates(float time)
 {
     NULLCHECK(this->internal);
@@ -278,14 +287,16 @@ std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPl
     {
         float difftime = time - element.second.timeUpdated;
 
-        vec3 pos = element.second.pdu.position + difftime * element.second.pdu.velocity;
+        vec3 pos = trunc_v4(element.second.pdu.position) + difftime * trunc_v4(element.second.pdu.velocity);
         quat rot = element.second.pdu.orientation;
 
         if (sizeof(NetworkedInterpolatedPlanePositionInfo) != sizeof(vec3) + sizeof(quat))
         {
             log_warn("Theres been a regression.");
         }
-        NetworkedInterpolatedPlanePositionInfo interpinfo = {pos, rot};
+
+        vec3 color = trunc_v4(element.second.pdu.color);
+        NetworkedInterpolatedPlanePositionInfo interpinfo = {pos, rot, color};
         ret.push_back(interpinfo);
     }
 
