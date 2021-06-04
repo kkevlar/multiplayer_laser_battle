@@ -665,8 +665,9 @@ class Application : public EventCallbacks
         M = translate_plane * plane_overall_rot * scale_plane;
 
             quat q = quat(plane_overall_rot);
-            // network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
-            // network.PollIncoming(glfwGetTime());
+            network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
+            network.PollIncoming(glfwGetTime());
+            log_info("After poll incoming");
             // NewShotLaserInfo netlaser;
             // while (network.MaybePopIncomingNetworkedLaser(&netlaser))
             // {

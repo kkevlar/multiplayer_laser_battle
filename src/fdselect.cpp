@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <iostream>
+#include "log.h"
 
 
     void fd_selector_clearFds(FDSelectorContext* context)
@@ -40,7 +41,8 @@ bool fd_selector_performSelect(FDSelectorContext* context, long timeout_ms)
     struct timeval time;
     struct timeval* time_ptr = &time;
 
-    memset(&time, 0, sizeof(time));
+time.tv_sec = 0;
+time.tv_usec = 0;
 
     if (timeout_ms > 0)
     {
@@ -67,4 +69,3 @@ bool fd_selector_testPostSelectMembership(FDSelectorContext* context,CompatSocke
 #endif
 }
 
-// Kevin Kellar's FD Selector - 2021
