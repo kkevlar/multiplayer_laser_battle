@@ -665,15 +665,15 @@ class Application : public EventCallbacks
         M = translate_plane * plane_overall_rot * scale_plane;
 
             quat q = quat(plane_overall_rot);
-            network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
-            network.PollIncoming(glfwGetTime());
-            NewShotLaserInfo netlaser;
-            while (network.MaybePopIncomingNetworkedLaser(&netlaser))
-            {
-                // TODO THIS IS silly
-                netlaser.start_time = glfwGetTime();
-                laser_manager.admitLaser(&netlaser);
-            }
+            // network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
+            // network.PollIncoming(glfwGetTime());
+            // NewShotLaserInfo netlaser;
+            // while (network.MaybePopIncomingNetworkedLaser(&netlaser))
+            // {
+            //     // TODO THIS IS silly
+            //     netlaser.start_time = glfwGetTime();
+            //     laser_manager.admitLaser(&netlaser);
+            // }
 
         pplane->bind();
         glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
@@ -685,17 +685,17 @@ class Application : public EventCallbacks
         glBindTexture(GL_TEXTURE_2D, Texture2);
         plane->draw(pplane);  // render!!!!!!
 
-        const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
-        for (const auto& estimate : estimates)
-        {
-            translate_plane = translate(mat4(1), estimate.pos);
-            plane_overall_rot = mat4(quat(estimate.rot));
+        // const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+        // for (const auto& estimate : estimates)
+        // {
+        //     translate_plane = translate(mat4(1), estimate.pos);
+        //     plane_overall_rot = mat4(quat(estimate.rot));
 
-            M = translate_plane * plane_overall_rot * scale_plane;
-            glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-        glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
-            plane->draw(pplane);  // render!!!!!!
-        }
+        //     M = translate_plane * plane_overall_rot * scale_plane;
+        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        // glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
+        //     plane->draw(pplane);  // render!!!!!!
+        // }
 
         pplane->unbind();
 
@@ -784,6 +784,11 @@ int main(int argc, char** argv)
     application->network.PlanesNetworkedSetup(my_username, hostname, &ucid_from_server, &timediff_unused);
 
     application->my_allocated_color_from_server = global_plane_color_allocation[ucid_from_server % GLOBAL_COLOR_COUNT];
+    log_info("My UCID is %d", ucid_from_server);
+    log_info("My allocated color is RGB %f %f %f", 
+    application->my_allocated_color_from_server.r,
+    application->my_allocated_color_from_server.g,
+    application->my_allocated_color_from_server.b);
 
 
     /* your main will always include a similar set up to establish your window
@@ -803,6 +808,14 @@ int main(int argc, char** argv)
     while (!glfwWindowShouldClose(windowManager->getHandle()))
     {
         // Render scene.
+        static int ccc = 0;
+        if (ccc > 100)
+        {
+
+        log_trace("About to render");
+        ccc = 0;
+        }
+        ccc +=1 ;
         application->render(windowManager->getHandle());
 
         // Swap front and back buffers.
