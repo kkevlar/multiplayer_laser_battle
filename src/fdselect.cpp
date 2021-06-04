@@ -1,84 +1,42 @@
 // Kevin Kellar's FD Selector - 2021
 
 #include "fdselect.h"
-
-#ifdef _MSC_VER
-#include <winsock2.h>
-
-#else
-#include <sys/select.h>
-#include <sys/time.h>
-#include <unistd.h>
-
-#endif
+#include "log.h"
 
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-
 
 #include <iostream>
 
-struct FDSelectorInternal
-{
-    fd_set set;
-    int max_fd;
-};
 
-FDSelector::FDSelector()
+    void fd_selector_clearFds(FDSelectorContext* context)
 {
-    this->internal = new FDSelectorInternal;
+    NULLCHECK(context);
+    FD_ZERO(&context->set);
+    context->max_fd = 0;
 }
 
-FDSelector::~FDSelector()
+void fd_selector_addFd(FDSelectorContext* context, CompatSocket fd)
 {
-    delete this->internal;
-}
+    NULLCHECK(context);
 
-void FDSelector::clearFds()
-{
-    if (!this->internal)
-    {
-        std::cerr << "Bad0" << std::endl;
-        exit(99);
-    }
-    FD_ZERO(&this->internal->set);
-    this->internal->max_fd = 0;
-}
-
-void FDSelector::addFd(CompatSocket fd)
-{
-    if (!this->internal)
-    {
-        std::cerr << "Bad1" << std::endl;
-        exit(99);
-    }
-#ifdef _MSC_VER
-
-      FD_SET(fd.ms_socket, &this->internal->set);
-#else
-    FD_SET(fd.unix_socket, &this->internal->set);
-
-#endif
 
 #ifdef _MSC_VER
-this->internal->max_fd = 30;
+    FD_SET(fd, &context->set);
 #else
-    if (fd.unix_socket > this->internal->max_fd)
+    FD_SET(fd.unix_socket, &context->set);
+    if (fd.unix_socket > context->max_fd)
     {
-        this->internal->max_fd = fd.unix_socket;
+        context->max_fd = fd.unix_socket;
     }
-
 #endif
+
+
 }
 
-bool FDSelector::performSelect(long timeout_ms)
+bool fd_selector_performSelect(FDSelectorContext* context, long timeout_ms)
 {
-    if (!this->internal)
-    {
-        std::cerr << "Bad2" << std::endl;
-        exit(99);
-    }
+    NULLCHECK(context);
     struct timeval time;
     struct timeval* time_ptr = &time;
 
@@ -94,21 +52,19 @@ bool FDSelector::performSelect(long timeout_ms)
         time_ptr = NULL;
     }
 
-    return select(this->internal->max_fd + 1, &this->internal->set, NULL, NULL, time_ptr) >= 0;
+    int rett = select(context->max_fd + 1, &context->set, NULL, NULL, time_ptr);
+
+    log_trace("Select returned %d", rett);
+    return rett >= 0;
 }
 
-bool FDSelector::testPostSelectMembership(CompatSocket fd)
+bool fd_selector_testPostSelectMembership(FDSelectorContext* context,CompatSocket fd)
 {
-    if (!this->internal)
-    {
-        std::cerr << "Bad3" << std::endl;
-        exit(99);
-    }
+    NULLCHECK(context);
 #ifdef _MSC_VER
-    return (FD_ISSET(fd.ms_socket, &this->internal->set));
+    return (FD_ISSET(fd.unix_socket, &context->set));
 #else
-    return (FD_ISSET(fd.unix_socket, &this->internal->set));
-
+    return (FD_ISSET(fd.unix_socket, &context->set));
 #endif
 }
 

@@ -67,7 +67,7 @@ typedef struct
 
 struct PlanesNetworkedInternal
 {
-    NetworksHandle* net_handle;
+    NetworksHandle net_handle;
     map<string, PlanePositionInfoWithTime> position_map;
     float last_poll_time;
     float last_broadcast_time;
@@ -78,7 +78,7 @@ PlanesNetworked::PlanesNetworked()
 {
     this->internal = new PlanesNetworkedInternal;
     NULLCHECK(this->internal);
-    this->internal->net_handle = NULL;
+    memset(&this->internal->net_handle, 0 , sizeof(this->internal->net_handle));
     this->internal->position_map = map<string, PlanePositionInfoWithTime>{};
     this->internal->last_poll_time = 0;
     this->internal->last_broadcast_time = 0;
@@ -201,7 +201,6 @@ void PlanesNetworked::PlanesNetworkedSetup(const char* username, const char* hos
     {
         exit(7);
     }
-    NULLCHECK(this->internal->net_handle);
 }
 
 void PlanesNetworked::BroadcastSelfPosition(float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot)
@@ -225,7 +224,7 @@ void PlanesNetworked::BroadcastSelfPosition(float time, glm::vec3 pos, glm::vec3
         pdu.flag = FLAG_POSITION;
         pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
-        if (!publicBroadcastOutgoing(this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
+        if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
         {
             log_fatal("Failed to broadcast outgoing");
             exit(-1);
@@ -249,7 +248,7 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
     pdu.flag = FLAG_SHOOT_LASER;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
-    if (!publicBroadcastOutgoing(this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
+    if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
     {
         log_fatal("Failed to broadcast outgoing");
         exit(-1);
@@ -260,7 +259,7 @@ void PlanesNetworked::PollIncoming(float time)
 {
     NULLCHECK(this->internal);
     this->internal->last_poll_time = time;
-    if (!publicClientPollSelectForMessages(this->internal->net_handle))
+    if (!publicClientPollSelectForMessages(&this->internal->net_handle))
     {
         log_fatal("Failed to poll for incoming messages");
         exit(-1);

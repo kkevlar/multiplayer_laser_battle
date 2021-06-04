@@ -14,10 +14,10 @@
 
 #define DEBUG_FLAG 0
 
-static CHECK_RETURN_VAL bool fromServerProcessBroadcastPacket(const LibPacketHeader* const header,
-                                                                                 NetworksContext* context);
+static __attribute__((warn_unused_result)) bool fromServerProcessBroadcastPacket(const LibPacketHeader* const header,
+                                                                                 NetworksHandle* context);
 
-bool fromServerProcessPacket(const LibPacketHeader* const header, NetworksContext* context)
+bool fromServerProcessPacket(const LibPacketHeader* const header, NetworksHandle* context)
 {
     using namespace std;
     if (!header)
@@ -41,7 +41,7 @@ bool fromServerProcessPacket(const LibPacketHeader* const header, NetworksContex
     return true;
 }
 
-static bool fromServerProcessBroadcastPacket(const LibPacketHeader* const header, NetworksContext* context)
+static bool fromServerProcessBroadcastPacket(const LibPacketHeader* const header, NetworksHandle* context)
 {
     using namespace std;
 

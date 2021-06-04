@@ -8,6 +8,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <assert.h>
 
 #include "fdselect.h"
 #include "fromserver_client.h"
@@ -25,10 +26,10 @@
 
 #define DEBUG_FLAG 0
 
-static CHECK_RETURN_VAL bool clientProcessServer(NetworksContext* context)
+static bool clientProcessServer(NetworksHandle* handle)
 {
     uint8_t buf[4096];
-    LibPacketHeader* header = packetFillIncomingUsingDualRecv(context->socketNum, buf, sizeof(buf));
+    LibPacketHeader* header = packetFillIncomingUsingDualRecv(handle->socketNum, buf, sizeof(buf));
     if (!header)
     {
         std::cout << "Server Terminated." << std::endl;
@@ -36,7 +37,7 @@ static CHECK_RETURN_VAL bool clientProcessServer(NetworksContext* context)
     }
     else
     {
-        if (!fromServerProcessPacket(header, context))
+        if (!fromServerProcessPacket(header, handle))
         {
             std::cerr << "Failed to process an incoming packet on the "
                          "client side. Continuing..."
@@ -123,17 +124,13 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
                                                                 const char* port_num,
                                                                 void* caller_context,
                                                                 NetworksCallback callback,
-                                                                NetworksHandle** out_handle)
+                                                                NetworksHandle* out_handle)
 {
     NULLCHECK(out_handle);
     CompatSocket myCompatSocket;
 
     // THIS IS NEVER FREED LOL
-    NetworksHandle* give_to_caller_handle = (NetworksHandle*)calloc(sizeof(NetworksHandle), 1);
-    NULLCHECK(give_to_caller_handle);
-    give_to_caller_handle->net_context = (NetworksContext*)calloc(sizeof(struct NetworksContext), 1);
-    NULLCHECK(give_to_caller_handle->net_context);
-
+    memset(out_handle, 0, sizeof(NetworksHandle));
 
     /* set up the TCP Client socket  */
 #ifdef _MSC_VER
@@ -150,15 +147,12 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
 
     std::string myhandle = checkThenSetupHandle(handle_AKA_name, myCompatSocket);
 
-      memset(&give_to_caller_handle->net_context->socketNum, 0, sizeof(CompatSocket));
-    memcpy(&give_to_caller_handle->net_context->socketNum, &myCompatSocket, sizeof(CompatSocket));
-    give_to_caller_handle->net_context->selector = FDSelector{};
-    give_to_caller_handle->net_context->callback = callback;
-    give_to_caller_handle->net_context->caller_context = caller_context;
-    give_to_caller_handle->net_context->handle = myhandle;
-  
+    out_handle->callback = callback;
+    out_handle->caller_context = caller_context;
+    assert(sizeof(out_handle->username) ==100);
+    strncpy(out_handle->username, myhandle.c_str(), sizeof(out_handle->username-1));
+    out_handle->socketNum = socketNum;
 
-    *out_handle = give_to_caller_handle;
     return true;
 }
 
@@ -167,18 +161,18 @@ CHECK_RETURN_VAL bool publicClientPollSelectForMessages(NetworksHandle* handle)
     CompatSocket socketNum = handle->net_context->socketNum;
 
 again:
-    handle->net_context->selector.clearFds();
-    handle->net_context->selector.addFd(socketNum);
+fd_selector_clearFds(&handle->selector);
+fd_selector_addFd(&handle->selector, handle->socketNum);
 
-    if (!handle->net_context->selector.performSelect(0))
+    if (!fd_selector_performSelect(&handle->selector, 0))
     {
         perror("Select owie");
         exit(20);
     }
 
-    if (handle->net_context->selector.testPostSelectMembership(socketNum))
+    if (fd_selector_testPostSelectMembership(&handle->selector, socketNum))
     {
-        if (!clientProcessServer(handle->net_context))
+        if (!clientProcessServer(handle))
         {
             return false;
         }
@@ -195,11 +189,11 @@ CHECK_RETURN_VAL bool publicBroadcastOutgoing(NetworksHandle* handle,
     size_t used;
     if (!messageFillOutgoingPacket(
 
-            FLAG_BROADCAST_MESSAGE, handle->net_context->handle, data, data_size, buf, &used, sizeof(buf)))
+            FLAG_BROADCAST_MESSAGE, handle->username, data, data_size, buf, &used, sizeof(buf)))
     {
         return false;
     }
-    packetSend(handle->net_context->socketNum, buf, used);
+    packetSend(handle->socketNum, buf, used);
 
     return true;
 }
