@@ -18,6 +18,7 @@
 
 
 #include <iostream>
+#include "log.h"
 
 struct FDSelectorInternal
 {
@@ -82,7 +83,8 @@ bool FDSelector::performSelect(long timeout_ms)
     struct timeval time;
     struct timeval* time_ptr = &time;
 
-    memset(&time, 0, sizeof(time));
+time.tv_sec = 0;
+time.tv_usec = 0;
 
     if (timeout_ms > 0)
     {
@@ -94,6 +96,7 @@ bool FDSelector::performSelect(long timeout_ms)
         time_ptr = NULL;
     }
 
+log_trace("Calling select with maxfd %d", this->internal->max_fd+1);
     return select(this->internal->max_fd + 1, &this->internal->set, NULL, NULL, time_ptr) >= 0;
 }
 
