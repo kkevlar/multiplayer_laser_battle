@@ -665,7 +665,7 @@ class Application : public EventCallbacks
         M = translate_plane * plane_overall_rot * scale_plane;
 
             quat q = quat(plane_overall_rot);
-            network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q);
+            network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
             network.PollIncoming(glfwGetTime());
             NewShotLaserInfo netlaser;
             while (network.MaybePopIncomingNetworkedLaser(&netlaser))
@@ -680,6 +680,7 @@ class Application : public EventCallbacks
         glUniformMatrix4fv(pplane->getUniform("V"), 1, GL_FALSE, &V[0][0]);
         glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
         glUniform3fv(pplane->getUniform("campos"), 1, &mycam.pos[0]);
+        glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, Texture2);
         plane->draw(pplane);  // render!!!!!!
@@ -692,6 +693,7 @@ class Application : public EventCallbacks
 
             M = translate_plane * plane_overall_rot * scale_plane;
             glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
             plane->draw(pplane);  // render!!!!!!
         }
 
