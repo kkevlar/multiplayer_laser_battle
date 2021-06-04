@@ -9,7 +9,7 @@ typedef bool (*NetworksCallback)(void*, std::string, const uint8_t*, size_t);
 typedef struct
 {
     char username[100];
-    int socketNum;
+    CompatSocket socketNum;
     void* caller_context;
     NetworksCallback callback;
     FDSelectorContext selector;

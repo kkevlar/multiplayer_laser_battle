@@ -151,14 +151,13 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
     out_handle->caller_context = caller_context;
     assert(sizeof(out_handle->username) ==100);
     strncpy(out_handle->username, myhandle.c_str(), sizeof(out_handle->username-1));
-    out_handle->socketNum = socketNum;
+    memcpy(&out_handle->socketNum ,&myCompatSocket, sizeof(myCompatSocket)) ;
 
     return true;
 }
 
 CHECK_RETURN_VAL bool publicClientPollSelectForMessages(NetworksHandle* handle)
 {
-    CompatSocket socketNum = handle->net_context->socketNum;
 
 again:
 fd_selector_clearFds(&handle->selector);
@@ -170,7 +169,7 @@ fd_selector_addFd(&handle->selector, handle->socketNum);
         exit(20);
     }
 
-    if (fd_selector_testPostSelectMembership(&handle->selector, socketNum))
+    if (fd_selector_testPostSelectMembership(&handle->selector, handle->socketNum))
     {
         if (!clientProcessServer(handle))
         {
