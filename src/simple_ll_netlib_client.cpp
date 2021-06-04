@@ -70,7 +70,7 @@ NULLCHECK(ucid);
     cerr << "Handle proposal submitted to server. Waiting for reply..." << endl;
 #endif
 
-    LibPacketHeader* header = packetFillIncomingUsingDualRecv(sock, buf, len);
+    LibPacketHeader* header = packetFillIncomingUsingDualRecv(sock, buf, sizeof(buf));
 #if DEBUG_FLAG == 1
     cerr << "Server reponse!" << endl;
 #endif

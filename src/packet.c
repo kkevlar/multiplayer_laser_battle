@@ -7,6 +7,7 @@
 
 #include "byte_order.h"
 #include "compat.h"
+#include "log.h"
 
 #define PACKET_DEBUG 0
 
@@ -14,7 +15,7 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock, uint8_t* buf
 {
     if (!buf)
     {
-        fprintf(stderr, "Null buf ptr packetFillIncomingUsingDualRecv\n");
+        log_error( "Null buf ptr packetFillIncomingUsingDualRecv\n");
         exit(8);
     }
 
@@ -24,7 +25,7 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock, uint8_t* buf
     size_t bytes_requested = sizeof(LibPacketHeader);
     if (bytes_requested > buf_size)
     {
-        fprintf(stderr,
+        log_error(
                 "WAY too small buf size passed into "
                 "packetFillIncomingUsingDualRecv\n");
         exit(2);
@@ -33,7 +34,7 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock, uint8_t* buf
     if ((bytes_read = compat_recv_waitall(sock, buf, bytes_requested)) < 0)
     {
         perror("recv call errored");
-        fprintf(stderr, "GONNA JUST PRENTEND IT DIDNT FAIL\n");
+        log_error( "GONNA JUST PRENTEND IT DIDNT FAIL\n");
     }
     else if (bytes_read < (int)bytes_requested)
     {
@@ -44,7 +45,7 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock, uint8_t* buf
 
     if (bytes_requested + sizeof(LibPacketHeader) > buf_size)
     {
-        fprintf(stderr,
+        log_error(
                 "Too small buf size passed into "
                 "packetFillIncomingUsingDualRecv\nManually disconnecting this "
                 "malicious client\n");
@@ -54,12 +55,12 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock, uint8_t* buf
 
     {
 #if PACKET_DEBUG == 1
-        fprintf(stderr, "Gonna block on getting %lu more bytes of data \n", bytes_requested);
+        log_error( "Gonna block on getting %lu more bytes of data \n", bytes_requested);
 #endif
         if ((bytes_read = compat_recv_waitall(sock, PACKET_PDU_DATA_SEGMENT(header), bytes_requested)) < 0)
         {
             perror("recv call2 errored");
-            fprintf(stderr, "GONNA JUST PRENTEND IT DIDNT FAIL\n");
+            log_error( "GONNA JUST PRENTEND IT DIDNT FAIL\n");
         }
         else if (bytes_read < (int)bytes_requested)
         {
@@ -70,17 +71,17 @@ LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock, uint8_t* buf
     else
     {
 #if PACKET_DEBUG == 1
-        fprintf(stderr, "Skipping second stage in 2-stage recv. Header only packet. \n");
+        log_info( "Skipping second stage in 2-stage recv. Header only packet. \n");
 #endif
     }
 
 #if PACKET_DEBUG == 1
-    fprintf(stderr, "Incoming: ");
+    log_error( "Incoming: ");
     for (size_t i = 0; i < bytes_read + sizeof(LibPacketHeader); i++)
     {
-        fprintf(stderr, "%x(%u)(%c) ", buf[i], buf[i], buf[i]);
+        log_info( "%x(%u)(%c) ", buf[i], buf[i], buf[i]);
     }
-    fprintf(stderr, "\n");
+    log_info( "\n");
 #endif
 
     return header;
@@ -90,13 +91,13 @@ size_t packetFillOutgoingHeader(size_t pdu_size, PacketFlag flag, uint8_t* buf, 
 {
     if (!buf)
     {
-        fprintf(stderr, "Null buf ptr packetFillOutgoingHeaderOnly \n");
+        log_error( "Null buf ptr packetFillOutgoingHeaderOnly \n");
         exit(7);
     }
 
     if (buf_size < sizeof(LibPacketHeader))
     {
-        fprintf(stderr, "Too small buf size packetFillOutgoingHeaderOnly \n");
+        log_error( "Too small buf size packetFillOutgoingHeaderOnly \n");
         exit(9);
     }
 
@@ -110,18 +111,18 @@ size_t packetFillOutgoingHeader(size_t pdu_size, PacketFlag flag, uint8_t* buf, 
 void packetSend(CompatSocket sock, uint8_t* buf, size_t buf_size)
 {
 #if PACKET_DEBUG == 1
-    fprintf(stderr, "Outgoing: ");
+    log_error( "Outgoing: ");
     for (size_t i = 0; i < buf_size; i++)
     {
-        fprintf(stderr, "%x(%u)(%c) ", buf[i], buf[i], buf[i]);
+        log_info( "%x(%u)(%c) ", buf[i], buf[i], buf[i]);
     }
-    fprintf(stderr, "\n");
+    log_info( "\n");
 #endif
 
     if (compat_send_noflags(sock, buf, buf_size) < 0)
     {
         perror("send failed");
-        fprintf(stderr, "GONNA JUST PRENTEND IT DIDNT FAIL\n");
+        log_warn( "GONNA JUST PRENTEND IT DIDNT FAIL\n");
     }
 }
 
