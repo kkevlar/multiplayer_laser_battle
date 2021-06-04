@@ -248,6 +248,8 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
     pdu.flag = FLAG_SHOOT_LASER;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
+    log_info("Broadcasting laser");
+
     if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
     {
         log_fatal("Failed to broadcast outgoing");

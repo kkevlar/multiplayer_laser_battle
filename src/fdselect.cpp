@@ -54,7 +54,6 @@ bool fd_selector_performSelect(FDSelectorContext* context, long timeout_ms)
 
     int rett = select(context->max_fd + 1, &context->set, NULL, NULL, time_ptr);
 
-    log_trace("Select returned %d", rett);
     return rett >= 0;
 }
 
