@@ -67,14 +67,14 @@ mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 #define GLOBAL_COLOR_COUNT (8)
 static glm::vec3 global_plane_color_allocation[] = {
 
-    vec3(0,0,1),
-    vec3(1,0,0),
-    vec3(0,1, 0),
-    vec3(1,0.4,0), //orange
-    vec3(0,1, 1), //cyan
-    vec3(1,1,0), //yellow
-    vec3(1,0, 1), //magenta
-    vec3(0.4,0, 1), //purple
+    vec3(0, 0, 1),
+    vec3(1, 0, 0),
+    vec3(0, 1, 0),
+    vec3(1, 0.4, 0),  // orange
+    vec3(0, 1, 1),    // cyan
+    vec3(1, 1, 0),    // yellow
+    vec3(1, 0, 1),    // magenta
+    vec3(0.4, 0, 1),  // purple
 };
 
 double get_last_elapsed_time()
@@ -220,7 +220,7 @@ class Application : public EventCallbacks
     LaserManager laser_manager;
     PlanesNetworked network;
 
-    vec3 my_allocated_color_from_server = vec3(0,0,0);
+    vec3 my_allocated_color_from_server = vec3(0, 0, 0);
 
     bool shoot;
 
@@ -664,16 +664,17 @@ class Application : public EventCallbacks
         mat4 plane_overall_rot = rotate_plane * rotate_default_plane;
         M = translate_plane * plane_overall_rot * scale_plane;
 
-            quat q = quat(plane_overall_rot);
-            network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
-            network.PollIncoming(glfwGetTime());
-            NewShotLaserInfo netlaser;
-            while (network.MaybePopIncomingNetworkedLaser(&netlaser))
-            {
-                // TODO THIS IS silly
-                netlaser.start_time = glfwGetTime();
-                laser_manager.admitLaser(&netlaser);
-            }
+        quat q = quat(plane_overall_rot);
+        network.BroadcastSelfPosition(
+            glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
+        network.PollIncoming(glfwGetTime());
+        NewShotLaserInfo netlaser;
+        while (network.MaybePopIncomingNetworkedLaser(&netlaser))
+        {
+            // TODO THIS IS silly
+            netlaser.start_time = glfwGetTime();
+            laser_manager.admitLaser(&netlaser);
+        }
 
         pplane->bind();
         glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
@@ -693,7 +694,7 @@ class Application : public EventCallbacks
 
             M = translate_plane * plane_overall_rot * scale_plane;
             glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-        glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
+            glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
             plane->draw(pplane);  // render!!!!!!
         }
 
@@ -786,11 +787,10 @@ int main(int argc, char** argv)
 
     application->my_allocated_color_from_server = global_plane_color_allocation[ucid_from_server % GLOBAL_COLOR_COUNT];
     log_info("My UCID is %d", ucid_from_server);
-    log_info("My allocated color is RGB %f %f %f", 
-    application->my_allocated_color_from_server.r,
-    application->my_allocated_color_from_server.g,
-    application->my_allocated_color_from_server.b);
-
+    log_info("My allocated color is RGB %f %f %f",
+             application->my_allocated_color_from_server.r,
+             application->my_allocated_color_from_server.g,
+             application->my_allocated_color_from_server.b);
 
     /* your main will always include a similar set up to establish your window
             and GL context, etc. */

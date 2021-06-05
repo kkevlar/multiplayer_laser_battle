@@ -18,13 +18,13 @@ struct FDSelectorContext
     int max_fd;
 };
 
-    void fd_selector_clearFds(FDSelectorContext* context);
-    void fd_selector_addFd(FDSelectorContext* context, CompatSocket fd);
+void fd_selector_clearFds(FDSelectorContext* context);
+void fd_selector_addFd(FDSelectorContext* context, CompatSocket fd);
 
-    // -1 for forever, 0 for no timeout
-    // Returns false on error
-    bool fd_selector_performSelect(FDSelectorContext*context,long  timeout_ms);
+// -1 for forever, 0 for no timeout
+// Returns false on error
+bool fd_selector_performSelect(FDSelectorContext* context, long timeout_ms);
 
-    bool fd_selector_testPostSelectMembership(FDSelectorContext* context,  CompatSocket fd);
+bool fd_selector_testPostSelectMembership(FDSelectorContext* context, CompatSocket fd);
 
 // Kevin Kellar's FD Selector - 2021

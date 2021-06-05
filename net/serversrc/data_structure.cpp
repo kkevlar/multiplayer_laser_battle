@@ -8,7 +8,6 @@
 
 using namespace std;
 
-
 typedef struct
 {
     int fd;
@@ -72,7 +71,10 @@ bool clientFDListRemoveFd(int fd)
     return true;
 }
 
-const std::list<int> clientFdListGetAll() { return fdList; }
+const std::list<int> clientFdListGetAll()
+{
+    return fdList;
+}
 
 bool clientMapCheckHandleExistence(const string handle)
 {
@@ -85,21 +87,21 @@ static void allocateNewPersistentInfo(const string handle)
     persist.unique_color_id = max_unique_color_id_unallocated;
     max_unique_color_id_unallocated++;
 
-   persistentMap[handle] = persist;
+    persistentMap[handle] = persist;
 }
 
 PersistentInfo clientMapAddHandle(const string handle, int fd)
 {
-    if(persistentMap.find(handle) == persistentMap.end())
+    if (persistentMap.find(handle) == persistentMap.end())
     {
-       allocateNewPersistentInfo(handle); 
+        allocateNewPersistentInfo(handle);
     }
 
-PersistentInfo persist = persistentMap[handle];
+    PersistentInfo persist = persistentMap[handle];
     ClientInfo info{fd, persist};
     handleMap[handle] = info;
 
-return persist;
+    return persist;
 }
 
 bool clientMapDeleteHandle(const string handle)

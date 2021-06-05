@@ -9,7 +9,7 @@ using namespace glm;
 #include "AnimTextureBillboard.h"
 #include "Program.h"
 
-//TODO RENAME TO LASER CLASS
+// TODO RENAME TO LASER CLASS
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
@@ -189,8 +189,13 @@ void AnimTextureBillboard::initTexture(const std::string& resourceDirectory,
     glUniform1i(Tex1Location, 0);
 }
 
-void AnimTextureBillboard::renderLaser(
-    glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, glm::vec3 where_to_look, glm::vec3 modify_color, float time)
+void AnimTextureBillboard::renderLaser(glm::mat4& P,
+                                       glm::mat4& V,
+                                       glm::vec3 campos,
+                                       glm::vec3 position_xyz,
+                                       glm::vec3 where_to_look,
+                                       glm::vec3 modify_color,
+                                       float time)
 {
     // Draw the box using GLSL.
     prog->bind();

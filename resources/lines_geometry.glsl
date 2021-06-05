@@ -14,19 +14,16 @@ out vec2 frag_tex;
 out vec3 frag_norm;
 void main()
 {
+    gl_Position = P * V * gl_in[0].gl_Position;
+    frag_pos = gl_in[0].gl_Position.xyz;
+    frag_tex = vertex_tex[0];
+    frag_norm = vec3(0, 1, 0);
+    EmitVertex();
+    gl_Position = P * V * gl_in[1].gl_Position;
+    frag_pos = gl_in[1].gl_Position.xyz;
+    frag_tex = vertex_tex[1];
+    frag_norm = vec3(0, 1, 0);
+    EmitVertex();
 
- 
-	gl_Position = P * V * gl_in[0].gl_Position;
-	frag_pos=gl_in[0].gl_Position.xyz;
-	frag_tex=vertex_tex[0];
-	frag_norm = vec3(0,1,0);
-	EmitVertex();
-	gl_Position = P * V * gl_in[1].gl_Position;
-	frag_pos=gl_in[1].gl_Position.xyz;
-	frag_tex=vertex_tex[1];
-	frag_norm = vec3(0,1,0);
-	EmitVertex();
-
-
-   // EndPrimitive();
+    // EndPrimitive();
 }

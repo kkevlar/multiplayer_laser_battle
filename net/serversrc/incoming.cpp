@@ -84,18 +84,18 @@ bool incomingClientHandleProposal(const LibPacketHeader* const header, int clien
              << clientMapFindByFD(clientSockFd) << "\". Its persist ucid is " << persist.unique_color_id << endl;
         CompatSocket sock = {clientSockFd};
 
-        uint8_t buf[ 128] ;
+        uint8_t buf[128];
 
-        UCIDPayload* payload = (UCIDPayload*) MAKE_POINTER_AT_OFFSET(buf, sizeof(LibPacketHeader));
+        UCIDPayload* payload = (UCIDPayload*)MAKE_POINTER_AT_OFFSET(buf, sizeof(LibPacketHeader));
         payload->magic1 = UCID_PAYLOAD_MAGIC_1;
         payload->magic2 = UCID_PAYLOAD_MAGIC_2;
         payload->ucid_check_endianness = htons(persist.unique_color_id);
-        //TODO TODO
-        //TODO htonl
+        // TODO TODO
+        // TODO htonl
         payload->num_ms_check_endiannes = 0;
 
-size_t pdu_size = sizeof(UCIDPayload) + sizeof(LibPacketHeader);
-        packetFillOutgoingHeader(pdu_size , FLAG_SERVER_HANDLE_PROPOSAL_OK_WITH_COLOR_ALLOCATION, buf, sizeof(buf));
+        size_t pdu_size = sizeof(UCIDPayload) + sizeof(LibPacketHeader);
+        packetFillOutgoingHeader(pdu_size, FLAG_SERVER_HANDLE_PROPOSAL_OK_WITH_COLOR_ALLOCATION, buf, sizeof(buf));
 
         if (!compat_send_noflags(sock, buf, pdu_size))
         {
@@ -116,7 +116,6 @@ static bool incomingBroadcast(const LibPacketHeader* const header, int clientSoc
 
     for (const int& fd : clientFdListGetAll())
     {
-
         if (fd != clientSockFd)
         {
             CompatSocket sock = {fd};

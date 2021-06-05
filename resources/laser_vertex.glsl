@@ -10,9 +10,9 @@ out vec3 vertex_normal;
 out vec2 vertex_tex;
 void main()
 {
-	vertex_normal = vec4(M * vec4(vertNor,0.0)).xyz;
-	vec4 pos = M * vec4(vertPos,1.0);
-	gl_Position = P * V * pos;
-	vertex_tex = vertTex;
+    vertex_normal = vec4(M * vec4(vertNor, 0.0)).xyz;
+    vec4 pos = M * vec4(vertPos, 1.0);
+    gl_Position = P * V * pos;
+    vertex_tex = vertTex;
     vertex_pos = pos.xyz;
 }
