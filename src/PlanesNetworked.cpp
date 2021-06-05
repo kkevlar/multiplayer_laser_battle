@@ -81,7 +81,7 @@ PlanesNetworked::PlanesNetworked()
 {
     this->internal = new PlanesNetworkedInternal;
     NULLCHECK(this->internal);
-    memset(&this->internal->net_handle, 0 , sizeof(this->internal->net_handle));
+    memset(&this->internal->net_handle, 0, sizeof(this->internal->net_handle));
     this->internal->position_map = map<string, PlanePositionInfoWithTime>{};
     this->internal->last_poll_time = 0;
     this->internal->last_broadcast_time = 0;
@@ -192,7 +192,10 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
     return false;
 }
 
-void PlanesNetworked::PlanesNetworkedSetup(const char* username, const char* hostname, uint16_t* ucid, uint32_t* ms_elapsed)
+void PlanesNetworked::PlanesNetworkedSetup(const char* username,
+                                           const char* hostname,
+                                           uint16_t* ucid,
+                                           uint32_t* ms_elapsed)
 {
     NULLCHECK(this);
     NULLCHECK(this->internal);
@@ -202,13 +205,15 @@ void PlanesNetworked::PlanesNetworkedSetup(const char* username, const char* hos
     NULLCHECK(ucid);
     NULLCHECK(ms_elapsed);
 
-    if (!publicClientInitialize(username, hostname, NETWORK_PORT, this, internal_callback, &this->internal->net_handle, ucid, ms_elapsed))
+    if (!publicClientInitialize(
+            username, hostname, NETWORK_PORT, this, internal_callback, &this->internal->net_handle, ucid, ms_elapsed))
     {
         exit(7);
     }
 }
 
-void PlanesNetworked::BroadcastSelfPosition(float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color)
+void PlanesNetworked::BroadcastSelfPosition(
+    float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color)
 {
     NULLCHECK(this->internal);
     if (time - this->internal->last_broadcast_time > (1.0f / FASTEST_BROADCAST_FREQ_ALLOWED_HZ))
@@ -254,7 +259,6 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
     pdu.flag = FLAG_SHOOT_LASER;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
-
     if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
     {
         log_fatal("Failed to broadcast outgoing");
@@ -275,7 +279,7 @@ void PlanesNetworked::PollIncoming(float time)
 
 static inline glm::vec3 trunc_v4(glm::vec4 four)
 {
-   return vec3(four.x, four.y, four.z); 
+    return vec3(four.x, four.y, four.z);
 }
 
 std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPlaneEstimates(float time)

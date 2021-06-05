@@ -12,11 +12,11 @@
 #include <iostream>
 #include <list>
 
+#include "compat.h"
 #include "data_structure.h"
 #include "incoming.h"
 #include "networks.h"
 #include "packet.h"
-#include "compat.h"
 
 #define DEBUG_FLAG (0)
 

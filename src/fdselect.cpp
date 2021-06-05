@@ -1,16 +1,15 @@
 // Kevin Kellar's FD Selector - 2021
 
 #include "fdselect.h"
-#include "log.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #include <iostream>
+
 #include "log.h"
 
-
-    void fd_selector_clearFds(FDSelectorContext* context)
+void fd_selector_clearFds(FDSelectorContext* context)
 {
     NULLCHECK(context);
     FD_ZERO(&context->set);
@@ -21,7 +20,6 @@ void fd_selector_addFd(FDSelectorContext* context, CompatSocket fd)
 {
     NULLCHECK(context);
 
-
 #ifdef _MSC_VER
     FD_SET(fd, &context->set);
 #else
@@ -31,8 +29,6 @@ void fd_selector_addFd(FDSelectorContext* context, CompatSocket fd)
         context->max_fd = fd.unix_socket;
     }
 #endif
-
-
 }
 
 bool fd_selector_performSelect(FDSelectorContext* context, long timeout_ms)
@@ -41,8 +37,8 @@ bool fd_selector_performSelect(FDSelectorContext* context, long timeout_ms)
     struct timeval time;
     struct timeval* time_ptr = &time;
 
-time.tv_sec = 0;
-time.tv_usec = 0;
+    time.tv_sec = 0;
+    time.tv_usec = 0;
 
     if (timeout_ms > 0)
     {
@@ -59,7 +55,7 @@ time.tv_usec = 0;
     return rett >= 0;
 }
 
-bool fd_selector_testPostSelectMembership(FDSelectorContext* context,CompatSocket fd)
+bool fd_selector_testPostSelectMembership(FDSelectorContext* context, CompatSocket fd)
 {
     NULLCHECK(context);
 #ifdef _MSC_VER
@@ -68,4 +64,3 @@ bool fd_selector_testPostSelectMembership(FDSelectorContext* context,CompatSocke
     return (FD_ISSET(fd.unix_socket, &context->set));
 #endif
 }
-

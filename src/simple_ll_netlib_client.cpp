@@ -3,21 +3,21 @@
 
 #include "simple_ll_netlib_client.h"
 
+#include <assert.h>
 #include <string.h>
 
 #include <iostream>
 #include <list>
 #include <string>
-#include <assert.h>
 
+#include "byte_order.h"
+#include "compat.h"
 #include "fdselect.h"
 #include "fromserver_client.h"
-#include "compat.h"
 #include "handle.h"
 #include "message.h"
-#include "packet.h"
 #include "netcontext.h"
-#include "byte_order.h"
+#include "packet.h"
 
 #ifdef _MSC_VER
 #include "windows_tcp_client.h"
@@ -51,7 +51,7 @@ static bool clientProcessServer(NetworksHandle* handle)
 static CHECK_RETURN_VAL bool setupHandle(std::string handle, CompatSocket sock, UCIDPayload* ucid)
 {
     using namespace std;
-NULLCHECK(ucid);
+    NULLCHECK(ucid);
 
     uint8_t buf[200];
     size_t len;
@@ -85,8 +85,8 @@ NULLCHECK(ucid);
     {
         log_info("Handle proposal approved by server handle: \"%s\"", handle.c_str());
 
-        UCIDPayload* payload = (UCIDPayload*) PACKET_PDU_DATA_SEGMENT(header);
-        memcpy (ucid, payload, sizeof(UCIDPayload));
+        UCIDPayload* payload = (UCIDPayload*)PACKET_PDU_DATA_SEGMENT(header);
+        memcpy(ucid, payload, sizeof(UCIDPayload));
 
         return true;
     }
@@ -125,13 +125,13 @@ static CHECK_RETURN_VAL std::string checkThenSetupHandle(const char* handle, Com
 }
 
 CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
-                                                                const char* host_name,
-                                                                const char* port_num,
-                                                                void* caller_context,
-                                                                NetworksCallback callback,
-                                                                NetworksHandle* out_handle,
-                                                                uint16_t* ucid,
-                                                                uint32_t* ms_elapsed)
+                                             const char* host_name,
+                                             const char* port_num,
+                                             void* caller_context,
+                                             NetworksCallback callback,
+                                             NetworksHandle* out_handle,
+                                             uint16_t* ucid,
+                                             uint32_t* ms_elapsed)
 {
     NULLCHECK(out_handle);
     NULLCHECK(ucid);
@@ -143,34 +143,34 @@ CHECK_RETURN_VAL bool publicClientInitialize(const char* handle_AKA_name,
 
     /* set up the TCP Client socket  */
 #ifdef _MSC_VER
-    if(!
-    winTcpClientSetup(host_name, port_num, &myCompatSocket))
-{return false;
+    if (!winTcpClientSetup(host_name, port_num, &myCompatSocket))
+    {
+        return false;
     }
 #else
-    if(!tcpClientSetup(host_name, port_num, DEBUG_FLAG, &myCompatSocket))
-{return false;
-
+    if (!tcpClientSetup(host_name, port_num, DEBUG_FLAG, &myCompatSocket))
+    {
+        return false;
     }
 #endif
 
-UCIDPayload payload;
+    UCIDPayload payload;
 
     std::string myhandle = checkThenSetupHandle(handle_AKA_name, myCompatSocket, &payload);
 
     out_handle->callback = callback;
     out_handle->caller_context = caller_context;
-    assert(sizeof(out_handle->username) ==100);
-    strncpy(out_handle->username, myhandle.c_str(), sizeof(out_handle->username-1));
-    memcpy(&out_handle->socketNum ,&myCompatSocket, sizeof(myCompatSocket)) ;
+    assert(sizeof(out_handle->username) == 100);
+    strncpy(out_handle->username, myhandle.c_str(), sizeof(out_handle->username - 1));
+    memcpy(&out_handle->socketNum, &myCompatSocket, sizeof(myCompatSocket));
     memset(&out_handle->selector, 0, sizeof(out_handle->selector));
 
-    if(payload.magic1 != UCID_PAYLOAD_MAGIC_1)
+    if (payload.magic1 != UCID_PAYLOAD_MAGIC_1)
     {
         log_error("Bad magic 1 UCID");
         return false;
     }
-    else if(payload.magic2 != UCID_PAYLOAD_MAGIC_2)
+    else if (payload.magic2 != UCID_PAYLOAD_MAGIC_2)
     {
         log_error("Bad magic 2 UCID");
         return false;
@@ -184,10 +184,9 @@ UCIDPayload payload;
 
 CHECK_RETURN_VAL bool publicClientPollSelectForMessages(NetworksHandle* handle)
 {
-
 again:
-fd_selector_clearFds(&handle->selector);
-fd_selector_addFd(&handle->selector, handle->socketNum);
+    fd_selector_clearFds(&handle->selector);
+    fd_selector_addFd(&handle->selector, handle->socketNum);
 
     if (!fd_selector_performSelect(&handle->selector, 0))
     {
@@ -206,9 +205,7 @@ fd_selector_addFd(&handle->selector, handle->socketNum);
     return true;
 }
 
-CHECK_RETURN_VAL bool publicBroadcastOutgoing(NetworksHandle* handle,
-                                                                 uint8_t* data,
-                                                                 size_t data_size)
+CHECK_RETURN_VAL bool publicBroadcastOutgoing(NetworksHandle* handle, uint8_t* data, size_t data_size)
 {
     uint8_t buf[4096];
     size_t used;
@@ -222,8 +219,5 @@ CHECK_RETURN_VAL bool publicBroadcastOutgoing(NetworksHandle* handle,
 
     return true;
 }
-
-
-
 
 // Client library main file for use in online games

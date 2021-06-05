@@ -17,7 +17,7 @@ typedef struct
 struct LaserManagerInternal
 {
     std::vector<LaserInfoWithValid> lasers;
-    bool has_invalid =0;
+    bool has_invalid = 0;
 };
 
 LaserManager::LaserManager()
@@ -73,7 +73,8 @@ void LaserManager::renderLasers(
             glm::vec3 along_route = info.info.position_target - info.info.position_source;
             float ratio_to_target = (currentTime - info.info.start_time) * info.info.speed;
             glm::vec3 where = info.info.position_source + ratio_to_target * along_route;
-            laser->renderLaser(P, V, campos, where, info.info.position_target, info.info.color, currentTime - info.info.start_time);
+            laser->renderLaser(
+                P, V, campos, where, info.info.position_target, info.info.color, currentTime - info.info.start_time);
 
             if (ratio_to_target > 1.0f)
             {

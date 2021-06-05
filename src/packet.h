@@ -6,8 +6,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "log.h"
+
 #include "compat.h"
+#include "log.h"
 
 #define MAKE_POINTER_AT_OFFSET(base, offset) (((uintptr_t)base) + ((uintptr_t)offset))
 
@@ -28,7 +29,7 @@ typedef enum
 } PacketFlag;
 COMPILER_ASSERT(FLAG_BROADCAST_MESSAGE == 4, flags);
 
-typedef struct 
+typedef struct
 {
     uint16_t pdu_size_check_endianness;
     uint8_t flag;
@@ -36,7 +37,7 @@ typedef struct
 } LibPacketHeader;
 COMPILER_ASSERT(sizeof(LibPacketHeader) == 4, LibPacketHeader);
 
-typedef struct 
+typedef struct
 {
     uint8_t magic1;
     uint8_t magic2;
@@ -54,8 +55,8 @@ extern "C"
 #endif
 
     CHECK_RETURN_VAL LibPacketHeader* packetFillIncomingUsingDualRecv(CompatSocket sock,
-                                                                                         uint8_t* buffer,
-                                                                                         size_t buf_size);
+                                                                      uint8_t* buffer,
+                                                                      size_t buf_size);
     size_t packetFillOutgoingHeader(size_t pdu_size, PacketFlag flag, uint8_t* buf, size_t buf_size);
     void packetSend(CompatSocket sock, uint8_t* buf, size_t buf_size);
     CHECK_RETURN_VAL bool packetFillSendHeaderOnlyPacket(CompatSocket socket, PacketFlag flag);

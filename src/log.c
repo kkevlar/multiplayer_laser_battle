@@ -40,12 +40,10 @@ static struct
     Callback callbacks[MAX_CALLBACKS];
 } L;
 
-static const char* level_strings[] = {
-    "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+static const char* level_strings[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
 
 #ifdef LOG_USE_COLOR
-static const char* level_colors[] = {
-    "\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"};
+static const char* level_colors[] = {"\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"};
 #endif
 
 static void stdout_callback(log_Event* ev)
@@ -62,13 +60,7 @@ static void stdout_callback(log_Event* ev)
             ev->file,
             ev->line);
 #else
-    fprintf(ev->udata,
-            "%s %-5s %s @ %s:%d: ",
-            buf,
-            level_strings[ev->level],
-            ev->func,
-            ev->file,
-            ev->line);
+    fprintf(ev->udata, "%s %-5s %s @ %s:%d: ", buf, level_strings[ev->level], ev->func, ev->file, ev->line);
 #endif
     vfprintf(ev->udata, ev->fmt, ev->ap);
     fprintf(ev->udata, "\n");
@@ -79,13 +71,7 @@ static void file_callback(log_Event* ev)
 {
     char buf[64];
     buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
-    fprintf(ev->udata,
-            "%s %-5s %s:%s:%d: ",
-            buf,
-            level_strings[ev->level],
-            ev->file,
-            ev->func,
-            ev->line);
+    fprintf(ev->udata, "%s %-5s %s:%s:%d: ", buf, level_strings[ev->level], ev->file, ev->func, ev->line);
     vfprintf(ev->udata, ev->fmt, ev->ap);
     fprintf(ev->udata, "\n");
     fflush(ev->udata);
@@ -107,7 +93,10 @@ static void unlock(void)
     }
 }
 
-const char* log_level_string(int level) { return level_strings[level]; }
+const char* log_level_string(int level)
+{
+    return level_strings[level];
+}
 
 void log_set_lock(log_LockFn fn, void* udata)
 {
@@ -115,9 +104,15 @@ void log_set_lock(log_LockFn fn, void* udata)
     L.udata = udata;
 }
 
-void log_set_level(int level) { L.level = level; }
+void log_set_level(int level)
+{
+    L.level = level;
+}
 
-void log_set_quiet(bool enable) { L.quiet = enable; }
+void log_set_quiet(bool enable)
+{
+    L.quiet = enable;
+}
 
 int log_add_callback(log_LogFn fn, void* udata, int level)
 {
@@ -147,12 +142,7 @@ static void init_event(log_Event* ev, void* udata)
     ev->udata = udata;
 }
 
-void log_log(int level,
-             const char* file,
-             const char* func,
-             int line,
-             const char* fmt,
-             ...)
+void log_log(int level, const char* file, const char* func, int line, const char* fmt, ...)
 {
     log_Event ev = {
         .fmt = fmt,
