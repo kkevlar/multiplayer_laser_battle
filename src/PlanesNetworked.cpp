@@ -125,7 +125,6 @@ static bool handleShootLaser(PlanesNetworkedInternal* internal, string handle, S
         memcpy(&internal->laser_buffer.buf[safeindex], &laserpdu->laser, sizeof(NewShotLaserInfo));
         internal->laser_buffer.count += 1;
 
-        log_info("Just stored an incoming laser from %s", handle.c_str());
         return true;
     }
 }
@@ -255,7 +254,6 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
     pdu.flag = FLAG_SHOOT_LASER;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
-    log_info("Broadcasting laser");
 
     if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
     {

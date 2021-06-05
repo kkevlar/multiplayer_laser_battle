@@ -15,7 +15,6 @@
 
 size_t compat_recv_waitall(CompatSocket sockfd, void* buf, size_t len)
 {
-    log_info("Receiving a packet from fd %d", sockfd.unix_socket);
     
 #ifdef _MSC_VER
 
@@ -29,7 +28,6 @@ size_t compat_recv_waitall(CompatSocket sockfd, void* buf, size_t len)
 
 size_t compat_send_noflags(CompatSocket sockfd, void* buf, size_t len)
 {
-    log_info("Sending a packet to fd %d", sockfd.unix_socket);
 
 #ifdef _MSC_VER
     int iResult;
