@@ -259,6 +259,15 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
     pdu.flag = FLAG_SHOOT_LASER;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
+    log_debug("Broadcasting a laser of supplied color %f %f %f, actual color %f %f %f", 
+    laser->color.r,
+    laser->color.g,
+    laser->color.b,
+    pdu.data.laser.laser.color.r,
+    pdu.data.laser.laser.color.g,
+    pdu.data.laser.laser.color.b
+    );
+
     if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
     {
         log_fatal("Failed to broadcast outgoing");
@@ -310,6 +319,7 @@ bool PlanesNetworked::MaybePopIncomingNetworkedLaser(NewShotLaserInfo* laser)
 {
     NULLCHECK(laser);
 
+
     if (this->internal->laser_buffer.count < 0)
     {
         log_fatal("bug");
@@ -325,6 +335,11 @@ bool PlanesNetworked::MaybePopIncomingNetworkedLaser(NewShotLaserInfo* laser)
         this->internal->laser_buffer.start += 1;
         this->internal->laser_buffer.start %= MAX_LASERS_TO_BUFFER;
         this->internal->laser_buffer.count -= 1;
+
+log_debug("Just supplied a laser with color %f %f %f", 
+laser->color.r,
+laser->color.g,
+laser->color.b);
         return true;
     }
 }

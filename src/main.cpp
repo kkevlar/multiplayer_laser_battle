@@ -668,12 +668,16 @@ class Application : public EventCallbacks
         network.BroadcastSelfPosition(
             glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
         network.PollIncoming(glfwGetTime());
+
+        // Special scope for netlaser
+        {
         NewShotLaserInfo netlaser;
         while (network.MaybePopIncomingNetworkedLaser(&netlaser))
         {
             // TODO THIS IS silly
             netlaser.start_time = glfwGetTime();
             laser_manager.admitLaser(&netlaser);
+        }
         }
 
         pplane->bind();
@@ -736,7 +740,7 @@ class Application : public EventCallbacks
             newlaser.position_target = ((normalize(theplayer.forward) * 1000.0f) + newlaser.position_source);
             newlaser.start_time = glfwGetTime();
             newlaser.speed = 0.25;
-            netlaser.color = my_allocated_color_from_server;
+            newlaser.color = my_allocated_color_from_server;
             laser_manager.admitLaser(&newlaser);
             network.BroadcastNewLaser(&newlaser);
             newlaser.position_source = -rightvec + othervec;
