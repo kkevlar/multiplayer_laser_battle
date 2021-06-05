@@ -150,9 +150,9 @@ void CustomTextBillboard::initProgram(const std::string& resourceDirectory
     prog->addUniform("frames_height");
     prog->addUniform("frames_width");
     prog->addUniform("ratio_texslice_show");
-    prog->addUniform("frame_select");
     prog->addUniform("modify_color");
     prog->addUniform("numletters");
+    prog->addUniform("letter_select");
     prog->addAttribute("vertPos");
     prog->addAttribute("vertNor");
     prog->addAttribute("vertTex");
@@ -196,6 +196,14 @@ void CustomTextBillboard::renderLaser(glm::mat4& P,
     // Draw the box using GLSL.
     prog->bind();
 
+mat4 letterselect;
+letterselect[0][0] = 1;
+letterselect[0][1] = 'u' -'a';
+letterselect[0][2] = 's' - 'a';
+letterselect[0][3] = 't' - 'a';
+letterselect[1][0] = 'e' - 'a';
+letterselect[1][1] = 'r' - 'a';
+
     // send the matrices to the shaders
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
@@ -206,8 +214,8 @@ void CustomTextBillboard::renderLaser(glm::mat4& P,
     glUniform2f(prog->getUniform("ratio_texslice_show"), time * 14, 1.0f);
     glUniform1f(prog->getUniform("frames_width"), 37);
     glUniform1f(prog->getUniform("frames_height"), 1);
-    glUniform1f(prog->getUniform("frame_select"), time * 10);
     glUniform1i(prog->getUniform("numletters"), 10);
+    glUniformMatrix4fv(prog->getUniform("letterselect"), 1, GL_FALSE, &V[0][0]);
 
     glBindVertexArray(VertexArrayID);
     // actually draw from vertex 0, 3 vertices
