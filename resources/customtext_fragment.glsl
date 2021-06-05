@@ -12,6 +12,7 @@ uniform vec2 ratio_texslice_show;
 uniform float frames_height;
 uniform float frames_width;
 uniform float frame_select;
+uniform int numletters;
 
 uniform sampler2D tex;
 uniform sampler2D tex2;
@@ -55,14 +56,18 @@ void main()
     int treatframe = int(frame_select);
 
     vec4 oof;
-    if (vertex_tex.x < 0.5 && vertex_tex.y < 0.5)
-    oof = bruhmoment(vertex_tex*2, 0);
-   else if (vertex_tex.x < 0.5)
-    oof = bruhmoment((vertex_tex-vec2(0,0.5))*2 , 1);
-   else if (vertex_tex.y < 0.5)
-    oof = bruhmoment((vertex_tex-vec2(0.5,0.0))*2, 2);
-   else 
-    oof = bruhmoment((vertex_tex-vec2(0.5,0.5))*2, 3);
+    float diff = (1.0f / numletters );
+
+for (int i = 0; i < numletters; i++)
+{
+    float cut =(i+1) * diff;
+
+    if (vertex_tex.x < cut)
+    {
+    oof = bruhmoment( vec2((vertex_tex.x - (cut-diff) ) * numletters, vertex_tex.y), i);
+    break;
+    }
+} 
 
     float c = oof.r;
 

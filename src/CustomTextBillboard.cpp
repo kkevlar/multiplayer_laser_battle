@@ -152,6 +152,7 @@ void CustomTextBillboard::initProgram(const std::string& resourceDirectory
     prog->addUniform("ratio_texslice_show");
     prog->addUniform("frame_select");
     prog->addUniform("modify_color");
+    prog->addUniform("numletters");
     prog->addAttribute("vertPos");
     prog->addAttribute("vertNor");
     prog->addAttribute("vertTex");
@@ -206,6 +207,7 @@ void CustomTextBillboard::renderLaser(glm::mat4& P,
     glUniform1f(prog->getUniform("frames_width"), 37);
     glUniform1f(prog->getUniform("frames_height"), 1);
     glUniform1f(prog->getUniform("frame_select"), time * 10);
+    glUniform1i(prog->getUniform("numletters"), 10);
 
     glBindVertexArray(VertexArrayID);
     // actually draw from vertex 0, 3 vertices
