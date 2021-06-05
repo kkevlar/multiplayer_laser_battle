@@ -10,6 +10,7 @@
 #include "Program.h"
 #include "Shape.h"
 #include "WindowManager.h"
+#include "SimpleTextBillboard.h"
 #include "log.h"
 #include "stb_image.h"
 // value_ptr for glm
@@ -217,6 +218,7 @@ class Application : public EventCallbacks
     GLuint Texture2, HeightTex;
 
     AnimTextureBillboard laser;
+    CustomTextBillboard custom_text;
     LaserManager laser_manager;
     PlanesNetworked network;
 
@@ -361,6 +363,7 @@ class Application : public EventCallbacks
         init_mesh();
 
         laser.initGeom(resourceDirectory);
+        custom_text.initGeom(resourceDirectory);
 
         // Initialize mesh.
         shape = make_shared<Shape>();
@@ -467,6 +470,7 @@ class Application : public EventCallbacks
                         */
 
         laser.initTexture(resourceDirectory, "laser.png", stbi_load);
+        custom_text.initTexture(resourceDirectory, stbi_load);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -572,8 +576,8 @@ class Application : public EventCallbacks
         pplane->addAttribute("vertTex");
 
         laser.initProgram(resourceDirectory, "laser_vertex.glsl", "laser_fragment.glsl");
+        custom_text.initProgram(resourceDirectory);
     }
-
     /****DRAW
     This is the most important function in your program - this is where you
     will actually issue the commands to draw any geometry you have set up to
@@ -704,6 +708,7 @@ class Application : public EventCallbacks
 
         pplane->unbind();
 
+
         // Draw the terrain --------------------------------------------------------------
         heightshader->bind();
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -750,6 +755,7 @@ class Application : public EventCallbacks
             shoot = false;
         }
         laser_manager.renderLasers(P, V, campos3, glfwGetTime(), &laser);
+        custom_text.renderLaser(P,V,campos3, theplayer.pos, vec3(0.5,0.5,0.5), glfwGetTime()/10);
     }
 };
 
