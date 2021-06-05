@@ -55,7 +55,14 @@ void main()
     int treatframe = int(frame_select);
 
     vec4 oof;
-    oof = bruhmoment(vertex_tex * 2, treatframe % int(frames_height * frames_width));
+    if (vertex_tex.x < 0.5 && vertex_tex.y < 0.5)
+    oof = bruhmoment(vertex_tex*2, 0);
+   else if (vertex_tex.x < 0.5)
+    oof = bruhmoment((vertex_tex-vec2(0,0.5))*2 , 1);
+   else if (vertex_tex.y < 0.5)
+    oof = bruhmoment((vertex_tex-vec2(0.5,0.0))*2, 2);
+   else 
+    oof = bruhmoment((vertex_tex-vec2(0.5,0.5))*2, 3);
 
     float c = oof.r;
 

@@ -755,7 +755,7 @@ class Application : public EventCallbacks
             shoot = false;
         }
         laser_manager.renderLasers(P, V, campos3, glfwGetTime(), &laser);
-        custom_text.renderLaser(P,V,campos3, theplayer.pos, vec3(0.5,0.5,0.5), glfwGetTime()/10);
+        custom_text.renderLaser(P,V,campos3, theplayer.pos + vec3(0,10,0), vec3(0.5,0.5,0.5), glfwGetTime()/10);
     }
 };
 
