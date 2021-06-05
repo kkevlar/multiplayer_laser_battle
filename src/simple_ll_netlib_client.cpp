@@ -163,18 +163,16 @@ UCIDPayload payload;
     assert(sizeof(out_handle->username) ==100);
     strncpy(out_handle->username, myhandle.c_str(), sizeof(out_handle->username-1));
     memcpy(&out_handle->socketNum ,&myCompatSocket, sizeof(myCompatSocket)) ;
+    memset(&out_handle->selector, 0, sizeof(out_handle->selector));
 
-    *out_handle = give_to_caller_handle;
-
-using namespace std;
     if(payload.magic1 != UCID_PAYLOAD_MAGIC_1)
     {
-        cerr << "BAD MAGIC 1 UCID" << endl;
+        log_error("Bad magic 1 UCID");
         return false;
     }
     else if(payload.magic2 != UCID_PAYLOAD_MAGIC_2)
     {
-        cerr << "BAD MAGIC 2 UCID" << endl;
+        log_error("Bad magic 2 UCID");
         return false;
     }
 
