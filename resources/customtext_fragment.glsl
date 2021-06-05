@@ -13,6 +13,7 @@ uniform float frames_height;
 uniform float frames_width;
 uniform float frame_select;
 uniform int numletters;
+uniform mat4 letterselect;
 
 uniform sampler2D tex;
 uniform sampler2D tex2;
@@ -58,6 +59,7 @@ void main()
     vec4 oof;
     float diff = (1.0f / numletters );
 
+//TODO use the matrix
 for (int i = 0; i < numletters; i++)
 {
     float cut =(i+1) * diff;
