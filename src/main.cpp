@@ -68,9 +68,9 @@ mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 static glm::vec3 global_plane_color_allocation[] = {
 
     vec3(0,0,1),
-    vec3(1,0.4,0), //orange
     vec3(1,0,0),
     vec3(0,1, 0),
+    vec3(1,0.4,0), //orange
     vec3(0,1, 1), //cyan
     vec3(1,1,0), //yellow
     vec3(1,0, 1), //magenta
@@ -735,6 +735,7 @@ class Application : public EventCallbacks
             newlaser.position_target = ((normalize(theplayer.forward) * 1000.0f) + newlaser.position_source);
             newlaser.start_time = glfwGetTime();
             newlaser.speed = 0.25;
+            netlaser.color = my_allocated_color_from_server;
             laser_manager.admitLaser(&newlaser);
             network.BroadcastNewLaser(&newlaser);
             newlaser.position_source = -rightvec + othervec;
@@ -808,14 +809,6 @@ int main(int argc, char** argv)
     while (!glfwWindowShouldClose(windowManager->getHandle()))
     {
         // Render scene.
-        static int ccc = 0;
-        if (ccc > 100)
-        {
-
-        log_trace("About to render");
-        ccc = 0;
-        }
-        ccc +=1 ;
         application->render(windowManager->getHandle());
 
         // Swap front and back buffers.

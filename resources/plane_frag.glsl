@@ -27,7 +27,13 @@ vec4 tcol = texture(tex, vec2(vertex_tex.x,1-vertex_tex.y)); //the plane has rev
 color.rgb =  2.0f *tcol.rgb*diffuse_fact + vec3(1,1,1)*spec_fact + tcol.rbg * 0.2f;
 
 vec3 tint = tint_color;
-float tintfactor = 0.4f;
+if(tint.r < 0.01)
+{ tint.r = -0.1; }
+if(tint.b < 0.01)
+{ tint.b = -0.1; }
+if(tint.g < 0.01)
+{ tint.g = -0.1; }
+float tintfactor = 0.5f;
 float mymin = min(min(color.r, color.b), color.g);
 color.rgb += mymin * tintfactor * tint;
 
