@@ -102,9 +102,10 @@ static bool incomingBroadcast(const LibPacketHeader* const header, int clientSoc
 
     for (const int& fd : clientFdListGetAll())
     {
+
         if (fd != clientSockFd)
         {
-            CompatSocket sock = {clientSockFd};
+            CompatSocket sock = {fd};
             packetSend(sock, (uint8_t*)header, ntohs(header->pdu_size_check_endianness));
         }
     }
