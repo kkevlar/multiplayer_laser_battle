@@ -259,7 +259,6 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
     pdu.flag = FLAG_SHOOT_LASER;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
-
     if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
     {
         log_fatal("Failed to broadcast outgoing");
@@ -310,7 +309,6 @@ std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPl
 bool PlanesNetworked::MaybePopIncomingNetworkedLaser(NewShotLaserInfo* laser)
 {
     NULLCHECK(laser);
-
 
     if (this->internal->laser_buffer.count < 0)
     {
