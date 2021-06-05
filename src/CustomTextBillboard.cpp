@@ -152,7 +152,7 @@ void CustomTextBillboard::initProgram(const std::string& resourceDirectory
     prog->addUniform("ratio_texslice_show");
     prog->addUniform("modify_color");
     prog->addUniform("numletters");
-    prog->addUniform("letter_select");
+    prog->addUniform("letterselect");
     prog->addAttribute("vertPos");
     prog->addAttribute("vertNor");
     prog->addAttribute("vertTex");
@@ -214,8 +214,8 @@ letterselect[1][1] = 'r' - 'a';
     glUniform2f(prog->getUniform("ratio_texslice_show"), time * 14, 1.0f);
     glUniform1f(prog->getUniform("frames_width"), 37);
     glUniform1f(prog->getUniform("frames_height"), 1);
-    glUniform1i(prog->getUniform("numletters"), 10);
-    glUniformMatrix4fv(prog->getUniform("letterselect"), 1, GL_FALSE, &V[0][0]);
+    glUniform1i(prog->getUniform("numletters"), 6);
+    glUniformMatrix4fv(prog->getUniform("letterselect"), 1, GL_FALSE, &letterselect[0][0]);
 
     glBindVertexArray(VertexArrayID);
     // actually draw from vertex 0, 3 vertices

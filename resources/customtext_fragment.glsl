@@ -59,15 +59,24 @@ void main()
     vec4 oof;
     float diff = (1.0f / numletters );
 
-//TODO use the matrix
+
+int rindex = 0;
+int cindex = 0;
 for (int i = 0; i < numletters; i++)
 {
     float cut =(i+1) * diff;
 
     if (vertex_tex.x < cut)
     {
-    oof = bruhmoment( vec2((vertex_tex.x - (cut-diff) ) * numletters, vertex_tex.y), i);
+    oof = bruhmoment( vec2((vertex_tex.x - (cut-diff) ) * numletters, vertex_tex.y), int(letterselect[rindex][cindex]));
     break;
+    }
+
+    cindex +=1;
+    if(cindex >= 4)
+    {
+        cindex -= 4;
+        rindex += 1;
     }
 } 
 
