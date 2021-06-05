@@ -10,7 +10,7 @@
 #include "Program.h"
 #include "Shape.h"
 #include "WindowManager.h"
-#include "SimpleTextBillboard.h"
+#include "CustomTextBillboard.h"
 #include "log.h"
 #include "stb_image.h"
 // value_ptr for glm
