@@ -9,6 +9,8 @@ using namespace glm;
 #include "AnimTextureBillboard.h"
 #include "Program.h"
 
+//TODO RENAME TO LASER CLASS
+
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
     mat4 m1;
@@ -188,7 +190,7 @@ void AnimTextureBillboard::initTexture(const std::string& resourceDirectory,
 }
 
 void AnimTextureBillboard::renderLaser(
-    glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, glm::vec3 where_to_look, float time)
+    glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, glm::vec3 where_to_look, glm::vec3 modify_color, float time)
 {
     // Draw the box using GLSL.
     prog->bind();
@@ -197,7 +199,7 @@ void AnimTextureBillboard::renderLaser(
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
     glUniform3fv(prog->getUniform("campos"), 1, &campos[0]);
-    glUniform3f(prog->getUniform("modify_color"), 0, 0, 1);
+    glUniform3fv(prog->getUniform("modify_color"), 1, &modify_color[0]);
     glUniform2f(prog->getUniform("topleft_start_coords"), 0, 0);
     glUniform2f(prog->getUniform("botright_end_coords"), 1.0f, 1.0f);
     glUniform2f(prog->getUniform("ratio_texslice_show"), time * 14, 1.0f);

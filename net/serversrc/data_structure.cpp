@@ -20,7 +20,7 @@ typedef struct
 static map<string, PersistentInfo> persistentMap{};
 static map<string, ClientInfo> handleMap{};
 static list<int> fdList{};
-static int max_unique_color_id_allocated = 0;
+static int max_unique_color_id_unallocated = 0;
 
 void clientFDListAddFd(int fd)
 {
@@ -82,8 +82,8 @@ bool clientMapCheckHandleExistence(const string handle)
 static void allocateNewPersistentInfo(const string handle)
 {
     PersistentInfo persist;
-    max_unique_color_id_allocated++;
-    persist.unique_color_id = max_unique_color_id_allocated;
+    persist.unique_color_id = max_unique_color_id_unallocated;
+    max_unique_color_id_unallocated++;
 
    persistentMap[handle] = persist;
 }
