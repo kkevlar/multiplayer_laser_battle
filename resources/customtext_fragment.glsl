@@ -18,10 +18,10 @@ uniform mat4 letterselect;
 uniform sampler2D tex;
 uniform sampler2D tex2;
 
-vec4 bruhmoment(vec2 incoming_tex_corods, int frame)
+vec4 bruhmoment(vec2 incoming_tex_corods, int row, int col, vec3 color)
 {
-    int row = frame / int(frames_width);
-    int col = frame % int(frames_width);
+
+  
 
     vec2 diff = botright_end_coords - topleft_start_coords;
     vec2 bruh = vec2(diff.x * incoming_tex_corods.x / frames_width, diff.y * incoming_tex_corods.y / frames_height);
@@ -44,8 +44,22 @@ vec4 bruhmoment(vec2 incoming_tex_corods, int frame)
         tcol.g > 0.01 ||
         tcol.r > 0.01
          ) tcol.rgba = vec4(0);
+        else
+        {
+            tcol.rgb = color;
+            
+        }
     return tcol;
 }
+
+vec4 wetterbruhmoment (vec2 incoming_tex_corods, int row, int col)
+{
+   vec4 buster = bruhmoment(incoming_tex_corods,row,col, modify_color);
+  
+   return buster;
+
+}
+
 
 void main()
 {
@@ -68,7 +82,10 @@ for (int i = 0; i < numletters; i++)
 
     if (vertex_tex.x < cut)
     {
-    oof = bruhmoment( vec2((vertex_tex.x - (cut-diff) ) * numletters, vertex_tex.y), int(letterselect[rindex][cindex]));
+        int frame = int(letterselect[rindex][cindex]);
+  int row = frame / int(frames_width);
+    int col = frame % int(frames_width);
+    oof = wetterbruhmoment( vec2((vertex_tex.x - (cut-diff) ) * numletters, vertex_tex.y), row, col);
     break;
     }
 

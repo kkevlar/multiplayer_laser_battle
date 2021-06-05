@@ -754,8 +754,9 @@ class Application : public EventCallbacks
             network.BroadcastNewLaser(&newlaser);
             shoot = false;
         }
+        // custom_text.renderLaser(P,V,campos3, theplayer.pos + vec3(0,10,0), my_allocated_color_from_server, glfwGetTime()/10);
+        custom_text.renderCustomText(P,V,campos3, theplayer.pos + vec3(0,10,0), vec3(0,0,1), glfwGetTime()/10);
         laser_manager.renderLasers(P, V, campos3, glfwGetTime(), &laser);
-        custom_text.renderLaser(P,V,campos3, theplayer.pos + vec3(0,10,0), vec3(0.5,0.5,0.5), glfwGetTime()/10);
     }
 };
 

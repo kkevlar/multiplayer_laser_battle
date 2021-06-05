@@ -165,7 +165,7 @@ void CustomTextBillboard::initTexture(const std::string& resourceDirectory,
     char filepath[1000];
 
     // texture 1
-    string str = resourceDirectory + "/" + "uppertext.png";
+    string str = resourceDirectory + "/" + "orbitron.png";
     strcpy(filepath, str.c_str());
     unsigned char* data = loader(filepath, &width, &height, &channels, 4);
     glGenTextures(1, &Texture);
@@ -186,7 +186,7 @@ void CustomTextBillboard::initTexture(const std::string& resourceDirectory,
     glUniform1i(Tex1Location, 0);
 }
 
-void CustomTextBillboard::renderLaser(glm::mat4& P,
+void CustomTextBillboard::renderCustomText(glm::mat4& P,
                                        glm::mat4& V,
                                        glm::vec3 campos,
                                        glm::vec3 position_xyz,
@@ -203,6 +203,8 @@ letterselect[0][2] = 's' - 'a';
 letterselect[0][3] = 't' - 'a';
 letterselect[1][0] = 'e' - 'a';
 letterselect[1][1] = 'r' - 'a';
+letterselect[1][2] = 'z' - 'a' +1;
+letterselect[1][3] = 'z' - 'a' +3;
 
     // send the matrices to the shaders
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
@@ -214,7 +216,7 @@ letterselect[1][1] = 'r' - 'a';
     glUniform2f(prog->getUniform("ratio_texslice_show"), time * 14, 1.0f);
     glUniform1f(prog->getUniform("frames_width"), 37);
     glUniform1f(prog->getUniform("frames_height"), 1);
-    glUniform1i(prog->getUniform("numletters"), 6);
+    glUniform1i(prog->getUniform("numletters"), 8);
     glUniformMatrix4fv(prog->getUniform("letterselect"), 1, GL_FALSE, &letterselect[0][0]);
 
     glBindVertexArray(VertexArrayID);
@@ -228,7 +230,7 @@ letterselect[1][1] = 'r' - 'a';
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Texture);
 
-    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(30,30,30));
+    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(30,5,1));
     glm::mat4 TransCaller = glm::translate(glm::mat4(1.0f), position_xyz);
 
 
