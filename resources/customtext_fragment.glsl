@@ -20,9 +20,6 @@ uniform sampler2D tex2;
 
 vec4 bruhmoment(vec2 incoming_tex_corods, int row, int col, vec3 color)
 {
-
-  
-
     vec2 diff = botright_end_coords - topleft_start_coords;
     vec2 bruh = vec2(diff.x * incoming_tex_corods.x / frames_width, diff.y * incoming_tex_corods.y / frames_height);
     bruh += vec2(col * diff.x / frames_width, row * diff.y / frames_height);
@@ -39,27 +36,21 @@ vec4 bruhmoment(vec2 incoming_tex_corods, int row, int col, vec3 color)
     }
 
     if (tcol.a < 0.2) tcol.rgba = vec4(0);
-    if (
-        tcol.r > 0.01 ||
-        tcol.g > 0.01 ||
-        tcol.r > 0.01
-         ) tcol.rgba = vec4(0);
-        else
-        {
-            tcol.rgb = color;
-            
-        }
+    if (tcol.r > 0.01 || tcol.g > 0.01 || tcol.r > 0.01)
+        tcol.rgba = vec4(0);
+    else
+    {
+        tcol.rgb = color;
+    }
     return tcol;
 }
 
-vec4 wetterbruhmoment (vec2 incoming_tex_corods, int row, int col)
+vec4 wetterbruhmoment(vec2 incoming_tex_corods, int row, int col)
 {
-   vec4 buster = bruhmoment(incoming_tex_corods,row,col, modify_color);
-  
-   return buster;
+    vec4 buster = bruhmoment(incoming_tex_corods, row, col, modify_color);
 
+    return buster;
 }
-
 
 void main()
 {
@@ -71,31 +62,30 @@ void main()
     int treatframe = int(frame_select);
 
     vec4 oof;
-    float diff = (1.0f / numletters );
+    float diff = (1.0f / numletters);
 
-
-int rindex = 0;
-int cindex = 0;
-for (int i = 0; i < numletters; i++)
-{
-    float cut =(i+1) * diff;
-
-    if (vertex_tex.x < cut)
+    int rindex = 0;
+    int cindex = 0;
+    for (int i = 0; i < numletters; i++)
     {
-        int frame = int(letterselect[rindex][cindex]);
-  int row = frame / int(frames_width);
-    int col = frame % int(frames_width);
-    oof = wetterbruhmoment( vec2((vertex_tex.x - (cut-diff) ) * numletters, vertex_tex.y), row, col);
-    break;
-    }
+        float cut = (i + 1) * diff;
 
-    cindex +=1;
-    if(cindex >= 4)
-    {
-        cindex -= 4;
-        rindex += 1;
+        if (vertex_tex.x < cut)
+        {
+            int frame = int(letterselect[rindex][cindex]);
+            int row = frame / int(frames_width);
+            int col = frame % int(frames_width);
+            oof = wetterbruhmoment(vec2((vertex_tex.x - (cut - diff)) * numletters, vertex_tex.y), row, col);
+            break;
+        }
+
+        cindex += 1;
+        if (cindex >= 4)
+        {
+            cindex -= 4;
+            rindex += 1;
+        }
     }
-} 
 
     float c = oof.r;
 

@@ -4,13 +4,13 @@
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "AnimTextureBillboard.h"
+#include "CustomTextBillboard.h"
 #include "GLSL.h"
 #include "LaserManager.h"
 #include "PlanesNetworked.h"
 #include "Program.h"
 #include "Shape.h"
 #include "WindowManager.h"
-#include "CustomTextBillboard.h"
 #include "log.h"
 #include "stb_image.h"
 // value_ptr for glm
@@ -708,7 +708,6 @@ class Application : public EventCallbacks
 
         pplane->unbind();
 
-
         // Draw the terrain --------------------------------------------------------------
         heightshader->bind();
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -754,8 +753,9 @@ class Application : public EventCallbacks
             network.BroadcastNewLaser(&newlaser);
             shoot = false;
         }
-        // custom_text.renderLaser(P,V,campos3, theplayer.pos + vec3(0,10,0), my_allocated_color_from_server, glfwGetTime()/10);
-        custom_text.renderCustomText(P,V,campos3, theplayer.pos + vec3(0,10,0), vec3(0,0,1), glfwGetTime()/10);
+        // custom_text.renderLaser(P,V,campos3, theplayer.pos + vec3(0,10,0), my_allocated_color_from_server,
+        // glfwGetTime()/10);
+        custom_text.renderCustomText(P, V, campos3, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() / 10);
         laser_manager.renderLasers(P, V, campos3, glfwGetTime(), &laser);
     }
 };
