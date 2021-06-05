@@ -130,12 +130,12 @@ void CustomTextBillboard::initGeom(const std::string& resourceDirectory)
     glBindVertexArray(0);
 }
 
-void CustomTextBillboard::initProgram(const std::string& resourceDirectory
-                                      )
+void CustomTextBillboard::initProgram(const std::string& resourceDirectory)
 {
     prog = std::make_shared<Program>();
     prog->setVerbose(true);
-    prog->setShaderNames(resourceDirectory + "/" + "customtext_vertex.glsl", resourceDirectory + +"/" + "customtext_fragment.glsl");
+    prog->setShaderNames(resourceDirectory + "/" + "customtext_vertex.glsl",
+                         resourceDirectory + +"/" + "customtext_fragment.glsl");
     if (!prog->init())
     {
         std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
@@ -158,8 +158,7 @@ void CustomTextBillboard::initProgram(const std::string& resourceDirectory
     prog->addAttribute("vertTex");
 }
 
-void CustomTextBillboard::initTexture(const std::string& resourceDirectory,
-                                       ImageLoader loader)
+void CustomTextBillboard::initTexture(const std::string& resourceDirectory, ImageLoader loader)
 {
     int width, height, channels;
     char filepath[1000];
@@ -186,25 +185,21 @@ void CustomTextBillboard::initTexture(const std::string& resourceDirectory,
     glUniform1i(Tex1Location, 0);
 }
 
-void CustomTextBillboard::renderCustomText(glm::mat4& P,
-                                       glm::mat4& V,
-                                       glm::vec3 campos,
-                                       glm::vec3 position_xyz,
-                                       glm::vec3 modify_color,
-                                       float time)
+void CustomTextBillboard::renderCustomText(
+    glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, glm::vec3 modify_color, float time)
 {
     // Draw the box using GLSL.
     prog->bind();
 
-mat4 letterselect;
-letterselect[0][0] = 1;
-letterselect[0][1] = 'u' -'a';
-letterselect[0][2] = 's' - 'a';
-letterselect[0][3] = 't' - 'a';
-letterselect[1][0] = 'e' - 'a';
-letterselect[1][1] = 'r' - 'a';
-letterselect[1][2] = 'z' - 'a' +1;
-letterselect[1][3] = 'z' - 'a' +3;
+    mat4 letterselect;
+    letterselect[0][0] = 1;
+    letterselect[0][1] = 'u' - 'a';
+    letterselect[0][2] = 's' - 'a';
+    letterselect[0][3] = 't' - 'a';
+    letterselect[1][0] = 'e' - 'a';
+    letterselect[1][1] = 'r' - 'a';
+    letterselect[1][2] = 'z' - 'a' + 1;
+    letterselect[1][3] = 'z' - 'a' + 3;
 
     // send the matrices to the shaders
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
@@ -230,12 +225,11 @@ letterselect[1][3] = 'z' - 'a' +3;
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Texture);
 
-    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(30,5,1));
+    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(30, 5, 1));
     glm::mat4 TransCaller = glm::translate(glm::mat4(1.0f), position_xyz);
 
-
     glm::mat4 M;
-    M = TransCaller * Vi* S;
+    M = TransCaller * Vi * S;
     glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)0);
     // M =  TransZ *  rr * zzz *yyy *    S;
