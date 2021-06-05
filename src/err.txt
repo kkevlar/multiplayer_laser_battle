@@ -1,4 +1,0 @@
-WARN: campos cannot be bound (it either doesn't exist or has been optimized away). safe_glUniform calls will silently ignore it.
-
-WARN: vertNor cannot be bound (it either doesn't exist or has been optimized away). safe_glAttrib calls will silently ignore it.
-
