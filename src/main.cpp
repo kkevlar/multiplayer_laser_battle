@@ -667,14 +667,13 @@ class Application : public EventCallbacks
             quat q = quat(plane_overall_rot);
             network.BroadcastSelfPosition(glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
             network.PollIncoming(glfwGetTime());
-            log_info("After poll incoming");
-            // NewShotLaserInfo netlaser;
-            // while (network.MaybePopIncomingNetworkedLaser(&netlaser))
-            // {
-            //     // TODO THIS IS silly
-            //     netlaser.start_time = glfwGetTime();
-            //     laser_manager.admitLaser(&netlaser);
-            // }
+            NewShotLaserInfo netlaser;
+            while (network.MaybePopIncomingNetworkedLaser(&netlaser))
+            {
+                // TODO THIS IS silly
+                netlaser.start_time = glfwGetTime();
+                laser_manager.admitLaser(&netlaser);
+            }
 
         pplane->bind();
         glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
@@ -686,17 +685,17 @@ class Application : public EventCallbacks
         glBindTexture(GL_TEXTURE_2D, Texture2);
         plane->draw(pplane);  // render!!!!!!
 
-        // const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
-        // for (const auto& estimate : estimates)
-        // {
-        //     translate_plane = translate(mat4(1), estimate.pos);
-        //     plane_overall_rot = mat4(quat(estimate.rot));
+        const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+        for (const auto& estimate : estimates)
+        {
+            translate_plane = translate(mat4(1), estimate.pos);
+            plane_overall_rot = mat4(quat(estimate.rot));
 
-        //     M = translate_plane * plane_overall_rot * scale_plane;
-        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-        // glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
-        //     plane->draw(pplane);  // render!!!!!!
-        // }
+            M = translate_plane * plane_overall_rot * scale_plane;
+            glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
+            plane->draw(pplane);  // render!!!!!!
+        }
 
         pplane->unbind();
 
