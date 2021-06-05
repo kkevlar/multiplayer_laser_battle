@@ -6,7 +6,7 @@
 #include <iostream>
 using namespace std;
 using namespace glm;
-#include "SimpleTextBillboard.h"
+#include "CustomTextBillboard.h"
 #include "Program.h"
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)

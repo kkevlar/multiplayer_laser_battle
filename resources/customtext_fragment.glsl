@@ -16,13 +16,13 @@ uniform float frame_select;
 uniform sampler2D tex;
 uniform sampler2D tex2;
 
-vec4 bruhmoment(int frame)
+vec4 bruhmoment(vec2 incoming_tex_corods, int frame)
 {
     int row = frame / int(frames_width);
     int col = frame % int(frames_width);
 
     vec2 diff = botright_end_coords - topleft_start_coords;
-    vec2 bruh = vec2(diff.x * vertex_tex.x / frames_width, diff.y * vertex_tex.y / frames_height);
+    vec2 bruh = vec2(diff.x * incoming_tex_corods.x / frames_width, diff.y * incoming_tex_corods.y / frames_height);
     bruh += vec2(col * diff.x / frames_width, row * diff.y / frames_height);
     bruh += topleft_start_coords;
 
@@ -53,12 +53,9 @@ void main()
     float diffuse = dot(n, ld);
 
     int treatframe = int(frame_select);
-    float interp = frame_select - int(frame_select);
-    interp = 0;
 
     vec4 oof;
-    oof = (1 - interp) * bruhmoment(treatframe % int(frames_height * frames_width));
-    oof += (interp)*bruhmoment((treatframe + 1) % int(frames_height * frames_width));
+    oof = bruhmoment(vertex_tex * 2, treatframe % int(frames_height * frames_width));
 
     float c = oof.r;
 
