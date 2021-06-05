@@ -671,13 +671,13 @@ class Application : public EventCallbacks
 
         // Special scope for netlaser
         {
-        NewShotLaserInfo netlaser;
-        while (network.MaybePopIncomingNetworkedLaser(&netlaser))
-        {
-            // TODO THIS IS silly
-            netlaser.start_time = glfwGetTime();
-            laser_manager.admitLaser(&netlaser);
-        }
+            NewShotLaserInfo netlaser;
+            while (network.MaybePopIncomingNetworkedLaser(&netlaser))
+            {
+                // TODO THIS IS silly
+                netlaser.start_time = glfwGetTime();
+                laser_manager.admitLaser(&netlaser);
+            }
         }
 
         pplane->bind();
