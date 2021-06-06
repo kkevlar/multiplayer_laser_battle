@@ -26,10 +26,21 @@ shared_ptr<Shape> plane;
 #define PI 3.1415926
 
 #define MAX_SPD 240.0f
-#define MIN_SPD 10.0f
+#define MIN_SPD 100.0f
 #define MED_SPD (MAX_SPD + MIN_SPD) / 2.0f
 
-#define CENTER vec2(1920 / 2, 1080 / 2)
+#define MAP_X_MAX_BOUND 1000.0f
+#define MAP_Y_MAX_BOUND 1000.0f
+#define MAP_Z_MAX_BOUND 1000.0f
+
+#define MAP_X_MIN_BOUND -1000.0f
+#define MAP_Y_MIN_BOUND 0.0f
+#define MAP_Z_MIN_BOUND -1000.0f
+
+#define NUM_BOTS 5
+
+// screen space center
+#define SS_CENTER vec2(1920 / 2, 1080 / 2)
 
 ofstream file;
 int renderstate = 1;
@@ -132,6 +143,20 @@ class player
 
         velocity_cached = forward * speed;
         pos += velocity_cached * ftime;
+
+        if (pos.x > MAP_X_MAX_BOUND)
+            pos.x = MAP_X_MAX_BOUND;
+        if (pos.y > MAP_Y_MAX_BOUND)
+            pos.y = MAP_Y_MAX_BOUND;
+        if (pos.z > MAP_Z_MAX_BOUND)
+            pos.z = MAP_Z_MAX_BOUND;
+
+        if (pos.x < MAP_X_MIN_BOUND)
+            pos.x = MAP_X_MIN_BOUND;
+        if (pos.y < MAP_Y_MIN_BOUND)
+            pos.y = MAP_Y_MIN_BOUND;
+        if (pos.z < MAP_Z_MIN_BOUND)
+            pos.z = MAP_Z_MIN_BOUND;
     }
 };
 
@@ -145,7 +170,7 @@ class npc
 
     npc()
     {
-        pos = vec3(20, 180, 20);
+        pos = vec3(0, 180, 20);
         speed = MIN_SPD;
 
         forward = vec3(0, 0, 1);
@@ -184,18 +209,18 @@ class npc
         float right_w_trueup = dot(right, vec3(0,1,0));
 
         if (updown > 0)
-            xangle = -0.8f * ftime;
+            xangle = -1.0f * ftime;
         else if (updown < 0)
-            xangle = 0.8f * ftime;
+            xangle = 1.0f * ftime;
         if (leftright > 0)
-            yangle = 0.8f * ftime;
+            yangle = 1.0f * ftime;
         else if (leftright < 0)
-            yangle = -0.8f * ftime;
+            yangle = -1.0f * ftime;
 
         if (right_w_trueup > 0)
-            zangle = -0.8f * ftime;
+            zangle = -1.0f * ftime;
         if (right_w_trueup < 0)
-            zangle = 0.8f * ftime;
+            zangle = 1.0f * ftime;
 
         mat4 rotate_x = rotate(mat4(1), xangle, right);
         mat4 rotate_y = rotate(mat4(1), yangle, up);
@@ -208,6 +233,20 @@ class npc
 
         velocity_cached = forward * speed;
         pos += velocity_cached * ftime;
+
+        if (pos.x > MAP_X_MAX_BOUND)
+            pos.x = MAP_X_MAX_BOUND;
+        if (pos.y > MAP_Y_MAX_BOUND)
+            pos.y = MAP_Y_MAX_BOUND;
+        if (pos.z > MAP_Z_MAX_BOUND)
+            pos.z = MAP_Z_MAX_BOUND;
+
+        if (pos.x < MAP_X_MIN_BOUND)
+            pos.x = MAP_X_MIN_BOUND;
+        if (pos.y < MAP_Y_MIN_BOUND)
+            pos.y = MAP_Y_MIN_BOUND;
+        if (pos.z < MAP_Z_MIN_BOUND)
+            pos.z = MAP_Z_MIN_BOUND;
     }
 };
 
@@ -246,6 +285,25 @@ class camera
 camera mycam;
 player theplayer;
 npc thebot;
+vector<npc> thebots;
+
+void setup_players()
+{
+    for (int i = 0; i < NUM_BOTS; i ++)
+    {
+        npc bot;
+
+        // bot.pos = vec3(bot.pos.x * i, 200, bot.pos.z);
+        bot.pos = theplayer.pos + vec3(10) * ((float) i);
+
+        // float rho, theta;
+        // rho = 5.0f;
+        // theta = (i * 2 * PI) / NUM_BOTS;
+        // // bot.pos = vec3(acos(theta) * rho, (i % 2) ? 150 : 250, asin(theta) * rho);
+        // bot.pos = vec3(acos(theta) * rho, 200, asin(theta) * rho);
+        thebots.push_back(bot);
+    }
+}
 
 class Application : public EventCallbacks
 {
@@ -523,6 +581,8 @@ class Application : public EventCallbacks
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        setup_players();
     }
 
     // General OGL initialization - set OGL state here
@@ -640,8 +700,8 @@ class Application : public EventCallbacks
 
         double posX, posY;
         glfwGetCursorPos(window, &posX, &posY);
-        double xdiff = posX - CENTER.x;
-        double ydiff = posY - CENTER.y;
+        double xdiff = posX - SS_CENTER.x;
+        double ydiff = posY - SS_CENTER.y;
 
         double xpercent = xdiff / (1920.0f / 2);
         double ypercent = ydiff / (1080.0f / 2);
@@ -651,7 +711,34 @@ class Application : public EventCallbacks
 
         theplayer.update(frametime, ypercent, xpercent);
         // for now
-        thebot.update(frametime, theplayer.pos);
+
+        vector<vec3> positions;
+        for (int i = 0; i < thebots.size(); i ++)
+        {
+            positions.push_back(thebots[i].pos);
+        }
+        positions.push_back(theplayer.pos);
+
+        for (int i = 0; i < thebots.size(); i ++)
+        {
+            float min_distance = length(positions[i] - positions[i + 1]);
+            int min_index = i + 1;
+            for (int j = 0; j < positions.size(); j ++)
+            {
+                if (j != i)
+                {
+                    float distance = length(positions[i] - positions[j]);
+                    if (distance < min_distance)
+                    {
+                        min_index = j;
+                        min_distance = distance;
+                    }
+                }
+            }
+
+            thebots[i].update(frametime, positions[min_index]);
+            // thebots[i].update(frametime, theplayer.pos);
+        }
 
         // Get current frame buffer size.
         int width, height;
@@ -756,23 +843,22 @@ class Application : public EventCallbacks
             plane->draw(pplane);  // render!!!!!!
         }
 
-        // draw the bot
+        // draw the bots
 
-        // scale_plane = scale(mat4(1), vec3(10));
-        rotate_plane = safe_lookat(thebot.pos, thebot.pos + thebot.forward, thebot.up);
-        translate_plane = translate(mat4(1), thebot.pos);
-        plane_overall_rot = rotate_plane * rotate_default_plane;
-        M = translate_plane * plane_overall_rot * scale_plane;
+        for (int i = 0; i < thebots.size(); i ++)
+        {
+            // scale_plane = scale(mat4(1), vec3(10));
+            rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
+            translate_plane = translate(mat4(1), thebots[i].pos);
+            plane_overall_rot = rotate_plane * rotate_default_plane;
+            M = translate_plane * plane_overall_rot * scale_plane;
 
-        pplane->bind();
-        glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
-        glUniformMatrix4fv(pplane->getUniform("V"), 1, GL_FALSE, &V[0][0]);
-        glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-        glUniform3fv(pplane->getUniform("campos"), 1, &mycam.pos[0]);
-        glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, Texture2);
-        plane->draw(pplane);  // render!!!!!!
+            glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+            glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, Texture2);
+            plane->draw(pplane);  // render!!!!!!
+        }
 
         pplane->unbind();
 
