@@ -27,6 +27,7 @@ shared_ptr<Shape> plane;
 
 #define MAX_SPD 240.0f
 #define MIN_SPD 10.0f
+#define MED_SPD (MAX_SPD + MIN_SPD) / 2.0f
 
 #define CENTER vec2(1920 / 2, 1080 / 2)
 
@@ -111,9 +112,9 @@ class player
     {
         if (w)
         {
-            speed += 200 * ftime;
+            speed += 100 * ftime;
         }
-        if (s) speed -= 200 * ftime;
+        if (s) speed -= 100 * ftime;
         speed = clamp(speed, MIN_SPD, MAX_SPD);
 
         float zangle = 0;
@@ -158,6 +159,25 @@ class npc
         xangle = yangle = zangle = 0;
 
         vec3 to_targ = target - pos;
+        float distance = length(to_targ);
+
+        if (distance > 400)
+            speed += 100 * ftime;
+        else if (distance > 200)
+        {
+            if (speed > MED_SPD)
+                speed -= 100 * ftime;
+            else
+                speed += 100 * ftime;
+        }
+        else
+        {
+            speed -= 100 * ftime;
+            to_targ = to_targ + 20.0f * up;
+        }
+
+        speed = clamp(speed, MIN_SPD, MAX_SPD);
+
         float updown = dot(to_targ, up);
         float leftright = dot(to_targ, right);
 
@@ -176,13 +196,6 @@ class npc
             zangle = -0.8f * ftime;
         if (right_w_trueup < 0)
             zangle = 0.8f * ftime;
-
-        // if (w)
-        // {
-        //     speed += 200 * ftime;
-        // }
-        // if (s) speed -= 200 * ftime;
-        // speed = clamp(speed, MIN_SPD, MAX_SPD);
 
         mat4 rotate_x = rotate(mat4(1), xangle, right);
         mat4 rotate_y = rotate(mat4(1), yangle, up);
