@@ -161,6 +161,8 @@ class npc
         float updown = dot(to_targ, up);
         float leftright = dot(to_targ, right);
 
+        float right_w_trueup = dot(right, vec3(0,1,0));
+
         if (updown > 0)
             xangle = -0.8f * ftime;
         else if (updown < 0)
@@ -170,16 +172,17 @@ class npc
         else if (leftright < 0)
             yangle = -0.8f * ftime;
 
+        if (right_w_trueup > 0)
+            zangle = -0.8f * ftime;
+        if (right_w_trueup < 0)
+            zangle = 0.8f * ftime;
+
         // if (w)
         // {
         //     speed += 200 * ftime;
         // }
         // if (s) speed -= 200 * ftime;
         // speed = clamp(speed, MIN_SPD, MAX_SPD);
-
-        // float zangle = 0;
-        // if (a) zangle = 1.3f * ftime;
-        // if (d) zangle = -1.3f * ftime;
 
         mat4 rotate_x = rotate(mat4(1), xangle, right);
         mat4 rotate_y = rotate(mat4(1), yangle, up);
