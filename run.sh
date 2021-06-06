@@ -5,6 +5,6 @@ mkdir build
 cd build
 cmake ..
 make -j8
-./program1
+./program1 ../resources justin localhost 
 cd ../
 
