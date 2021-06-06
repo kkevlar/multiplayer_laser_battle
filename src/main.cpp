@@ -129,21 +129,70 @@ class player
         up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
         right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
 
-        if (dot(forward, up) > 0.0001 || dot(forward, up) < -0.0001) printf("%f\n", dot(forward, up));
+        velocity_cached = forward * speed;
+        pos += velocity_cached * ftime;
+    }
+};
+
+class npc
+{
+   public:
+    vec3 pos;
+    vec3 velocity_cached;
+    vec3 forward, up, right;
+    float speed;
+
+    npc()
+    {
+        pos = vec3(20, 180, 20);
+        speed = MIN_SPD;
+
+        forward = vec3(0, 0, 1);
+        up = vec3(0, 1, 0);
+        right = vec3(1, 0, 0);
+    }
+
+    void update(float ftime, vec3 target)
+    {
+        float xangle, yangle, zangle;
+        xangle = yangle = zangle = 0;
+
+        vec3 to_targ = target - pos;
+        float updown = dot(to_targ, up);
+        float leftright = dot(to_targ, right);
+
+        if (updown > 0)
+            xangle = -0.8f * ftime;
+        else if (updown < 0)
+            xangle = 0.8f * ftime;
+        if (leftright > 0)
+            yangle = 0.8f * ftime;
+        else if (leftright < 0)
+            yangle = -0.8f * ftime;
+
+        // if (w)
+        // {
+        //     speed += 200 * ftime;
+        // }
+        // if (s) speed -= 200 * ftime;
+        // speed = clamp(speed, MIN_SPD, MAX_SPD);
+
+        // float zangle = 0;
+        // if (a) zangle = 1.3f * ftime;
+        // if (d) zangle = -1.3f * ftime;
+
+        mat4 rotate_x = rotate(mat4(1), xangle, right);
+        mat4 rotate_y = rotate(mat4(1), yangle, up);
+        mat4 rotate_z = rotate(mat4(1), zangle, forward);
+        mat4 R = rotate_z * rotate_y * rotate_x;
+
+        forward = normalize(vec3(R * vec4(forward.x, forward.y, forward.z, 1)));
+        up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
+        right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
 
         velocity_cached = forward * speed;
         pos += velocity_cached * ftime;
     }
-
-    // void init(const std::string& resourceDirectory)
-    // {
-
-    // }
-
-    // void initGeom()
-    // {
-
-    // }
 };
 
 class camera
@@ -180,6 +229,7 @@ class camera
 
 camera mycam;
 player theplayer;
+npc thebot;
 
 class Application : public EventCallbacks
 {
@@ -226,6 +276,7 @@ class Application : public EventCallbacks
 
         if (key == GLFW_KEY_D && action == GLFW_PRESS) theplayer.d = true;
         if (key == GLFW_KEY_D && action == GLFW_RELEASE) theplayer.d = false;
+        
         if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) shoot = true;
 
         if (key == GLFW_KEY_F && action == GLFW_RELEASE)
@@ -582,8 +633,9 @@ class Application : public EventCallbacks
         xpercent *= 0.025;
         ypercent *= 0.020;
 
-        // why are these flipped? Not sure
         theplayer.update(frametime, ypercent, xpercent);
+        // for now
+        thebot.update(frametime, theplayer.pos);
 
         // Get current frame buffer size.
         int width, height;
@@ -688,6 +740,24 @@ class Application : public EventCallbacks
             plane->draw(pplane);  // render!!!!!!
         }
 
+        // draw the bot
+
+        // scale_plane = scale(mat4(1), vec3(10));
+        rotate_plane = safe_lookat(thebot.pos, thebot.pos + thebot.forward, thebot.up);
+        translate_plane = translate(mat4(1), thebot.pos);
+        plane_overall_rot = rotate_plane * rotate_default_plane;
+        M = translate_plane * plane_overall_rot * scale_plane;
+
+        pplane->bind();
+        glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
+        glUniformMatrix4fv(pplane->getUniform("V"), 1, GL_FALSE, &V[0][0]);
+        glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        glUniform3fv(pplane->getUniform("campos"), 1, &mycam.pos[0]);
+        glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, Texture2);
+        plane->draw(pplane);  // render!!!!!!
+
         pplane->unbind();
 
         // Draw the terrain --------------------------------------------------------------
@@ -735,7 +805,7 @@ class Application : public EventCallbacks
         }
         // custom_text.renderLaser(P,V,campos, theplayer.pos + vec3(0,10,0), my_allocated_color_from_server,
         // glfwGetTime()/10);
-        custom_text.renderCustomText(P, V, campos, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() / 10);
+        // custom_text.renderCustomText(P, V, campos, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() / 10);
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
     }
 };
