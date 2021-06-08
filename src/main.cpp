@@ -635,17 +635,18 @@ class Application : public EventCallbacks
         heightshader->unbind();
 
         {
-            // const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
-            // for (const auto& estimate : estimates)
-            // {
-            //     translate_plane = translate(mat4(1), estimate.pos);
-            //     plane_overall_rot = mat4(quat(estimate.rot));
+            plane_renderer.bindPlaneProgram();
 
-            //     M = translate_plane * plane_overall_rot * scale_plane;
-            //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-            //     glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
-            //     plane->draw(pplane);  // render!!!!!!
-            // }
+            // Render your own plane
+            plane_renderer.renderAirplane(
+                P, V, theplayer.pos, plane_overall_rot, mycam.pos, my_allocated_color_from_server);
+
+            // Renders the other real human players
+            const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+            for (const auto& estimate : estimates)
+            {
+                plane_renderer.renderAirplane(P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color);
+            }
 
             // draw the bots
 
@@ -664,9 +665,6 @@ class Application : public EventCallbacks
             //     glBindTexture(GL_TEXTURE_2D, Texture2);
             //     plane->draw(pplane);  // render!!!!!!
             // }
-            plane_renderer.bindPlaneProgram();
-            plane_renderer.renderAirplane(
-                P, V, theplayer.pos, plane_overall_rot, mycam.pos, my_allocated_color_from_server);
             plane_renderer.unBindPlaneProgram();
         }
 
