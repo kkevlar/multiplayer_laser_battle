@@ -103,7 +103,6 @@ camera mycam;
 //TODO BRING THIS BACK
 // vector<npc> thebots;
 shared_ptr<Shape> shape;
-shared_ptr<Shape> plane;
 int renderstate = 1;
 
 class Application : public EventCallbacks
@@ -112,7 +111,7 @@ class Application : public EventCallbacks
     WindowManager* windowManager = nullptr;
 
     // Our shader program
-    std::shared_ptr<Program> prog, heightshader, skyprog, linesshader, pplane;
+    std::shared_ptr<Program> prog, heightshader, skyprog, linesshader ;
 
     // Contains vertex information for OpenGL
     GLuint VertexArrayID;
@@ -290,12 +289,7 @@ double get_last_elapsed_time()
         shape->resize();
         shape->init();
 
-        plane = make_shared<Shape>();
-        string mtldir = resourceDirectory + "/FA-18E_SuperHornet/";
-        plane->loadMesh(resourceDirectory + "/FA-18E_SuperHornet/FA-18E_SuperHornet.obj", &mtldir, stbi_load);
-
-        plane->resize();
-        plane->init();
+//TODO init plane shape
 
         int width, height, channels;
         char filepath[1000];
@@ -479,22 +473,7 @@ double get_last_elapsed_time()
         linesshader->addAttribute("vertTex");
         linesshader->addUniform("bgcolor");
 
-        pplane = std::make_shared<Program>();
-        pplane->setVerbose(true);
-        pplane->setShaderNames(resourceDirectory + "/plane_vertex.glsl", resourceDirectory + "/plane_frag.glsl");
-        if (!pplane->init())
-        {
-            std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
-            exit(1);
-        }
-        pplane->addUniform("P");
-        pplane->addUniform("V");
-        pplane->addUniform("M");
-        pplane->addUniform("campos");
-        pplane->addUniform("tint_color");
-        pplane->addAttribute("vertPos");
-        pplane->addAttribute("vertNor");
-        pplane->addAttribute("vertTex");
+//TODO init plane
 
         laser.initProgram(resourceDirectory, "laser_vertex.glsl", "laser_fragment.glsl");
         custom_text.initProgram(resourceDirectory);
@@ -630,27 +609,28 @@ double get_last_elapsed_time()
             }
         }
 
-        pplane->bind();
-        glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
-        glUniformMatrix4fv(pplane->getUniform("V"), 1, GL_FALSE, &V[0][0]);
-        glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-        glUniform3fv(pplane->getUniform("campos"), 1, &mycam.pos[0]);
-        glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, Texture2);
-        plane->draw(pplane);  // render!!!!!!
+//TODO TODO
+        // pplane->bind();
+        // glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
+        // glUniformMatrix4fv(pplane->getUniform("V"), 1, GL_FALSE, &V[0][0]);
+        // glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        // glUniform3fv(pplane->getUniform("campos"), 1, &mycam.pos[0]);
+        // glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, Texture2);
+        // plane->draw(pplane);  // render!!!!!!
 
-        const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
-        for (const auto& estimate : estimates)
-        {
-            translate_plane = translate(mat4(1), estimate.pos);
-            plane_overall_rot = mat4(quat(estimate.rot));
+        // const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+        // for (const auto& estimate : estimates)
+        // {
+        //     translate_plane = translate(mat4(1), estimate.pos);
+        //     plane_overall_rot = mat4(quat(estimate.rot));
 
-            M = translate_plane * plane_overall_rot * scale_plane;
-            glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-            glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
-            plane->draw(pplane);  // render!!!!!!
-        }
+        //     M = translate_plane * plane_overall_rot * scale_plane;
+        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        //     glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
+        //     plane->draw(pplane);  // render!!!!!!
+        // }
 
         // draw the bots
 
@@ -670,7 +650,8 @@ double get_last_elapsed_time()
         //     plane->draw(pplane);  // render!!!!!!
         // }
 
-        pplane->unbind();
+        // pplane->unbind();
+
 
         // Draw the terrain --------------------------------------------------------------
         heightshader->bind();
