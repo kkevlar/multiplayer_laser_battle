@@ -26,9 +26,21 @@ shared_ptr<Shape> plane;
 #define PI 3.1415926
 
 #define MAX_SPD 240.0f
-#define MIN_SPD 10.0f
+#define MIN_SPD 100.0f
+#define MED_SPD (MAX_SPD + MIN_SPD) / 2.0f
 
-#define CENTER vec2(1920 / 2, 1080 / 2)
+#define MAP_X_MAX_BOUND 1000.0f
+#define MAP_Y_MAX_BOUND 1000.0f
+#define MAP_Z_MAX_BOUND 1000.0f
+
+#define MAP_X_MIN_BOUND -1000.0f
+#define MAP_Y_MIN_BOUND 0.0f
+#define MAP_Z_MIN_BOUND -1000.0f
+
+#define NUM_BOTS 5
+
+// screen space center
+#define SS_CENTER vec2(1920 / 2, 1080 / 2)
 
 ofstream file;
 int renderstate = 1;
@@ -111,9 +123,9 @@ class player
     {
         if (w)
         {
-            speed += 200 * ftime;
+            speed += 100 * ftime;
         }
-        if (s) speed -= 200 * ftime;
+        if (s) speed -= 100 * ftime;
         speed = clamp(speed, MIN_SPD, MAX_SPD);
 
         float zangle = 0;
@@ -129,21 +141,113 @@ class player
         up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
         right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
 
-        if (dot(forward, up) > 0.0001 || dot(forward, up) < -0.0001) printf("%f\n", dot(forward, up));
+        velocity_cached = forward * speed;
+        pos += velocity_cached * ftime;
+
+        if (pos.x > MAP_X_MAX_BOUND)
+            pos.x = MAP_X_MAX_BOUND;
+        if (pos.y > MAP_Y_MAX_BOUND)
+            pos.y = MAP_Y_MAX_BOUND;
+        if (pos.z > MAP_Z_MAX_BOUND)
+            pos.z = MAP_Z_MAX_BOUND;
+
+        if (pos.x < MAP_X_MIN_BOUND)
+            pos.x = MAP_X_MIN_BOUND;
+        if (pos.y < MAP_Y_MIN_BOUND)
+            pos.y = MAP_Y_MIN_BOUND;
+        if (pos.z < MAP_Z_MIN_BOUND)
+            pos.z = MAP_Z_MIN_BOUND;
+    }
+};
+
+class npc
+{
+   public:
+    vec3 pos;
+    vec3 velocity_cached;
+    vec3 forward, up, right;
+    float speed;
+
+    npc()
+    {
+        pos = vec3(0, 180, 20);
+        speed = MIN_SPD;
+
+        forward = vec3(0, 0, 1);
+        up = vec3(0, 1, 0);
+        right = vec3(1, 0, 0);
+    }
+
+    void update(float ftime, vec3 target)
+    {
+        float xangle, yangle, zangle;
+        xangle = yangle = zangle = 0;
+
+        vec3 to_targ = target - pos;
+        float distance = length(to_targ);
+
+        if (distance > 400)
+            speed += 100 * ftime;
+        else if (distance > 200)
+        {
+            if (speed > MED_SPD)
+                speed -= 100 * ftime;
+            else
+                speed += 100 * ftime;
+        }
+        else
+        {
+            speed -= 100 * ftime;
+            to_targ = to_targ + 20.0f * up;
+        }
+
+        speed = clamp(speed, MIN_SPD, MAX_SPD);
+
+        float updown = dot(to_targ, up);
+        float leftright = dot(to_targ, right);
+
+        float right_w_trueup = dot(right, vec3(0,1,0));
+
+        if (updown > 0)
+            xangle = -1.0f * ftime;
+        else if (updown < 0)
+            xangle = 1.0f * ftime;
+        if (leftright > 0)
+            yangle = 1.0f * ftime;
+        else if (leftright < 0)
+            yangle = -1.0f * ftime;
+
+        if (right_w_trueup > 0)
+            zangle = -1.0f * ftime;
+        if (right_w_trueup < 0)
+            zangle = 1.0f * ftime;
+
+        mat4 rotate_x = rotate(mat4(1), xangle, right);
+        mat4 rotate_y = rotate(mat4(1), yangle, up);
+        mat4 rotate_z = rotate(mat4(1), zangle, forward);
+        mat4 R = rotate_z * rotate_y * rotate_x;
+
+        forward = normalize(vec3(R * vec4(forward.x, forward.y, forward.z, 1)));
+        up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
+        right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
 
         velocity_cached = forward * speed;
         pos += velocity_cached * ftime;
+
+        if (pos.x > MAP_X_MAX_BOUND)
+            pos.x = MAP_X_MAX_BOUND;
+        if (pos.y > MAP_Y_MAX_BOUND)
+            pos.y = MAP_Y_MAX_BOUND;
+        if (pos.z > MAP_Z_MAX_BOUND)
+            pos.z = MAP_Z_MAX_BOUND;
+
+        if (pos.x < MAP_X_MIN_BOUND)
+            pos.x = MAP_X_MIN_BOUND;
+        if (pos.y < MAP_Y_MIN_BOUND)
+            pos.y = MAP_Y_MIN_BOUND;
+        if (pos.z < MAP_Z_MIN_BOUND)
+            pos.z = MAP_Z_MIN_BOUND;
     }
-
-    // void init(const std::string& resourceDirectory)
-    // {
-
-    // }
-
-    // void initGeom()
-    // {
-
-    // }
 };
 
 class camera
@@ -180,6 +284,26 @@ class camera
 
 camera mycam;
 player theplayer;
+npc thebot;
+vector<npc> thebots;
+
+void setup_players()
+{
+    for (int i = 0; i < NUM_BOTS; i ++)
+    {
+        npc bot;
+
+        // bot.pos = vec3(bot.pos.x * i, 200, bot.pos.z);
+        bot.pos = theplayer.pos + vec3(10) * ((float) i);
+
+        // float rho, theta;
+        // rho = 5.0f;
+        // theta = (i * 2 * PI) / NUM_BOTS;
+        // // bot.pos = vec3(acos(theta) * rho, (i % 2) ? 150 : 250, asin(theta) * rho);
+        // bot.pos = vec3(acos(theta) * rho, 200, asin(theta) * rho);
+        thebots.push_back(bot);
+    }
+}
 
 class Application : public EventCallbacks
 {
@@ -226,6 +350,7 @@ class Application : public EventCallbacks
 
         if (key == GLFW_KEY_D && action == GLFW_PRESS) theplayer.d = true;
         if (key == GLFW_KEY_D && action == GLFW_RELEASE) theplayer.d = false;
+        
         if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) shoot = true;
 
         if (key == GLFW_KEY_F && action == GLFW_RELEASE)
@@ -456,6 +581,8 @@ class Application : public EventCallbacks
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        setup_players();
     }
 
     // General OGL initialization - set OGL state here
@@ -573,8 +700,8 @@ class Application : public EventCallbacks
 
         double posX, posY;
         glfwGetCursorPos(window, &posX, &posY);
-        double xdiff = posX - CENTER.x;
-        double ydiff = posY - CENTER.y;
+        double xdiff = posX - SS_CENTER.x;
+        double ydiff = posY - SS_CENTER.y;
 
         double xpercent = xdiff / (1920.0f / 2);
         double ypercent = ydiff / (1080.0f / 2);
@@ -582,8 +709,36 @@ class Application : public EventCallbacks
         xpercent *= 0.025;
         ypercent *= 0.020;
 
-        // why are these flipped? Not sure
         theplayer.update(frametime, ypercent, xpercent);
+        // for now
+
+        vector<vec3> positions;
+        for (int i = 0; i < thebots.size(); i ++)
+        {
+            positions.push_back(thebots[i].pos);
+        }
+        positions.push_back(theplayer.pos);
+
+        for (int i = 0; i < thebots.size(); i ++)
+        {
+            float min_distance = length(positions[i] - positions[i + 1]);
+            int min_index = i + 1;
+            for (int j = 0; j < positions.size(); j ++)
+            {
+                if (j != i)
+                {
+                    float distance = length(positions[i] - positions[j]);
+                    if (distance < min_distance)
+                    {
+                        min_index = j;
+                        min_distance = distance;
+                    }
+                }
+            }
+
+            thebots[i].update(frametime, positions[min_index]);
+            // thebots[i].update(frametime, theplayer.pos);
+        }
 
         // Get current frame buffer size.
         int width, height;
@@ -688,6 +843,23 @@ class Application : public EventCallbacks
             plane->draw(pplane);  // render!!!!!!
         }
 
+        // draw the bots
+
+        for (int i = 0; i < thebots.size(); i ++)
+        {
+            // scale_plane = scale(mat4(1), vec3(10));
+            rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
+            translate_plane = translate(mat4(1), thebots[i].pos);
+            plane_overall_rot = rotate_plane * rotate_default_plane;
+            M = translate_plane * plane_overall_rot * scale_plane;
+
+            glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+            glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, Texture2);
+            plane->draw(pplane);  // render!!!!!!
+        }
+
         pplane->unbind();
 
         // Draw the terrain --------------------------------------------------------------
@@ -735,7 +907,7 @@ class Application : public EventCallbacks
         }
         // custom_text.renderLaser(P,V,campos, theplayer.pos + vec3(0,10,0), my_allocated_color_from_server,
         // glfwGetTime()/10);
-        custom_text.renderCustomText(P, V, campos, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() / 10);
+        // custom_text.renderCustomText(P, V, campos, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() / 10);
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
     }
 };
