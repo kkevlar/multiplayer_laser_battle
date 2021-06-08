@@ -760,10 +760,8 @@ class Application : public EventCallbacks
     }
 };
 
-
 #include <Lmcons.h>
 #include <windows.h>
-
 
 //******************************************************************************************
 int main(int argc, char** argv)

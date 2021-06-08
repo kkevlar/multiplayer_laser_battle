@@ -15,7 +15,7 @@
 #define DEBUG_FLAG 0
 
 static CHECK_RETURN_VAL bool fromServerProcessBroadcastPacket(const LibPacketHeader* const header,
-                                                                                 NetworksHandle* context);
+                                                              NetworksHandle* context);
 
 bool fromServerProcessPacket(const LibPacketHeader* const header, NetworksHandle* context)
 {
