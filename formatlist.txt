@@ -43,6 +43,10 @@ src/packet.c
 src/packet.h
 src/PlanesNetworked.cpp
 src/PlanesNetworked.h
+src/Planes.cpp
+src/Planes.h
+src/PlaneRenderer.cpp
+src/PlaneRenderer.h
 src/Shape.cpp
 src/simple_ll_netlib_client.cpp
 src/simple_ll_netlib_client.h
