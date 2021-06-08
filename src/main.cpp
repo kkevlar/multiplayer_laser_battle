@@ -144,19 +144,13 @@ class player
         velocity_cached = forward * speed;
         pos += velocity_cached * ftime;
 
-        if (pos.x > MAP_X_MAX_BOUND)
-            pos.x = MAP_X_MAX_BOUND;
-        if (pos.y > MAP_Y_MAX_BOUND)
-            pos.y = MAP_Y_MAX_BOUND;
-        if (pos.z > MAP_Z_MAX_BOUND)
-            pos.z = MAP_Z_MAX_BOUND;
+        if (pos.x > MAP_X_MAX_BOUND) pos.x = MAP_X_MAX_BOUND;
+        if (pos.y > MAP_Y_MAX_BOUND) pos.y = MAP_Y_MAX_BOUND;
+        if (pos.z > MAP_Z_MAX_BOUND) pos.z = MAP_Z_MAX_BOUND;
 
-        if (pos.x < MAP_X_MIN_BOUND)
-            pos.x = MAP_X_MIN_BOUND;
-        if (pos.y < MAP_Y_MIN_BOUND)
-            pos.y = MAP_Y_MIN_BOUND;
-        if (pos.z < MAP_Z_MIN_BOUND)
-            pos.z = MAP_Z_MIN_BOUND;
+        if (pos.x < MAP_X_MIN_BOUND) pos.x = MAP_X_MIN_BOUND;
+        if (pos.y < MAP_Y_MIN_BOUND) pos.y = MAP_Y_MIN_BOUND;
+        if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
     }
 };
 
@@ -206,7 +200,7 @@ class npc
         float updown = dot(to_targ, up);
         float leftright = dot(to_targ, right);
 
-        float right_w_trueup = dot(right, vec3(0,1,0));
+        float right_w_trueup = dot(right, vec3(0, 1, 0));
 
         if (updown > 0)
             xangle = -1.0f * ftime;
@@ -217,10 +211,8 @@ class npc
         else if (leftright < 0)
             yangle = -1.0f * ftime;
 
-        if (right_w_trueup > 0)
-            zangle = -1.0f * ftime;
-        if (right_w_trueup < 0)
-            zangle = 1.0f * ftime;
+        if (right_w_trueup > 0) zangle = -1.0f * ftime;
+        if (right_w_trueup < 0) zangle = 1.0f * ftime;
 
         mat4 rotate_x = rotate(mat4(1), xangle, right);
         mat4 rotate_y = rotate(mat4(1), yangle, up);
@@ -234,19 +226,13 @@ class npc
         velocity_cached = forward * speed;
         pos += velocity_cached * ftime;
 
-        if (pos.x > MAP_X_MAX_BOUND)
-            pos.x = MAP_X_MAX_BOUND;
-        if (pos.y > MAP_Y_MAX_BOUND)
-            pos.y = MAP_Y_MAX_BOUND;
-        if (pos.z > MAP_Z_MAX_BOUND)
-            pos.z = MAP_Z_MAX_BOUND;
+        if (pos.x > MAP_X_MAX_BOUND) pos.x = MAP_X_MAX_BOUND;
+        if (pos.y > MAP_Y_MAX_BOUND) pos.y = MAP_Y_MAX_BOUND;
+        if (pos.z > MAP_Z_MAX_BOUND) pos.z = MAP_Z_MAX_BOUND;
 
-        if (pos.x < MAP_X_MIN_BOUND)
-            pos.x = MAP_X_MIN_BOUND;
-        if (pos.y < MAP_Y_MIN_BOUND)
-            pos.y = MAP_Y_MIN_BOUND;
-        if (pos.z < MAP_Z_MIN_BOUND)
-            pos.z = MAP_Z_MIN_BOUND;
+        if (pos.x < MAP_X_MIN_BOUND) pos.x = MAP_X_MIN_BOUND;
+        if (pos.y < MAP_Y_MIN_BOUND) pos.y = MAP_Y_MIN_BOUND;
+        if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
     }
 };
 
@@ -289,12 +275,12 @@ vector<npc> thebots;
 
 void setup_players()
 {
-    for (int i = 0; i < NUM_BOTS; i ++)
+    for (int i = 0; i < NUM_BOTS; i++)
     {
         npc bot;
 
         // bot.pos = vec3(bot.pos.x * i, 200, bot.pos.z);
-        bot.pos = theplayer.pos + vec3(10) * ((float) i);
+        bot.pos = theplayer.pos + vec3(10) * ((float)i);
 
         // float rho, theta;
         // rho = 5.0f;
@@ -350,7 +336,7 @@ class Application : public EventCallbacks
 
         if (key == GLFW_KEY_D && action == GLFW_PRESS) theplayer.d = true;
         if (key == GLFW_KEY_D && action == GLFW_RELEASE) theplayer.d = false;
-        
+
         if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) shoot = true;
 
         if (key == GLFW_KEY_F && action == GLFW_RELEASE)
@@ -713,17 +699,17 @@ class Application : public EventCallbacks
         // for now
 
         vector<vec3> positions;
-        for (int i = 0; i < thebots.size(); i ++)
+        for (int i = 0; i < thebots.size(); i++)
         {
             positions.push_back(thebots[i].pos);
         }
         positions.push_back(theplayer.pos);
 
-        for (int i = 0; i < thebots.size(); i ++)
+        for (int i = 0; i < thebots.size(); i++)
         {
             float min_distance = length(positions[i] - positions[i + 1]);
             int min_index = i + 1;
-            for (int j = 0; j < positions.size(); j ++)
+            for (int j = 0; j < positions.size(); j++)
             {
                 if (j != i)
                 {
@@ -757,12 +743,7 @@ class Application : public EventCallbacks
         glm::mat4 V, Vi, M, P;  // View, Model and Perspective matrix
         vec3 campos = theplayer.pos + -60.0f * theplayer.forward + 5.0f * theplayer.up;
 
-        V = mycam.process(
-            frametime, 
-            -1.0f * campos, 
-            theplayer.forward, 
-            theplayer.up, 
-            theplayer.right);
+        V = mycam.process(frametime, -1.0f * campos, theplayer.forward, theplayer.up, theplayer.right);
 
         Vi = glm::inverse(V);
         M = glm::mat4(1);
@@ -845,7 +826,7 @@ class Application : public EventCallbacks
 
         // draw the bots
 
-        for (int i = 0; i < thebots.size(); i ++)
+        for (int i = 0; i < thebots.size(); i++)
         {
             // scale_plane = scale(mat4(1), vec3(10));
             rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
@@ -907,7 +888,8 @@ class Application : public EventCallbacks
         }
         // custom_text.renderLaser(P,V,campos, theplayer.pos + vec3(0,10,0), my_allocated_color_from_server,
         // glfwGetTime()/10);
-        // custom_text.renderCustomText(P, V, campos, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() / 10);
+        // custom_text.renderCustomText(P, V, campos, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() /
+        // 10);
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
     }
 };
