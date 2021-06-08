@@ -740,11 +740,24 @@ class Application : public EventCallbacks
     }
 };
 
+#ifdef _MSC_VER
+#include <Lmcons.h>
+#include <windows.h>
+#endif
+
 //******************************************************************************************
 int main(int argc, char** argv)
 {
     std::string resourceDir = "../resources";  // Where the resources are loaded from
     const char* my_username = (const char*)"INVALID";
+
+#ifdef _MSC_VER
+    char windowsusername[UNLEN + 1];
+    DWORD username_len = UNLEN + 1;
+    GetUserName(windowsusername, &username_len);
+    my_username = windowsusername;
+#endif
+
     const char* hostname = (const char*)"localhost";
     if (argc >= 2)
     {

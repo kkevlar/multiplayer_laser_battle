@@ -21,7 +21,8 @@ void fd_selector_addFd(FDSelectorContext* context, CompatSocket fd)
     NULLCHECK(context);
 
 #ifdef _MSC_VER
-    FD_SET(fd, &context->set);
+    FD_SET(fd.ms_socket, &context->set);
+    context->max_fd = 15;
 #else
     FD_SET(fd.unix_socket, &context->set);
     if (fd.unix_socket > context->max_fd)
@@ -59,7 +60,7 @@ bool fd_selector_testPostSelectMembership(FDSelectorContext* context, CompatSock
 {
     NULLCHECK(context);
 #ifdef _MSC_VER
-    return (FD_ISSET(fd.unix_socket, &context->set));
+    return (FD_ISSET(fd.ms_socket, &context->set));
 #else
     return (FD_ISSET(fd.unix_socket, &context->set));
 #endif
