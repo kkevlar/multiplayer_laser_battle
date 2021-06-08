@@ -760,11 +760,21 @@ class Application : public EventCallbacks
     }
 };
 
+
+#include <Lmcons.h>
+#include <windows.h>
+
+
 //******************************************************************************************
 int main(int argc, char** argv)
 {
     std::string resourceDir = "../resources";  // Where the resources are loaded from
-    const char* my_username = (const char*)"BRUH";
+    const char* my_username = (const char*)"INVALID";
+    char windowsusername[UNLEN + 1];
+    DWORD username_len = UNLEN + 1;
+    GetUserName(windowsusername, &username_len);
+    my_username = windowsusername;
+
     const char* hostname = (const char*)"localhost";
     if (argc >= 2)
     {
@@ -786,7 +796,7 @@ int main(int argc, char** argv)
 
     Application* application = new Application();
 
-    if (strcmp(my_username, "BUSTERBUSTER") == 0)
+    if (strcmp(my_username, "INVALID") == 0)
     {
         log_fatal("Please choose a real username, not %s", my_username);
         return 96;

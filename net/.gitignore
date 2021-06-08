@@ -7,4 +7,5 @@ server
 /copy/
 *.h
 *.c
-!/serversrc/*server.exe
+!/serversrc/*
+server.exe
