@@ -146,22 +146,20 @@ class player
     // }
 };
 
-class free_camera
+class camera
 {
    public:
     glm::vec3 pos, rot;
     int w, a, s, d, q, e, z, c, sp, shft, ctrl;
-    free_camera()
+    camera()
     {
         w = a = s = d = q = e = z = c = 0;
         pos = rot = glm::vec3(0, 0, 0);
     }
-    glm::mat4 process(double ftime, vec3 campos, vec3 playerpos, vec3 forward, vec3 up, vec3 right)
+    glm::mat4 process(double ftime, vec3 campos, vec3 forward, vec3 up, vec3 right)
     {
         float default_rotation_angle = -1.0 * PI / 2.0;
-        mat4 rotate_default_plane = rotate(
-            mat4(1), default_rotation_angle, vec3(0, 1, 0));  // *
-                                                              // rotate(mat4(1), default_rotation_angle, vec3(0,0,1));
+        mat4 rotate_default_plane = rotate(mat4(1), default_rotation_angle, vec3(0, 1, 0));
 
         mat4 R = mat4(1);
         R[0][0] = forward.x;
@@ -174,29 +172,13 @@ class free_camera
         R[2][1] = right.y;
         R[2][2] = right.z;
 
-        pos = campos;
-        // pos += glm::vec3(dir.x, dir.y, dir.z);
+        pos = pos + (campos - pos) * 0.06f;
         glm::mat4 T = glm::translate(glm::mat4(1), pos);
         return inverse(rotate_default_plane) * inverse(R) * T;
     }
-    void get_dirpos(vec3& up, vec3& dir, vec3& position)
-    {
-        position = pos;
-        glm::mat4 R = glm::rotate(glm::mat4(1), rot.y, glm::vec3(0, 1, 0));
-        glm::mat4 Rz = glm::rotate(glm::mat4(1), rot.z, glm::vec3(0, 0, 1));
-        glm::mat4 Rx = glm::rotate(glm::mat4(1), rot.x, glm::vec3(1, 0, 0));
-        glm::vec4 dir4 = glm::vec4(0, 0, 1, 0);
-        R = Rz * Rx * R;
-        dir4 = dir4 * R;
-        dir = vec3(dir4);
-        glm::vec4 up4 = glm::vec4(0, 1, 0, 0);
-        up4 = R * vec4(0, 1, 0, 0);
-        up4 = vec4(0, 1, 0, 0) * R;
-        up = vec3(up4);
-    }
 };
 
-free_camera mycam;
+camera mycam;
 player theplayer;
 
 class Application : public EventCallbacks
@@ -616,16 +598,16 @@ class Application : public EventCallbacks
         float default_rotation_angle = -1.0 * PI / 2.0;
         mat4 rotate_default_plane =  // rotate(mat4(1), default_rotation_angle, vec3(0,1,0)) *
             rotate(mat4(1), default_rotation_angle, vec3(1, 0, 0));
-        // vec3 forward, up, right;
-        // theplayer.get_dirpos(forward, up, right);
 
         glm::mat4 V, Vi, M, P;  // View, Model and Perspective matrix
-        vec4 campos = vec4(theplayer.pos.x, theplayer.pos.y, theplayer.pos.z, 1) +
-                      -60.0f * vec4(theplayer.forward.x, theplayer.forward.y, theplayer.forward.z, 1.0f) +
-                      10.0f * vec4(theplayer.up.x, theplayer.up.y, theplayer.up.z, 1.0f);
+        vec3 campos = theplayer.pos + -60.0f * theplayer.forward + 5.0f * theplayer.up;
 
         V = mycam.process(
-            frametime, -1.0f * vec3(campos), theplayer.pos, theplayer.forward, theplayer.up, theplayer.right);
+            frametime, 
+            -1.0f * campos, 
+            theplayer.forward, 
+            theplayer.up, 
+            theplayer.right);
 
         Vi = glm::inverse(V);
         M = glm::mat4(1);
@@ -733,8 +715,6 @@ class Application : public EventCallbacks
         glDrawArrays(GL_TRIANGLES, 0, MESHSIZE * MESHSIZE * 6);
         heightshader->unbind();
 
-        vec3 campos3 = vec3(campos.x, campos.y, campos.z);
-
         if (shoot)
         {
             NewShotLaserInfo newlaser;
@@ -753,10 +733,10 @@ class Application : public EventCallbacks
             network.BroadcastNewLaser(&newlaser);
             shoot = false;
         }
-        // custom_text.renderLaser(P,V,campos3, theplayer.pos + vec3(0,10,0), my_allocated_color_from_server,
+        // custom_text.renderLaser(P,V,campos, theplayer.pos + vec3(0,10,0), my_allocated_color_from_server,
         // glfwGetTime()/10);
-        custom_text.renderCustomText(P, V, campos3, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() / 10);
-        laser_manager.renderLasers(P, V, campos3, glfwGetTime(), &laser);
+        custom_text.renderCustomText(P, V, campos, theplayer.pos + vec3(0, 10, 0), vec3(0, 0, 1), glfwGetTime() / 10);
+        laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
     }
 };
 
