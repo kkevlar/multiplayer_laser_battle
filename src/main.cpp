@@ -3,22 +3,24 @@
 #include <fstream>
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
+#include <math.h>
+
+#include <algorithm>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <thread>
+
 #include "AnimTextureBillboard.h"
 #include "CustomTextBillboard.h"
 #include "GLSL.h"
 #include "LaserManager.h"
+#include "Planes.h"
 #include "PlanesNetworked.h"
 #include "Program.h"
 #include "Shape.h"
 #include "WindowManager.h"
-#include "Planes.h"
 #include "log.h"
 #include "stb_image.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <thread>
-#include <math.h>
-#include <algorithm>
 
 using namespace std;
 using namespace glm;
@@ -100,7 +102,7 @@ class camera
 
 // TODO these should be fields of the Application class
 camera mycam;
-//TODO BRING THIS BACK
+// TODO BRING THIS BACK
 // vector<npc> thebots;
 shared_ptr<Shape> shape;
 int renderstate = 1;
@@ -111,7 +113,7 @@ class Application : public EventCallbacks
     WindowManager* windowManager = nullptr;
 
     // Our shader program
-    std::shared_ptr<Program> prog, heightshader, skyprog, linesshader ;
+    std::shared_ptr<Program> prog, heightshader, skyprog, linesshader;
 
     // Contains vertex information for OpenGL
     GLuint VertexArrayID;
@@ -123,7 +125,7 @@ class Application : public EventCallbacks
     GLuint Texture, AudioTex, AudioTexBuf;
     GLuint Texture2, HeightTex;
 
-player theplayer;
+    player theplayer;
     AnimTextureBillboard laser;
     CustomTextBillboard custom_text;
     LaserManager laser_manager;
@@ -133,14 +135,14 @@ player theplayer;
 
     bool shoot;
 
-double get_last_elapsed_time()
-{
-    static double lasttime = glfwGetTime();
-    double actualtime = glfwGetTime();
-    double difference = actualtime - lasttime;
-    lasttime = actualtime;
-    return difference;
-}
+    double get_last_elapsed_time()
+    {
+        static double lasttime = glfwGetTime();
+        double actualtime = glfwGetTime();
+        double difference = actualtime - lasttime;
+        lasttime = actualtime;
+        return difference;
+    }
 
     void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
@@ -289,7 +291,7 @@ double get_last_elapsed_time()
         shape->resize();
         shape->init();
 
-//TODO init plane shape
+        // TODO init plane shape
 
         int width, height, channels;
         char filepath[1000];
@@ -387,7 +389,7 @@ double get_last_elapsed_time()
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-//TODO TODO
+        // TODO TODO
         // setup_players();
     }
 
@@ -473,7 +475,7 @@ double get_last_elapsed_time()
         linesshader->addAttribute("vertTex");
         linesshader->addUniform("bgcolor");
 
-//TODO init plane
+        // TODO init plane
 
         laser.initProgram(resourceDirectory, "laser_vertex.glsl", "laser_fragment.glsl");
         custom_text.initProgram(resourceDirectory);
@@ -505,7 +507,7 @@ double get_last_elapsed_time()
 
         vector<vec3> positions;
 
-        //TODO TODO
+        // TODO TODO
         // for (int i = 0; i < thebots.size(); i++)
         // {
         //     positions.push_back(thebots[i].pos);
@@ -608,8 +610,6 @@ double get_last_elapsed_time()
                 laser_manager.admitLaser(&netlaser);
             }
         }
-
-
 
         // Draw the terrain --------------------------------------------------------------
         heightshader->bind();

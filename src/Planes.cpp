@@ -1,6 +1,7 @@
+#include "Planes.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "Planes.h"
 
 #define MAX_SPD 240.0f
 #define MIN_SPD 100.0f
@@ -17,50 +18,50 @@
 using namespace std;
 using namespace glm;
 
-    player::player()
+player::player()
+{
+    w = a = s = d = false;
+    pos = vec3(0, 180, 20);
+    speed = MIN_SPD;
+
+    forward = vec3(0, 0, 1);
+    up = vec3(0, 1, 0);
+    right = vec3(1, 0, 0);
+}
+
+void player::update(float ftime, float xangle, float yangle)
+{
+    if (w)
     {
-        w = a = s = d = false;
-        pos = vec3(0, 180, 20);
-        speed = MIN_SPD;
-
-        forward = vec3(0, 0, 1);
-        up = vec3(0, 1, 0);
-        right = vec3(1, 0, 0);
+        speed += 100 * ftime;
     }
+    if (s) speed -= 100 * ftime;
+    speed = clamp(speed, MIN_SPD, MAX_SPD);
 
-    void player::update(float ftime, float xangle, float yangle)
-    {
-        if (w)
-        {
-            speed += 100 * ftime;
-        }
-        if (s) speed -= 100 * ftime;
-        speed = clamp(speed, MIN_SPD, MAX_SPD);
+    float zangle = 0;
+    if (a) zangle = 1.3f * ftime;
+    if (d) zangle = -1.3f * ftime;
 
-        float zangle = 0;
-        if (a) zangle = 1.3f * ftime;
-        if (d) zangle = -1.3f * ftime;
+    mat4 rotate_x = rotate(mat4(1), xangle, right);
+    mat4 rotate_y = rotate(mat4(1), yangle, up);
+    mat4 rotate_z = rotate(mat4(1), zangle, forward);
+    mat4 R = rotate_z * rotate_y * rotate_x;
 
-        mat4 rotate_x = rotate(mat4(1), xangle, right);
-        mat4 rotate_y = rotate(mat4(1), yangle, up);
-        mat4 rotate_z = rotate(mat4(1), zangle, forward);
-        mat4 R = rotate_z * rotate_y * rotate_x;
+    forward = normalize(vec3(R * vec4(forward.x, forward.y, forward.z, 1)));
+    up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
+    right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
 
-        forward = normalize(vec3(R * vec4(forward.x, forward.y, forward.z, 1)));
-        up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
-        right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
+    velocity_cached = forward * speed;
+    pos += velocity_cached * ftime;
 
-        velocity_cached = forward * speed;
-        pos += velocity_cached * ftime;
+    if (pos.x > MAP_X_MAX_BOUND) pos.x = MAP_X_MAX_BOUND;
+    if (pos.y > MAP_Y_MAX_BOUND) pos.y = MAP_Y_MAX_BOUND;
+    if (pos.z > MAP_Z_MAX_BOUND) pos.z = MAP_Z_MAX_BOUND;
 
-        if (pos.x > MAP_X_MAX_BOUND) pos.x = MAP_X_MAX_BOUND;
-        if (pos.y > MAP_Y_MAX_BOUND) pos.y = MAP_Y_MAX_BOUND;
-        if (pos.z > MAP_Z_MAX_BOUND) pos.z = MAP_Z_MAX_BOUND;
-
-        if (pos.x < MAP_X_MIN_BOUND) pos.x = MAP_X_MIN_BOUND;
-        if (pos.y < MAP_Y_MIN_BOUND) pos.y = MAP_Y_MIN_BOUND;
-        if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
-    }
+    if (pos.x < MAP_X_MIN_BOUND) pos.x = MAP_X_MIN_BOUND;
+    if (pos.y < MAP_Y_MIN_BOUND) pos.y = MAP_Y_MIN_BOUND;
+    if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
+}
 
 class npc
 {
@@ -144,7 +145,7 @@ class npc
     }
 };
 
-//TODO rename setup bots
+// TODO rename setup bots
 // void setup_players()
 // {
 //     for (int i = 0; i < NUM_BOTS; i++)
