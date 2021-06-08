@@ -8,3 +8,4 @@ server
 *.h
 *.c
 !/serversrc/*
+server.exe

@@ -18,8 +18,8 @@ void main()
     float diffuse_fact = clamp(dot(lightdir, frag_norm), 0, 1);
     diffuse_fact = 0.3 + diffuse_fact * 0.7;
 
-    vec3 half = normalize(camdir + lightdir);
-    float spec_fact = clamp(dot(half, frag_norm), 0, 1);
+    vec3 halfangle = normalize(camdir + lightdir);
+    float spec_fact = clamp(dot(halfangle, frag_norm), 0, 1);
 
     vec4 tcol = texture(
         tex,
