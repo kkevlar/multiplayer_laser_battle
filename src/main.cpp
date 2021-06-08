@@ -609,48 +609,6 @@ double get_last_elapsed_time()
             }
         }
 
-//TODO TODO
-        // pplane->bind();
-        // glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
-        // glUniformMatrix4fv(pplane->getUniform("V"), 1, GL_FALSE, &V[0][0]);
-        // glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-        // glUniform3fv(pplane->getUniform("campos"), 1, &mycam.pos[0]);
-        // glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, Texture2);
-        // plane->draw(pplane);  // render!!!!!!
-
-        // const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
-        // for (const auto& estimate : estimates)
-        // {
-        //     translate_plane = translate(mat4(1), estimate.pos);
-        //     plane_overall_rot = mat4(quat(estimate.rot));
-
-        //     M = translate_plane * plane_overall_rot * scale_plane;
-        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-        //     glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
-        //     plane->draw(pplane);  // render!!!!!!
-        // }
-
-        // draw the bots
-
-//TODO TODO
-        // for (int i = 0; i < thebots.size(); i++)
-        // {
-        //     // scale_plane = scale(mat4(1), vec3(10));
-        //     rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
-        //     translate_plane = translate(mat4(1), thebots[i].pos);
-        //     plane_overall_rot = rotate_plane * rotate_default_plane;
-        //     M = translate_plane * plane_overall_rot * scale_plane;
-
-        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-        //     glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
-        //     glActiveTexture(GL_TEXTURE0);
-        //     glBindTexture(GL_TEXTURE_2D, Texture2);
-        //     plane->draw(pplane);  // render!!!!!!
-        // }
-
-        // pplane->unbind();
 
 
         // Draw the terrain --------------------------------------------------------------

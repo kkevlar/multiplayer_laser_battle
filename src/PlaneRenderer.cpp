@@ -8,6 +8,7 @@ using namespace std;
 using namespace glm;
 #include "PlaneRenderer.h"
 #include "Program.h"
+#include "Shape.h"
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
@@ -36,18 +37,18 @@ static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
     return m1;
 }
 
-void PlaneRenderer::initGeom(const std::string& resourceDirectory)
+    void PlaneRenderer::initGeom(const std::string& resDir, PlaneImageLoader loader)
 {
 
         plane = make_shared<Shape>();
-        string mtldir = resourceDirectory + "/FA-18E_SuperHornet/";
-        plane->loadMesh(resourceDirectory + "/FA-18E_SuperHornet/FA-18E_SuperHornet.obj", &mtldir, stbi_load);
+        string mtldir = resDir + "/FA-18E_SuperHornet/";
+        plane->loadMesh(resDir + "/FA-18E_SuperHornet/FA-18E_SuperHornet.obj", &mtldir, loader);
 
         plane->resize();
         plane->init();
 }
 
-void PlaneRenderer::initProgram(const std::string& resourceDirectory,)
+void PlaneRenderer::initProgram(const std::string& resourceDirectory)
 {
         internal_plane_prog = std::make_shared<Program>();
         internal_plane_prog->setVerbose(true);
@@ -75,52 +76,46 @@ void PlaneRenderer::renderLaser(glm::mat4& P,
                                        glm::vec3 modify_color,
                                        float time)
 {
-    // Draw the box using GLSL.
-    prog->bind();
+//TODO TODO
+        // pplane->bind();
+        // glUniformMatrix4fv(pplane->getUniform("P"), 1, GL_FALSE, &P[0][0]);
+        // glUniformMatrix4fv(pplane->getUniform("V"), 1, GL_FALSE, &V[0][0]);
+        // glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        // glUniform3fv(pplane->getUniform("campos"), 1, &mycam.pos[0]);
+        // glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, Texture2);
+        // plane->draw(pplane);  // render!!!!!!
 
-    // send the matrices to the shaders
-    glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
-    glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
-    glUniform3fv(prog->getUniform("campos"), 1, &campos[0]);
-    glUniform3fv(prog->getUniform("modify_color"), 1, &modify_color[0]);
-    glUniform2f(prog->getUniform("topleft_start_coords"), 0, 0);
-    glUniform2f(prog->getUniform("botright_end_coords"), 1.0f, 1.0f);
-    glUniform2f(prog->getUniform("ratio_texslice_show"), time * 14, 1.0f);
-    glUniform1f(prog->getUniform("frames_width"), 1);
-    glUniform1f(prog->getUniform("frames_height"), 11);
-    glUniform1f(prog->getUniform("frame_select"), time * 10);
+        // const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+        // for (const auto& estimate : estimates)
+        // {
+        //     translate_plane = translate(mat4(1), estimate.pos);
+        //     plane_overall_rot = mat4(quat(estimate.rot));
 
-    glBindVertexArray(VertexArrayID);
-    // actually draw from vertex 0, 3 vertices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferIDBox);
-    // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, (void*)0);
-    mat4 Vi = glm::transpose(V);
-    Vi[0][3] = 0;
-    Vi[1][3] = 0;
-    Vi[2][3] = 0;
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, Texture);
+        //     M = translate_plane * plane_overall_rot * scale_plane;
+        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        //     glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
+        //     plane->draw(pplane);  // render!!!!!!
+        // }
 
-    float scaleydiff = sin(time * 50);
-    vec2 scalexy = vec2(40, 2.5 + 1 * scaleydiff);
-    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(scalexy.x, scalexy.y, 1));
-    glm::mat4 TransCaller = glm::translate(glm::mat4(1.0f), position_xyz);
+        // draw the bots
 
-    glm::mat4 rr = safe_lookat(position_xyz, where_to_look, vec3(0, 1, 0));
+//TODO TODO
+        // for (int i = 0; i < thebots.size(); i++)
+        // {
+        //     // scale_plane = scale(mat4(1), vec3(10));
+        //     rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
+        //     translate_plane = translate(mat4(1), thebots[i].pos);
+        //     plane_overall_rot = rotate_plane * rotate_default_plane;
+        //     M = translate_plane * plane_overall_rot * scale_plane;
 
-    glm::mat4 yyy = rotate(mat4(1), 3.14159265f / 2, vec3(0, -1, 0));
-    float xrot = 3.14159265 / 2.0f;
-    glm::mat4 xxx = rotate(mat4(1), xrot, vec3(1, 0, 0));
+        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        //     glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+        //     glActiveTexture(GL_TEXTURE0);
+        //     glBindTexture(GL_TEXTURE_2D, Texture2);
+        //     plane->draw(pplane);  // render!!!!!!
+        // }
 
-    glm::mat4 M;
-    M = TransCaller * rr * yyy * xxx * S;
-    glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)0);
-    // M =  TransZ *  rr * zzz *yyy *    S;
-    // glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)0);
-
-    glBindVertexArray(0);
-
-    prog->unbind();
+        // pplane->unbind();
 }

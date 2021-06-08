@@ -8,17 +8,20 @@
 #include <string>
 
 #include "Program.h"
+#include "Shape.h"
+
+typedef unsigned char*(PlaneImageLoader)(char const*, int*, int*, int*, int);
 
 class PlaneRenderer
 {
    private:
-    std::shared_ptr<Program> prog;
+    std::shared_ptr<Program> internal_plane_prog;
+    std::shared_ptr<Shape> plane;
 
    public:
-    void initGeom(const std::string& resDir);
-    void initProgram(const std::string& resourceDirectory,
-                     const std::string& vert_shader_name,
-                     const std::string& frag_shader_name);
+    void initGeom(const std::string& resDir, PlaneImageLoader loader);
+    void initProgram(const std::string& resourceDirectory);
+
     void renderLaser(glm::mat4& P,
                      glm::mat4& V,
                      glm::vec3 campos,
