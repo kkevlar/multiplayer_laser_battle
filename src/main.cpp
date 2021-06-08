@@ -764,7 +764,7 @@ class Application : public EventCallbacks
 int main(int argc, char** argv)
 {
     std::string resourceDir = "../resources";  // Where the resources are loaded from
-    const char* my_username = (const char*)"INVALID";
+    const char* my_username = (const char*)"BRUH";
     const char* hostname = (const char*)"localhost";
     if (argc >= 2)
     {
@@ -786,7 +786,7 @@ int main(int argc, char** argv)
 
     Application* application = new Application();
 
-    if (strcmp(my_username, "INVALID") == 0)
+    if (strcmp(my_username, "BUSTERBUSTER") == 0)
     {
         log_fatal("Please choose a real username, not %s", my_username);
         return 96;

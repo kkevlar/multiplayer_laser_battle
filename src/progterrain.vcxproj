@@ -22,6 +22,7 @@
     <ClCompile Include="..\ext\glad\src\glad.c" />
     <ClCompile Include="AnimTextureBillboard.cpp" />
     <ClCompile Include="compat.cpp" />
+    <ClCompile Include="CustomTextBillboard.cpp" />
     <ClCompile Include="fdselect.cpp" />
     <ClCompile Include="fromserver_client.cpp" />
     <ClCompile Include="GLSL.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="AnimTextureBillboard.h" />
     <ClInclude Include="byte_order.h" />
     <ClInclude Include="compat.h" />
+    <ClInclude Include="CustomTextBillboard.h" />
     <ClInclude Include="fdselect.h" />
     <ClInclude Include="fromserver_client.h" />
     <ClInclude Include="GLSL.h" />
