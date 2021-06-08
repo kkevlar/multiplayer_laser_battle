@@ -11,46 +11,22 @@
 #include "Program.h"
 #include "Shape.h"
 #include "WindowManager.h"
+#include "Planes.h"
 #include "log.h"
 #include "stb_image.h"
-// value_ptr for glm
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <thread>
+#include <math.h>
+#include <algorithm>
 
 using namespace std;
 using namespace glm;
-shared_ptr<Shape> shape;
-shared_ptr<Shape> plane;
 #define MESHSIZE 1000
 #define PI 3.1415926
+#define SS_CENTER_USED_FOR_MOUSE_CONTROLS vec2(1920 / 2, 1080 / 2)
 
-#define MAX_SPD 240.0f
-#define MIN_SPD 100.0f
-#define MED_SPD (MAX_SPD + MIN_SPD) / 2.0f
-
-#define MAP_X_MAX_BOUND 1000.0f
-#define MAP_Y_MAX_BOUND 1000.0f
-#define MAP_Z_MAX_BOUND 1000.0f
-
-#define MAP_X_MIN_BOUND -1000.0f
-#define MAP_Y_MIN_BOUND 0.0f
-#define MAP_Z_MIN_BOUND -1000.0f
-
-#define NUM_BOTS 5
-
-// screen space center
-#define SS_CENTER vec2(1920 / 2, 1080 / 2)
-
-ofstream file;
-int renderstate = 1;
-int realspeed = 0;
-//********************
-#include <math.h>
-
-#include <algorithm>
-
-mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
+static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
     mat4 m1;
     vec3 ex, ey, ez;
@@ -90,152 +66,6 @@ static glm::vec3 global_plane_color_allocation[] = {
     vec3(0.4, 0, 1),  // purple
 };
 
-double get_last_elapsed_time()
-{
-    static double lasttime = glfwGetTime();
-    double actualtime = glfwGetTime();
-    double difference = actualtime - lasttime;
-    lasttime = actualtime;
-    return difference;
-}
-
-class player
-{
-   public:
-    vec3 pos;
-    vec3 velocity_cached;
-    vec3 forward, up, right;
-    float speed;
-    bool w, a, s, d;
-
-    player()
-    {
-        w = a = s = d = false;
-        pos = vec3(0, 180, 20);
-        speed = MIN_SPD;
-
-        forward = vec3(0, 0, 1);
-        up = vec3(0, 1, 0);
-        right = vec3(1, 0, 0);
-    }
-
-    void update(float ftime, float xangle, float yangle)
-    {
-        if (w)
-        {
-            speed += 100 * ftime;
-        }
-        if (s) speed -= 100 * ftime;
-        speed = clamp(speed, MIN_SPD, MAX_SPD);
-
-        float zangle = 0;
-        if (a) zangle = 1.3f * ftime;
-        if (d) zangle = -1.3f * ftime;
-
-        mat4 rotate_x = rotate(mat4(1), xangle, right);
-        mat4 rotate_y = rotate(mat4(1), yangle, up);
-        mat4 rotate_z = rotate(mat4(1), zangle, forward);
-        mat4 R = rotate_z * rotate_y * rotate_x;
-
-        forward = normalize(vec3(R * vec4(forward.x, forward.y, forward.z, 1)));
-        up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
-        right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
-
-        velocity_cached = forward * speed;
-        pos += velocity_cached * ftime;
-
-        if (pos.x > MAP_X_MAX_BOUND) pos.x = MAP_X_MAX_BOUND;
-        if (pos.y > MAP_Y_MAX_BOUND) pos.y = MAP_Y_MAX_BOUND;
-        if (pos.z > MAP_Z_MAX_BOUND) pos.z = MAP_Z_MAX_BOUND;
-
-        if (pos.x < MAP_X_MIN_BOUND) pos.x = MAP_X_MIN_BOUND;
-        if (pos.y < MAP_Y_MIN_BOUND) pos.y = MAP_Y_MIN_BOUND;
-        if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
-    }
-};
-
-class npc
-{
-   public:
-    vec3 pos;
-    vec3 velocity_cached;
-    vec3 forward, up, right;
-    float speed;
-
-    npc()
-    {
-        pos = vec3(0, 180, 20);
-        speed = MIN_SPD;
-
-        forward = vec3(0, 0, 1);
-        up = vec3(0, 1, 0);
-        right = vec3(1, 0, 0);
-    }
-
-    void update(float ftime, vec3 target)
-    {
-        float xangle, yangle, zangle;
-        xangle = yangle = zangle = 0;
-
-        vec3 to_targ = target - pos;
-        float distance = length(to_targ);
-
-        if (distance > 400)
-            speed += 100 * ftime;
-        else if (distance > 200)
-        {
-            if (speed > MED_SPD)
-                speed -= 100 * ftime;
-            else
-                speed += 100 * ftime;
-        }
-        else
-        {
-            speed -= 100 * ftime;
-            to_targ = to_targ + 20.0f * up;
-        }
-
-        speed = clamp(speed, MIN_SPD, MAX_SPD);
-
-        float updown = dot(to_targ, up);
-        float leftright = dot(to_targ, right);
-
-        float right_w_trueup = dot(right, vec3(0, 1, 0));
-
-        if (updown > 0)
-            xangle = -1.0f * ftime;
-        else if (updown < 0)
-            xangle = 1.0f * ftime;
-        if (leftright > 0)
-            yangle = 1.0f * ftime;
-        else if (leftright < 0)
-            yangle = -1.0f * ftime;
-
-        if (right_w_trueup > 0) zangle = -1.0f * ftime;
-        if (right_w_trueup < 0) zangle = 1.0f * ftime;
-
-        mat4 rotate_x = rotate(mat4(1), xangle, right);
-        mat4 rotate_y = rotate(mat4(1), yangle, up);
-        mat4 rotate_z = rotate(mat4(1), zangle, forward);
-        mat4 R = rotate_z * rotate_y * rotate_x;
-
-        forward = normalize(vec3(R * vec4(forward.x, forward.y, forward.z, 1)));
-        up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
-        right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
-
-        velocity_cached = forward * speed;
-        pos += velocity_cached * ftime;
-
-        if (pos.x > MAP_X_MAX_BOUND) pos.x = MAP_X_MAX_BOUND;
-        if (pos.y > MAP_Y_MAX_BOUND) pos.y = MAP_Y_MAX_BOUND;
-        if (pos.z > MAP_Z_MAX_BOUND) pos.z = MAP_Z_MAX_BOUND;
-
-        if (pos.x < MAP_X_MIN_BOUND) pos.x = MAP_X_MIN_BOUND;
-        if (pos.y < MAP_Y_MIN_BOUND) pos.y = MAP_Y_MIN_BOUND;
-        if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
-    }
-};
-
 class camera
 {
    public:
@@ -268,28 +98,13 @@ class camera
     }
 };
 
+// TODO these should be fields of the Application class
 camera mycam;
-player theplayer;
-npc thebot;
-vector<npc> thebots;
-
-void setup_players()
-{
-    for (int i = 0; i < NUM_BOTS; i++)
-    {
-        npc bot;
-
-        // bot.pos = vec3(bot.pos.x * i, 200, bot.pos.z);
-        bot.pos = theplayer.pos + vec3(10) * ((float)i);
-
-        // float rho, theta;
-        // rho = 5.0f;
-        // theta = (i * 2 * PI) / NUM_BOTS;
-        // // bot.pos = vec3(acos(theta) * rho, (i % 2) ? 150 : 250, asin(theta) * rho);
-        // bot.pos = vec3(acos(theta) * rho, 200, asin(theta) * rho);
-        thebots.push_back(bot);
-    }
-}
+//TODO BRING THIS BACK
+// vector<npc> thebots;
+shared_ptr<Shape> shape;
+shared_ptr<Shape> plane;
+int renderstate = 1;
 
 class Application : public EventCallbacks
 {
@@ -309,6 +124,7 @@ class Application : public EventCallbacks
     GLuint Texture, AudioTex, AudioTexBuf;
     GLuint Texture2, HeightTex;
 
+player theplayer;
     AnimTextureBillboard laser;
     CustomTextBillboard custom_text;
     LaserManager laser_manager;
@@ -317,6 +133,15 @@ class Application : public EventCallbacks
     vec3 my_allocated_color_from_server = vec3(0, 0, 0);
 
     bool shoot;
+
+double get_last_elapsed_time()
+{
+    static double lasttime = glfwGetTime();
+    double actualtime = glfwGetTime();
+    double difference = actualtime - lasttime;
+    lasttime = actualtime;
+    return difference;
+}
 
     void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
@@ -568,7 +393,8 @@ class Application : public EventCallbacks
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        setup_players();
+//TODO TODO
+        // setup_players();
     }
 
     // General OGL initialization - set OGL state here
@@ -686,8 +512,8 @@ class Application : public EventCallbacks
 
         double posX, posY;
         glfwGetCursorPos(window, &posX, &posY);
-        double xdiff = posX - SS_CENTER.x;
-        double ydiff = posY - SS_CENTER.y;
+        double xdiff = posX - SS_CENTER_USED_FOR_MOUSE_CONTROLS.x;
+        double ydiff = posY - SS_CENTER_USED_FOR_MOUSE_CONTROLS.y;
 
         double xpercent = xdiff / (1920.0f / 2);
         double ypercent = ydiff / (1080.0f / 2);
@@ -699,32 +525,34 @@ class Application : public EventCallbacks
         // for now
 
         vector<vec3> positions;
-        for (int i = 0; i < thebots.size(); i++)
-        {
-            positions.push_back(thebots[i].pos);
-        }
-        positions.push_back(theplayer.pos);
 
-        for (int i = 0; i < thebots.size(); i++)
-        {
-            float min_distance = length(positions[i] - positions[i + 1]);
-            int min_index = i + 1;
-            for (int j = 0; j < positions.size(); j++)
-            {
-                if (j != i)
-                {
-                    float distance = length(positions[i] - positions[j]);
-                    if (distance < min_distance)
-                    {
-                        min_index = j;
-                        min_distance = distance;
-                    }
-                }
-            }
+        //TODO TODO
+        // for (int i = 0; i < thebots.size(); i++)
+        // {
+        //     positions.push_back(thebots[i].pos);
+        // }
+        // positions.push_back(theplayer.pos);
 
-            thebots[i].update(frametime, positions[min_index]);
-            // thebots[i].update(frametime, theplayer.pos);
-        }
+        // for (int i = 0; i < thebots.size(); i++)
+        // {
+        //     float min_distance = length(positions[i] - positions[i + 1]);
+        //     int min_index = i + 1;
+        //     for (int j = 0; j < positions.size(); j++)
+        //     {
+        //         if (j != i)
+        //         {
+        //             float distance = length(positions[i] - positions[j]);
+        //             if (distance < min_distance)
+        //             {
+        //                 min_index = j;
+        //                 min_distance = distance;
+        //             }
+        //         }
+        //     }
+
+        //     thebots[i].update(frametime, positions[min_index]);
+        //     // thebots[i].update(frametime, theplayer.pos);
+        // }
 
         // Get current frame buffer size.
         int width, height;
@@ -826,20 +654,21 @@ class Application : public EventCallbacks
 
         // draw the bots
 
-        for (int i = 0; i < thebots.size(); i++)
-        {
-            // scale_plane = scale(mat4(1), vec3(10));
-            rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
-            translate_plane = translate(mat4(1), thebots[i].pos);
-            plane_overall_rot = rotate_plane * rotate_default_plane;
-            M = translate_plane * plane_overall_rot * scale_plane;
+//TODO TODO
+        // for (int i = 0; i < thebots.size(); i++)
+        // {
+        //     // scale_plane = scale(mat4(1), vec3(10));
+        //     rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
+        //     translate_plane = translate(mat4(1), thebots[i].pos);
+        //     plane_overall_rot = rotate_plane * rotate_default_plane;
+        //     M = translate_plane * plane_overall_rot * scale_plane;
 
-            glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-            glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, Texture2);
-            plane->draw(pplane);  // render!!!!!!
-        }
+        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        //     glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+        //     glActiveTexture(GL_TEXTURE0);
+        //     glBindTexture(GL_TEXTURE_2D, Texture2);
+        //     plane->draw(pplane);  // render!!!!!!
+        // }
 
         pplane->unbind();
 
@@ -925,11 +754,6 @@ int main(int argc, char** argv)
     {
         hostname = argv[3];
     }
-    file.open("pathinfo.txt");
-    if (!file.is_open())
-    {
-        cout << "warning! could not open pathinfo.txt file!" << endl;
-    }
 
     Application* application = new Application();
 
@@ -974,8 +798,6 @@ int main(int argc, char** argv)
         // Poll for and process events.
         glfwPollEvents();
     }
-
-    file.close();
 
     // Quit program.
     windowManager->shutdown();
