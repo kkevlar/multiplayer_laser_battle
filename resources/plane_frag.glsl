@@ -26,7 +26,8 @@ void main()
         vec2(vertex_tex.x, 1 - vertex_tex.y));  // the plane has reversed texture coordinates in y... blame the model!
     // color = tcol;
 
-    color.rgb = 2.0f * tcol.rgb * diffuse_fact + vec3(1, 1, 1) * spec_fact + tcol.rbg * 0.2f;
+    float tweak_amount_spec = 0.3;
+    color.rgb = 2.0f * tcol.rgb * diffuse_fact + vec3(1, 1, 1) * spec_fact * tweak_amount_spec + tcol.rbg * 0.2f;
 
     vec3 tint = tint_color;
     if (tint.r < 0.01)
