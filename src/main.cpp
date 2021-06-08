@@ -14,6 +14,7 @@
 #include "CustomTextBillboard.h"
 #include "GLSL.h"
 #include "LaserManager.h"
+#include "PlaneRenderer.h"
 #include "Planes.h"
 #include "PlanesNetworked.h"
 #include "Program.h"
@@ -127,6 +128,7 @@ class Application : public EventCallbacks
 
     player theplayer;
     AnimTextureBillboard laser;
+    PlaneRenderer plane_renderer;
     CustomTextBillboard custom_text;
     LaserManager laser_manager;
     PlanesNetworked network;
@@ -291,7 +293,7 @@ class Application : public EventCallbacks
         shape->resize();
         shape->init();
 
-        // TODO init plane shape
+        plane_renderer.initGeom(resourceDirectory, stbi_load);
 
         int width, height, channels;
         char filepath[1000];
@@ -475,8 +477,7 @@ class Application : public EventCallbacks
         linesshader->addAttribute("vertTex");
         linesshader->addUniform("bgcolor");
 
-        // TODO init plane
-
+        plane_renderer.initProgram(resourceDirectory);
         laser.initProgram(resourceDirectory, "laser_vertex.glsl", "laser_fragment.glsl");
         custom_text.initProgram(resourceDirectory);
     }
@@ -589,11 +590,8 @@ class Application : public EventCallbacks
         shape->draw(prog);
         glEnable(GL_DEPTH_TEST);
 
-        mat4 scale_plane = scale(mat4(1), vec3(10));
         mat4 rotate_plane = safe_lookat(theplayer.pos, theplayer.pos + theplayer.forward, theplayer.up);
-        mat4 translate_plane = translate(mat4(1), theplayer.pos);
         mat4 plane_overall_rot = rotate_plane * rotate_default_plane;
-        M = translate_plane * plane_overall_rot * scale_plane;
 
         quat q = quat(plane_overall_rot);
         network.BroadcastSelfPosition(
@@ -635,6 +633,42 @@ class Application : public EventCallbacks
         glBindTexture(GL_TEXTURE_2D, HeightTex);
         glDrawArrays(GL_TRIANGLES, 0, MESHSIZE * MESHSIZE * 6);
         heightshader->unbind();
+
+        {
+            // const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+            // for (const auto& estimate : estimates)
+            // {
+            //     translate_plane = translate(mat4(1), estimate.pos);
+            //     plane_overall_rot = mat4(quat(estimate.rot));
+
+            //     M = translate_plane * plane_overall_rot * scale_plane;
+            //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+            //     glUniform3fv(pplane->getUniform("tint_color"), 1, &estimate.color[0]);
+            //     plane->draw(pplane);  // render!!!!!!
+            // }
+
+            // draw the bots
+
+            // TODO TODO
+            // for (int i = 0; i < thebots.size(); i++)
+            // {
+            //     // scale_plane = scale(mat4(1), vec3(10));
+            //     rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
+            //     translate_plane = translate(mat4(1), thebots[i].pos);
+            //     plane_overall_rot = rotate_plane * rotate_default_plane;
+            //     M = translate_plane * plane_overall_rot * scale_plane;
+
+            //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+            //     glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+            //     glActiveTexture(GL_TEXTURE0);
+            //     glBindTexture(GL_TEXTURE_2D, Texture2);
+            //     plane->draw(pplane);  // render!!!!!!
+            // }
+            plane_renderer.bindPlaneProgram();
+            plane_renderer.renderAirplane(
+                P, V, theplayer.pos, plane_overall_rot, mycam.pos, my_allocated_color_from_server);
+            plane_renderer.unBindPlaneProgram();
+        }
 
         if (shoot)
         {
