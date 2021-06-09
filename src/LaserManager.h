@@ -23,5 +23,5 @@ class LaserManager
     ~LaserManager();
     void admitLaser(NewShotLaserInfo* info);
     void renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, LaserRenderer* laser);
-bool shouldDie(glm::vec3 pos, glm::vec3 color, float currentTime);
+    bool shouldDie(glm::vec3 pos, glm::vec3 color, float currentTime);
 };

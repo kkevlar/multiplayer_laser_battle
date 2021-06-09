@@ -295,14 +295,15 @@ std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPl
 
         if (!element.second.pdu.bool_is_dead)
         {
-velocity = trunc_v4(element.second.pdu.velocity);
+            velocity = trunc_v4(element.second.pdu.velocity);
         }
 
         vec3 pos = trunc_v4(element.second.pdu.position) + difftime * velocity;
         quat rot = element.second.pdu.orientation;
 
         vec3 color = trunc_v4(element.second.pdu.color);
-        NetworkedInterpolatedPlanePositionInfo interpinfo = {pos, rot, color, element.first, (bool) element.second.pdu.bool_is_dead};
+        NetworkedInterpolatedPlanePositionInfo interpinfo = {
+            pos, rot, color, element.first, (bool)element.second.pdu.bool_is_dead};
         ret.push_back(interpinfo);
     }
 

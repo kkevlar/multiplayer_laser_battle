@@ -141,7 +141,7 @@ class Application : public EventCallbacks
     bool shoot;
 
     bool is_dead = false;
-    vec3 deadpos = vec3(0,0,0);
+    vec3 deadpos = vec3(0, 0, 0);
 
     double get_last_elapsed_time()
     {
@@ -643,51 +643,61 @@ class Application : public EventCallbacks
         glDrawArrays(GL_TRIANGLES, 0, MESHSIZE * MESHSIZE * 6);
         heightshader->unbind();
 
+        plane_renderer.renderAirplane(P,
+                                      V,
+                                      theplayer.pos,
+                                      plane_overall_rot,
+                                      mycam.pos,
+                                      my_allocated_color_from_server,
+                                      my_username,
+                                      &custom_text,
+                                      is_dead);
+
+        if (is_dead)
+        {
+            theplayer.speed = 0;
+            theplayer.pos = deadpos;
+            explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime());
+        }
+
+        // Render your own plane
+
+        // Renders the other real human players
+        const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+        for (const auto& estimate : estimates)
+        {
             plane_renderer.renderAirplane(P,
                                           V,
-                                          theplayer.pos,
-                                          plane_overall_rot,
+                                          estimate.pos,
+                                          estimate.rot,
                                           mycam.pos,
-                                          my_allocated_color_from_server,
-                                          my_username,
-                                          &custom_text, 
-                                          is_dead);
-
-if(is_dead)
-{
-    theplayer.speed = 0;
-    theplayer.pos = deadpos;
-             explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime());
-}
-
-            // Render your own plane
-
-            // Renders the other real human players
-            const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
-            for (const auto& estimate : estimates)
+                                          estimate.color,
+                                          estimate.username,
+                                          &custom_text,
+                                          estimate.is_dead);
+            if (estimate.is_dead)
             {
-                 plane_renderer.renderAirplane( P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text, estimate.is_dead); 
-                if(estimate.is_dead)
-             { explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime()); }
+                explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime());
             }
+        }
 
-            // draw the bots
+        // draw the bots
 
-            // TODO TODO
-            // for (int i = 0; i < thebots.size(); i++)
-            // {
-            //     // scale_plane = scale(mat4(1), vec3(10));
-            //     rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
-            //     translate_plane = translate(mat4(1), thebots[i].pos);
-            //     plane_overall_rot = rotate_plane * rotate_default_plane;
-            //     M = translate_plane * plane_overall_rot * scale_plane;
+        // TODO TODO
+        // for (int i = 0; i < thebots.size(); i++)
+        // {
+        //     // scale_plane = scale(mat4(1), vec3(10));
+        //     rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
+        //     translate_plane = translate(mat4(1), thebots[i].pos);
+        //     plane_overall_rot = rotate_plane * rotate_default_plane;
+        //     M = translate_plane * plane_overall_rot * scale_plane;
 
-            //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-            //     glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
-            //     glActiveTexture(GL_TEXTURE0);
-            //     glBindTexture(GL_TEXTURE_2D, Texture2);
-            //     plane->draw(pplane);  // render!!!!!!
-            // }
+        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        //     glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+        //     glActiveTexture(GL_TEXTURE0);
+        //     glBindTexture(GL_TEXTURE_2D, Texture2);
+        //     plane->draw(pplane);  // render!!!!!!
+        // }
 
         if (shoot)
         {
@@ -710,12 +720,11 @@ if(is_dead)
 
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
 
-if(laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
-{
-    is_dead = true;
-    deadpos = theplayer.pos;
-}
-
+        if (laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
+        {
+            is_dead = true;
+            deadpos = theplayer.pos;
+        }
     }
 };
 

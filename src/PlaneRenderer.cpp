@@ -81,24 +81,26 @@ void PlaneRenderer::renderAirplane(glm::mat4& P,
                                    glm::vec3 tint_color,
                                    std::string badge_text,
                                    CustomTextBillboard* customtext,
-                                   bool textonly
-                                   )
+                                   bool textonly)
 {
-    internal_plane_prog->bind();
+    if (!textonly)
+    {
+        internal_plane_prog->bind();
 
-    mat4 scale_plane = scale(mat4(1), vec3(10));
-    mat4 translate_plane = translate(mat4(1), position_xyz);
-    mat4 plane_overall_rot = mat4(plane_rot_must_include_default_rotation);
-    mat4 M = translate_plane * plane_overall_rot * scale_plane;
+        mat4 scale_plane = scale(mat4(1), vec3(10));
+        mat4 translate_plane = translate(mat4(1), position_xyz);
+        mat4 plane_overall_rot = mat4(plane_rot_must_include_default_rotation);
+        mat4 M = translate_plane * plane_overall_rot * scale_plane;
 
-    glUniformMatrix4fv(internal_plane_prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
-    glUniformMatrix4fv(internal_plane_prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
-    glUniformMatrix4fv(internal_plane_prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-    glUniform3fv(internal_plane_prog->getUniform("campos"), 1, &campos[0]);
-    glUniform3fv(internal_plane_prog->getUniform("tint_color"), 1, &tint_color[0]);
-    glActiveTexture(GL_TEXTURE0);
-    plane->draw(internal_plane_prog);
-    internal_plane_prog->unbind();
+        glUniformMatrix4fv(internal_plane_prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
+        glUniformMatrix4fv(internal_plane_prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
+        glUniformMatrix4fv(internal_plane_prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        glUniform3fv(internal_plane_prog->getUniform("campos"), 1, &campos[0]);
+        glUniform3fv(internal_plane_prog->getUniform("tint_color"), 1, &tint_color[0]);
+        glActiveTexture(GL_TEXTURE0);
+        plane->draw(internal_plane_prog);
+        internal_plane_prog->unbind();
+    }
 
     customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 5, 0), tint_color, badge_text);
 }
