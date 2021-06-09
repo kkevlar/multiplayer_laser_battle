@@ -8,6 +8,7 @@ using namespace std;
 using namespace glm;
 #include "CustomTextBillboard.h"
 #include "Program.h"
+#include "log.h"
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
@@ -194,40 +195,36 @@ void CustomTextBillboard::renderCustomText(glm::mat4& P,
     // Draw the box using GLSL.
     prog->bind();
 
-    int count, index = 0;
+    int count = 0;
+    int index = 0;
     mat4 letterselect = mat4(1);
-    // while (count < 10 && index < text.size())
-    // {
-    //     char c = text.at(index);
-    //     if ((c >= 'a' && c <= 'z'))
-    //     {
-    //         letterselect[count / 4][count % 4] = ((int)c - 'a');
-    //         count += 1;
-    //     }
-    //     else if ((c >= 'A' && c <= 'Z'))
-    //     {
-    //         letterselect[count / 4][count % 4] = ((int)c - 'Z');
-    //         count += 1;
-    //     }
-    //     else if (c >= '0' && c <= '9')
-    //     {
-    //         letterselect[count / 4][count % 4] = ((int)c - '0') + ((int)'z' - 'a') + 2;
-    //         count += 1;
-    //     }
-    //     else if (c == ' ' || c == '_')
-    //     {
-    //         letterselect[count / 4][count % 4] = ((int)'z' - 'a') + 1;
-    //         count += 1;
-    //     }
-    //     index += 1;
-    // }
+    while (count < 10 && index < text.size())
+    {
+        char c = text.at(index);
+        if ((c >= 'a' && c <= 'z'))
+        {
+            letterselect[count / 4][count % 4] = ((int)c - 'a');
+            count += 1;
+        }
+        else if ((c >= 'A' && c <= 'Z'))
+        {
+            letterselect[count / 4][count % 4] = ((int)c - 'A');
+            count += 1;
+        }
+        else if (c >= '0' && c <= '9')
+        {
+            letterselect[count / 4][count % 4] = ((int)c - '0') + ((int)'z' - 'a') + 2;
+            count += 1;
+        }
+        else if (c == ' ' || c == '_')
+        {
+            letterselect[count / 4][count % 4] = ((int)'z' - 'a') + 1;
+            count += 1;
+        }
+        index += 1;
+    }
 
-    count = 5;
-    letterselect[0][0] = 'k' - 'a';
-    letterselect[0][1] = 'e' - 'a';
-    letterselect[0][2] = 'v' - 'a';
-    letterselect[0][3] = 'i' - 'a';
-    letterselect[1][0] = 'n' - 'a';
+
 
     // send the matrices to the shaders
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);

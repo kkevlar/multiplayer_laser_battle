@@ -647,12 +647,12 @@ class Application : public EventCallbacks
                                           &custom_text);
 
             // Renders the other real human players
-            // const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
-            // for (const auto& estimate : estimates)
-            // {
-            //     plane_renderer.renderAirplane(
-            //         P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text);
-            // }
+            const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+            for (const auto& estimate : estimates)
+            {
+                plane_renderer.renderAirplane(
+                    P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text);
+            }
 
             // draw the bots
 
