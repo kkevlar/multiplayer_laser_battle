@@ -702,7 +702,7 @@ class Application : public EventCallbacks
         //     plane->draw(pplane);  // render!!!!!!
         // }
 
-        if (shoot)
+        if (shoot && !is_dead)
         {
             NewShotLaserInfo newlaser;
             vec3 rightvec = normalize(theplayer.right) * 6.0f;
