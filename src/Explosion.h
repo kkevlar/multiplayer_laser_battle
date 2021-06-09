@@ -11,7 +11,7 @@
 
 typedef unsigned char*(ImageLoader)(char const*, int*, int*, int*, int);
 
-class AnimTextureBillboard
+class Explosion
 {
    private:
     GLuint VertexArrayID;
@@ -24,15 +24,11 @@ class AnimTextureBillboard
 
    public:
     void initGeom(const std::string& resDir);
-    void initProgram(const std::string& resourceDirectory,
-                     const std::string& vert_shader_name,
-                     const std::string& frag_shader_name);
-    void initTexture(const std::string& resourceDirectory, const std::string& tex_name, ImageLoader loader);
-    void renderLaser(glm::mat4& P,
+    void initProgram(const std::string& resourceDirectory);
+    void initTexture(const std::string& resourceDirectory, ImageLoader loader);
+    void renderExplosion(glm::mat4& P,
                      glm::mat4& V,
                      glm::vec3 campos,
                      glm::vec3 position_xyz,
-                     glm::vec3 where_to_look,
-                     glm::vec3 modify_color,
                      float time);
 };

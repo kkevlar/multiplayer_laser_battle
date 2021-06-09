@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "AnimTextureBillboard.h"
+#include "LaserRenderer.h"
 #include "Program.h"
 
 class CustomTextBillboard

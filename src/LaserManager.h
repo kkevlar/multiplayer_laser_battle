@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnimTextureBillboard.h"
+#include "LaserRenderer.h"
 
 struct LaserMangerInternal;
 
@@ -22,5 +22,5 @@ class LaserManager
     LaserManager();
     ~LaserManager();
     void admitLaser(NewShotLaserInfo* info);
-    void renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, AnimTextureBillboard* laser);
+    void renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, LaserRenderer* laser);
 };

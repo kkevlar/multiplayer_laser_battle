@@ -4,6 +4,8 @@ net/serversrc/incoming.cpp
 net/serversrc/incoming.h
 net/serversrc/main_server.cpp
 resources/geometry.glsl
+resources/explosion_fragment.glsl
+resources/explosion_vertex.glsl
 resources/height_frag.glsl
 resources/height_vertex.glsl
 resources/laser_fragment.glsl
@@ -26,6 +28,8 @@ src/compat.cpp
 src/compat.h
 src/CustomTextBillboard.cpp
 src/CustomTextBillboard.h
+src/Explosion.cpp
+src/Explosion.h
 src/fdselect.cpp
 src/fdselect.h
 src/fromserver_client.cpp

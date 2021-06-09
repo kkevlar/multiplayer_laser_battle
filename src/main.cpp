@@ -10,11 +10,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <thread>
 
-#include "AnimTextureBillboard.h"
+#include "LaserRenderer.h"
 #include "CustomTextBillboard.h"
 #include "GLSL.h"
 #include "LaserManager.h"
 #include "PlaneRenderer.h"
+#include "Explosion.h"
 #include "Planes.h"
 #include "PlanesNetworked.h"
 #include "Program.h"
@@ -128,7 +129,8 @@ class Application : public EventCallbacks
 
     std::string my_username;
     player theplayer;
-    AnimTextureBillboard laser;
+    Explosion explosion;
+    LaserRenderer laser;
     PlaneRenderer plane_renderer;
     CustomTextBillboard custom_text;
     LaserManager laser_manager;
@@ -285,6 +287,7 @@ class Application : public EventCallbacks
         init_mesh();
 
         laser.initGeom(resourceDirectory);
+        explosion.initGeom(resourceDirectory);
         custom_text.initGeom(resourceDirectory);
 
         // Initialize mesh.
@@ -387,6 +390,7 @@ class Application : public EventCallbacks
                         */
 
         laser.initTexture(resourceDirectory, "laser.png", stbi_load);
+        explosion.initTexture(resourceDirectory, stbi_load);
         custom_text.initTexture(resourceDirectory, stbi_load);
 
         glEnable(GL_BLEND);
@@ -479,6 +483,7 @@ class Application : public EventCallbacks
         linesshader->addUniform("bgcolor");
 
         plane_renderer.initProgram(resourceDirectory);
+        explosion.initProgram(resourceDirectory);
         laser.initProgram(resourceDirectory, "laser_vertex.glsl", "laser_fragment.glsl");
         custom_text.initProgram(resourceDirectory);
     }
@@ -645,6 +650,7 @@ class Application : public EventCallbacks
                                           my_allocated_color_from_server,
                                           my_username,
                                           &custom_text);
+                                          explosion.renderExplosion(P, V, mycam.pos, theplayer.pos, glfwGetTime());
 
             // Renders the other real human players
             const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());

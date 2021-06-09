@@ -6,10 +6,8 @@
 #include <iostream>
 using namespace std;
 using namespace glm;
-#include "AnimTextureBillboard.h"
+#include "LaserRenderer.h"
 #include "Program.h"
-
-// TODO RENAME TO LASER CLASS
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
@@ -38,7 +36,7 @@ static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
     return m1;
 }
 
-void AnimTextureBillboard::initGeom(const std::string& resourceDirectory)
+void LaserRenderer::initGeom(const std::string& resourceDirectory)
 {
     // generate the VAO
     glGenVertexArrays(1, &VertexArrayID);
@@ -132,7 +130,7 @@ void AnimTextureBillboard::initGeom(const std::string& resourceDirectory)
     glBindVertexArray(0);
 }
 
-void AnimTextureBillboard::initProgram(const std::string& resourceDirectory,
+void LaserRenderer::initProgram(const std::string& resourceDirectory,
                                        const std::string& vert_shader_name,
                                        const std::string& frag_shader_name)
 {
@@ -160,7 +158,7 @@ void AnimTextureBillboard::initProgram(const std::string& resourceDirectory,
     prog->addAttribute("vertTex");
 }
 
-void AnimTextureBillboard::initTexture(const std::string& resourceDirectory,
+void LaserRenderer::initTexture(const std::string& resourceDirectory,
                                        const std::string& tex_name,
                                        ImageLoader loader)
 {
@@ -189,7 +187,7 @@ void AnimTextureBillboard::initTexture(const std::string& resourceDirectory,
     glUniform1i(Tex1Location, 0);
 }
 
-void AnimTextureBillboard::renderLaser(glm::mat4& P,
+void LaserRenderer::renderLaser(glm::mat4& P,
                                        glm::mat4& V,
                                        glm::vec3 campos,
                                        glm::vec3 position_xyz,

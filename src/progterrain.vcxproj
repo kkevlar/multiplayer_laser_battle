@@ -20,14 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ext\glad\src\glad.c" />
-    <ClCompile Include="AnimTextureBillboard.cpp" />
     <ClCompile Include="compat.cpp" />
     <ClCompile Include="CustomTextBillboard.cpp" />
+    <ClCompile Include="Explosion.cpp" />
     <ClCompile Include="fdselect.cpp" />
     <ClCompile Include="fromserver_client.cpp" />
     <ClCompile Include="GLSL.cpp" />
     <ClCompile Include="handle.cpp" />
     <ClCompile Include="LaserManager.cpp" />
+    <ClCompile Include="LaserRenderer.cpp" />
     <ClCompile Include="log.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="message.cpp" />
@@ -43,16 +44,17 @@
     <ClCompile Include="windows_tcp_client.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimTextureBillboard.h" />
     <ClInclude Include="byte_order.h" />
     <ClInclude Include="compat.h" />
     <ClInclude Include="CustomTextBillboard.h" />
+    <ClInclude Include="Explosion.h" />
     <ClInclude Include="fdselect.h" />
     <ClInclude Include="fromserver_client.h" />
     <ClInclude Include="GLSL.h" />
     <ClInclude Include="handle.h" />
     <ClInclude Include="json_struct.h" />
     <ClInclude Include="LaserManager.h" />
+    <ClInclude Include="LaserRenderer.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="netcontext.h" />
@@ -72,6 +74,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\resources\geometry.glsl" />
+    <None Include="..\resources\explosion_fragment.glsl" />
+    <None Include="..\resources\explosion_vertex.glsl" />
     <None Include="..\resources\height_frag.glsl" />
     <None Include="..\resources\height_vertex.glsl" />
     <None Include="..\resources\laser_fragment.glsl" />

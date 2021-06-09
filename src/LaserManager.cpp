@@ -64,7 +64,7 @@ again:
 }
 
 void LaserManager::renderLasers(
-    glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, AnimTextureBillboard* laser)
+    glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, LaserRenderer* laser)
 {
     for (auto& info : this->internal->lasers)
     {
