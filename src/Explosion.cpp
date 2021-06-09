@@ -196,7 +196,7 @@ void Explosion::renderExplosion(glm::mat4& P, glm::mat4& V, glm::vec3 campos, gl
     glUniform2f(prog->getUniform("botright_end_coords"), 1.0f, 1.0f);
     glUniform1f(prog->getUniform("frames_width"), 4);
     glUniform1f(prog->getUniform("frames_height"), 4);
-    glUniform1f(prog->getUniform("frame_select"), time * 10);
+    glUniform1f(prog->getUniform("frame_select"), time * 3);
 
     glBindVertexArray(VertexArrayID);
     // actually draw from vertex 0, 3 vertices
