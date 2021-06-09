@@ -643,8 +643,6 @@ class Application : public EventCallbacks
         glDrawArrays(GL_TRIANGLES, 0, MESHSIZE * MESHSIZE * 6);
         heightshader->unbind();
 
-            if (!is_dead)
-{
             plane_renderer.renderAirplane(P,
                                           V,
                                           theplayer.pos,
@@ -652,24 +650,24 @@ class Application : public EventCallbacks
                                           mycam.pos,
                                           my_allocated_color_from_server,
                                           my_username,
-                                          &custom_text);
-}
-else
+                                          &custom_text, 
+                                          is_dead);
+
+if(is_dead)
 {
     theplayer.speed = 0;
     theplayer.pos = deadpos;
              explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime());
 }
-        {
+
             // Render your own plane
 
             // Renders the other real human players
             const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
             for (const auto& estimate : estimates)
             {
-                if(!estimate.is_dead)
-                { plane_renderer.renderAirplane( P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text); }
-                    else
+                 plane_renderer.renderAirplane( P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text, estimate.is_dead); 
+                if(estimate.is_dead)
              { explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime()); }
             }
 
@@ -690,7 +688,6 @@ else
             //     glBindTexture(GL_TEXTURE_2D, Texture2);
             //     plane->draw(pplane);  // render!!!!!!
             // }
-        }
 
         if (shoot)
         {

@@ -34,5 +34,6 @@ class PlaneRenderer
                         glm::vec3 campos,
                         glm::vec3 tint_color,
                         std::string badge_text,
-                        CustomTextBillboard* customtext);
+                        CustomTextBillboard* customtext,
+                        bool textonly);
 };

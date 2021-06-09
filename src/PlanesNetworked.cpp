@@ -289,9 +289,16 @@ std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPl
     vector<NetworkedInterpolatedPlanePositionInfo> ret;
     for (const pair<string, PlanePositionInfoWithTime>& element : this->internal->position_map)
     {
+        vec3 velocity = vec3(0);
+
         float difftime = time - element.second.timeUpdated;
 
-        vec3 pos = trunc_v4(element.second.pdu.position) + difftime * trunc_v4(element.second.pdu.velocity);
+        if (!element.second.pdu.bool_is_dead)
+        {
+velocity = trunc_v4(element.second.pdu.velocity);
+        }
+
+        vec3 pos = trunc_v4(element.second.pdu.position) + difftime * velocity;
         quat rot = element.second.pdu.orientation;
 
         vec3 color = trunc_v4(element.second.pdu.color);

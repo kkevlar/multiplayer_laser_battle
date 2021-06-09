@@ -80,7 +80,9 @@ void PlaneRenderer::renderAirplane(glm::mat4& P,
                                    glm::vec3 campos,
                                    glm::vec3 tint_color,
                                    std::string badge_text,
-                                   CustomTextBillboard* customtext)
+                                   CustomTextBillboard* customtext,
+                                   bool textonly
+                                   )
 {
     internal_plane_prog->bind();
 
