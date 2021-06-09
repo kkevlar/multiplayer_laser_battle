@@ -81,7 +81,11 @@ void PlaneRenderer::renderAirplane(glm::mat4& P,
                                    glm::vec3 tint_color,
                                    std::string badge_text,
                                    CustomTextBillboard* customtext,
-                                   bool textonly)
+                                   Scoreboard* scores,
+                                   int myscore,
+                                   int bestscore,
+                                   bool textonly,
+                                   bool notme)
 {
     if (!textonly)
     {
@@ -103,4 +107,10 @@ void PlaneRenderer::renderAirplane(glm::mat4& P,
     }
 
     customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 5, 0), tint_color, badge_text);
+
+    if (!notme)
+    {
+        scores->renderCustomText(P, V, campos, position_xyz + vec3(0, 15, 0), tint_color, 
+            "you " + to_string(myscore) + " best " + to_string(bestscore));
+    }    
 }

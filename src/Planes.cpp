@@ -30,6 +30,7 @@ player::player()
     forward = vec3(0, 0, 1);
     up = vec3(0, 1, 0);
     right = vec3(1, 0, 0);
+    score = 0;
 }
 
 void player::update(float ftime, float xangle, float yangle)
@@ -66,87 +67,87 @@ void player::update(float ftime, float xangle, float yangle)
     if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
 }
 
-class npc
-{
-   public:
-    vec3 pos;
-    vec3 velocity_cached;
-    vec3 forward, up, right;
-    float speed;
+// class npc
+// {
+//    public:
+//     vec3 pos;
+//     vec3 velocity_cached;
+//     vec3 forward, up, right;
+//     float speed;
 
-    npc()
-    {
-        pos = vec3(0, 180, 20);
-        speed = MIN_SPD;
+//     npc()
+//     {
+//         pos = vec3(0, 180, 20);
+//         speed = MIN_SPD;
 
-        forward = vec3(0, 0, 1);
-        up = vec3(0, 1, 0);
-        right = vec3(1, 0, 0);
-    }
+//         forward = vec3(0, 0, 1);
+//         up = vec3(0, 1, 0);
+//         right = vec3(1, 0, 0);
+//     }
 
-    void update(float ftime, vec3 target)
-    {
-        float xangle, yangle, zangle;
-        xangle = yangle = zangle = 0;
+//     void update(float ftime, vec3 target)
+//     {
+//         float xangle, yangle, zangle;
+//         xangle = yangle = zangle = 0;
 
-        vec3 to_targ = target - pos;
-        float distance = length(to_targ);
+//         vec3 to_targ = target - pos;
+//         float distance = length(to_targ);
 
-        if (distance > 400)
-            speed += 100 * ftime;
-        else if (distance > 200)
-        {
-            if (speed > MED_SPD)
-                speed -= 100 * ftime;
-            else
-                speed += 100 * ftime;
-        }
-        else
-        {
-            speed -= 100 * ftime;
-            to_targ = to_targ + 20.0f * up;
-        }
+//         if (distance > 400)
+//             speed += 100 * ftime;
+//         else if (distance > 200)
+//         {
+//             if (speed > MED_SPD)
+//                 speed -= 100 * ftime;
+//             else
+//                 speed += 100 * ftime;
+//         }
+//         else
+//         {
+//             speed -= 100 * ftime;
+//             to_targ = to_targ + 20.0f * up;
+//         }
 
-        speed = clamp(speed, MIN_SPD, MAX_SPD);
+//         speed = clamp(speed, MIN_SPD, MAX_SPD);
 
-        float updown = dot(to_targ, up);
-        float leftright = dot(to_targ, right);
+//         float updown = dot(to_targ, up);
+//         float leftright = dot(to_targ, right);
 
-        float right_w_trueup = dot(right, vec3(0, 1, 0));
+//         float right_w_trueup = dot(right, vec3(0, 1, 0));
 
-        if (updown > 0)
-            xangle = -1.0f * ftime;
-        else if (updown < 0)
-            xangle = 1.0f * ftime;
-        if (leftright > 0)
-            yangle = 1.0f * ftime;
-        else if (leftright < 0)
-            yangle = -1.0f * ftime;
+//         if (updown > 0)
+//             xangle = -1.0f * ftime;
+//         else if (updown < 0)
+//             xangle = 1.0f * ftime;
+//         if (leftright > 0)
+//             yangle = 1.0f * ftime;
+//         else if (leftright < 0)
+//             yangle = -1.0f * ftime;
 
-        if (right_w_trueup > 0) zangle = -1.0f * ftime;
-        if (right_w_trueup < 0) zangle = 1.0f * ftime;
+//         if (right_w_trueup > 0) zangle = -1.0f * ftime;
+//         if (right_w_trueup < 0) zangle = 1.0f * ftime;
 
-        mat4 rotate_x = rotate(mat4(1), xangle, right);
-        mat4 rotate_y = rotate(mat4(1), yangle, up);
-        mat4 rotate_z = rotate(mat4(1), zangle, forward);
-        mat4 R = rotate_z * rotate_y * rotate_x;
+//         mat4 rotate_x = rotate(mat4(1), xangle, right);
+//         mat4 rotate_y = rotate(mat4(1), yangle, up);
+//         mat4 rotate_z = rotate(mat4(1), zangle, forward);
+//         mat4 R = rotate_z * rotate_y * rotate_x;
 
-        forward = normalize(vec3(R * vec4(forward.x, forward.y, forward.z, 1)));
-        up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
-        right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
+//         forward = normalize(vec3(R * vec4(forward.x, forward.y, forward.z, 1)));
+//         up = normalize(vec3(R * vec4(up.x, up.y, up.z, 1)));
+//         right = normalize(vec3(R * vec4(right.x, right.y, right.z, 1)));
 
-        velocity_cached = forward * speed;
-        pos += velocity_cached * ftime;
+//         velocity_cached = forward * speed;
+//         pos += velocity_cached * ftime;
 
-        if (pos.x > MAP_X_MAX_BOUND) pos.x = MAP_X_MAX_BOUND;
-        if (pos.y > MAP_Y_MAX_BOUND) pos.y = MAP_Y_MAX_BOUND;
-        if (pos.z > MAP_Z_MAX_BOUND) pos.z = MAP_Z_MAX_BOUND;
+//         if (pos.x > MAP_X_MAX_BOUND) pos.x = MAP_X_MAX_BOUND;
+//         if (pos.y > MAP_Y_MAX_BOUND) pos.y = MAP_Y_MAX_BOUND;
+//         if (pos.z > MAP_Z_MAX_BOUND) pos.z = MAP_Z_MAX_BOUND;
 
-        if (pos.x < MAP_X_MIN_BOUND) pos.x = MAP_X_MIN_BOUND;
-        if (pos.y < MAP_Y_MIN_BOUND) pos.y = MAP_Y_MIN_BOUND;
-        if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
-    }
-};
+//         if (pos.x < MAP_X_MIN_BOUND) pos.x = MAP_X_MIN_BOUND;
+//         if (pos.y < MAP_Y_MIN_BOUND) pos.y = MAP_Y_MIN_BOUND;
+//         if (pos.z < MAP_Z_MIN_BOUND) pos.z = MAP_Z_MIN_BOUND;
+//     }
+// };
 
 // TODO rename setup bots
 // void setup_players()

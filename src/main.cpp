@@ -11,6 +11,7 @@
 #include <thread>
 
 #include "CustomTextBillboard.h"
+#include "Scoreboard.h"
 #include "Explosion.h"
 #include "GLSL.h"
 #include "LaserManager.h"
@@ -133,6 +134,7 @@ class Application : public EventCallbacks
     LaserRenderer laser;
     PlaneRenderer plane_renderer;
     CustomTextBillboard custom_text;
+    Scoreboard scores;
     LaserManager laser_manager;
     PlanesNetworked network;
 
@@ -292,6 +294,7 @@ class Application : public EventCallbacks
         laser.initGeom(resourceDirectory);
         explosion.initGeom(resourceDirectory);
         custom_text.initGeom(resourceDirectory);
+        scores.initGeom(resourceDirectory);
 
         // Initialize mesh.
         shape = make_shared<Shape>();
@@ -395,6 +398,7 @@ class Application : public EventCallbacks
         laser.initTexture(resourceDirectory, "laser.png", stbi_load);
         explosion.initTexture(resourceDirectory, stbi_load);
         custom_text.initTexture(resourceDirectory, stbi_load);
+        scores.initTexture(resourceDirectory, stbi_load);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -489,6 +493,7 @@ class Application : public EventCallbacks
         explosion.initProgram(resourceDirectory);
         laser.initProgram(resourceDirectory, "laser_vertex.glsl", "laser_fragment.glsl");
         custom_text.initProgram(resourceDirectory);
+        scores.initProgram(resourceDirectory);
     }
     /****DRAW
     This is the most important function in your program - this is where you
@@ -544,6 +549,8 @@ class Application : public EventCallbacks
         //     thebots[i].update(frametime, positions[min_index]);
         //     // thebots[i].update(frametime, theplayer.pos);
         // }
+
+        // get max score
 
         // Get current frame buffer size.
         int width, height;
@@ -651,7 +658,11 @@ class Application : public EventCallbacks
                                       my_allocated_color_from_server,
                                       my_username,
                                       &custom_text,
-                                      is_dead);
+                                      &scores,
+                                      theplayer.score,
+                                      10,
+                                      is_dead,
+                                      false);
 
         if (is_dead)
         {
@@ -674,7 +685,11 @@ class Application : public EventCallbacks
                                           estimate.color,
                                           estimate.username,
                                           &custom_text,
-                                          estimate.is_dead);
+                                          &scores,
+                                          theplayer.score,
+                                          10,
+                                          estimate.is_dead
+                                          true);
             if (estimate.is_dead)
             {
                 explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime());

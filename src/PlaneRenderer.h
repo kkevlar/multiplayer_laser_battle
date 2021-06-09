@@ -9,6 +9,7 @@
 #include <string>
 
 #include "CustomTextBillboard.h"
+#include "Scoreboard.h"
 #include "Program.h"
 #include "Shape.h"
 
@@ -35,5 +36,9 @@ class PlaneRenderer
                         glm::vec3 tint_color,
                         std::string badge_text,
                         CustomTextBillboard* customtext,
-                        bool textonly);
+                        Scoreboard* score_text,
+                        int myscore,
+                        int bestscore,
+                        bool textonly,
+                        bool notme);
 };
