@@ -79,10 +79,8 @@ void main()
         }
     }
 
-    float c = oof.r;
-
-    oof.r = (oof.b);
-    oof += vec4(vec3(modify_color * c), 0);
+    if (oof.a > 0.1)
+    oof.rgb = modify_color;
 
     color = oof;
 }

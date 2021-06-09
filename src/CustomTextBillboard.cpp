@@ -195,43 +195,50 @@ void CustomTextBillboard::renderCustomText(glm::mat4& P,
     prog->bind();
 
     int count, index = 0;
-    mat4 letterselect;
-    while (count < 10 && index < text.size())
-    {
-        char c = text.at(index);
-        if ((c >= 'a' && c <= 'z'))
-        {
-            letterselect[count / 4][count % 4] = ((int)c - 'a');
-            count += 1;
-        }
-        else if ((c >= 'A' && c <= 'Z'))
-        {
-            letterselect[count / 4][count % 4] = ((int)c - 'Z');
-            count += 1;
-        }
-        else if (c >= '0' && c <= '9')
-        {
-            letterselect[count / 4][count % 4] = ((int)c - '0') + ((int)'z' - 'a') + 2;
-            count += 1;
-        }
-        else if (c == ' ' || c == '_')
-        {
-            letterselect[count / 4][count % 4] = ((int)'z' - 'a') + 1;
-            count += 1;
-        }
-        index += 1;
-    }
+    mat4 letterselect = mat4(1);
+    // while (count < 10 && index < text.size())
+    // {
+    //     char c = text.at(index);
+    //     if ((c >= 'a' && c <= 'z'))
+    //     {
+    //         letterselect[count / 4][count % 4] = ((int)c - 'a');
+    //         count += 1;
+    //     }
+    //     else if ((c >= 'A' && c <= 'Z'))
+    //     {
+    //         letterselect[count / 4][count % 4] = ((int)c - 'Z');
+    //         count += 1;
+    //     }
+    //     else if (c >= '0' && c <= '9')
+    //     {
+    //         letterselect[count / 4][count % 4] = ((int)c - '0') + ((int)'z' - 'a') + 2;
+    //         count += 1;
+    //     }
+    //     else if (c == ' ' || c == '_')
+    //     {
+    //         letterselect[count / 4][count % 4] = ((int)'z' - 'a') + 1;
+    //         count += 1;
+    //     }
+    //     index += 1;
+    // }
+
+    count = 5;
+    letterselect[0][0] = 'k' - 'a';
+    letterselect[0][1] = 'e' - 'a';
+    letterselect[0][2] = 'v' - 'a';
+    letterselect[0][3] = 'i' - 'a';
+    letterselect[1][0] = 'n' - 'a';
 
     // send the matrices to the shaders
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
     glUniform3fv(prog->getUniform("campos"), 1, &campos[0]);
-    glUniform3fv(prog->getUniform("modify_color"), 1, &modify_color[0]);
     glUniform2f(prog->getUniform("topleft_start_coords"), 0, 0);
     glUniform2f(prog->getUniform("botright_end_coords"), 1.0f, 1.0f);
     glUniform1f(prog->getUniform("frames_width"), 37);
     glUniform1f(prog->getUniform("frames_height"), 1);
     glUniform1i(prog->getUniform("numletters"), count);
+    glUniform3fv(prog->getUniform("modify_color"), 1, &modify_color[0]);
     glUniformMatrix4fv(prog->getUniform("letterselect"), 1, GL_FALSE, &letterselect[0][0]);
 
     glBindVertexArray(VertexArrayID);
@@ -245,7 +252,7 @@ void CustomTextBillboard::renderCustomText(glm::mat4& P,
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Texture);
 
-    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(30, 5, 1));
+    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(10, 3, 1));
     glm::mat4 TransCaller = glm::translate(glm::mat4(1.0f), position_xyz);
 
     glm::mat4 M;

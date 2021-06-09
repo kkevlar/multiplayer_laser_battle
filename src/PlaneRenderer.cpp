@@ -99,5 +99,5 @@ void PlaneRenderer::renderAirplane(glm::mat4& P,
     plane->draw(internal_plane_prog);
     internal_plane_prog->unbind();
 
-    customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 20, 0), tint_color, badge_text);
+    customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 5, 0), tint_color, badge_text);
 }
