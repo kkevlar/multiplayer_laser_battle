@@ -1,3 +1,4 @@
+#include "PlaneRenderer.h"
 
 #include <glad/glad.h>
 
@@ -6,7 +7,6 @@
 #include <iostream>
 using namespace std;
 using namespace glm;
-#include "PlaneRenderer.h"
 #include "Program.h"
 #include "Shape.h"
 #include "log.h"
@@ -15,7 +15,6 @@ PlaneRenderer::PlaneRenderer()
 {
     this->init_geom = false;
     this->init_program = false;
-    this->is_bound = false;
 }
 
 void PlaneRenderer::initGeom(const std::string& resDir, PlaneImageLoader loader)
@@ -88,6 +87,7 @@ void PlaneRenderer::renderAirplane(const glm::mat3& P,
     mat4 plane_overall_rot = mat4(plane_rot_must_include_default_rotation);
     mat4 M = translate_plane * plane_overall_rot * scale_plane;
 
+log_debug("am i rendering?");
     internal_plane_prog->bind();
 
     glUniformMatrix4fv(internal_plane_prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
@@ -99,5 +99,5 @@ void PlaneRenderer::renderAirplane(const glm::mat3& P,
     plane->draw(internal_plane_prog);
     internal_plane_prog->unbind();
 
-    customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 20, 0), tint_color, badge_text);
+    // customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 20, 0), tint_color, badge_text);
 }
