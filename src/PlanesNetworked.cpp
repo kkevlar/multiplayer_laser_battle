@@ -31,7 +31,7 @@ typedef struct
     vec4 color;
     uint8_t magic;
     uint8_t bool_is_dead;
-    uint8_t pad_unused2;
+    uint8_t my_score;
     uint8_t magic2;
 } PlanePositionInfoPDU;
 
