@@ -53,8 +53,14 @@ void main()
     tpos.z -= camoff.z;
     tpos.x -= camoff.x;
 
-    float height = noise(tpos.xzy * 3, 11, 0.03, 0.6);
-    float baseheight = noise(tpos.xzy * 3, 4, 0.004, 0.3);
+    float height = noise(tpos.xzy * 3, 2, 0.06, 0.4);
+    float baseheight = noise(tpos.xzy * 3, 1, 0.004, 0.3);
+
+    height /= 7;
+
+    // height = cos(tpos.y);
+    // baseheight = tpos.y;
+
     baseheight = pow(baseheight, 5) * 3;
     height = baseheight * height;
     height *= 260;
