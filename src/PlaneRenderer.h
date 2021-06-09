@@ -27,8 +27,8 @@ class PlaneRenderer
     void initGeom(const std::string& resDir, PlaneImageLoader loader);
     void initProgram(const std::string& resourceDirectory);
 
-    void renderAirplane(const glm::mat3& P,
-                        const glm::mat4& V,
+    void renderAirplane(glm::mat4& P,
+                        glm::mat4& V,
                         glm::vec3 position_xyz,
                         glm::quat plane_rot_must_include_default_rotation,
                         glm::vec3 campos,

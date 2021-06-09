@@ -73,8 +73,8 @@ void PlaneRenderer::initProgram(const std::string& resourceDirectory)
     this->init_program = true;
 }
 
-void PlaneRenderer::renderAirplane(const glm::mat3& P,
-                                   const glm::mat4& V,
+void PlaneRenderer::renderAirplane(glm::mat4& P,
+                                   glm::mat4& V,
                                    glm::vec3 position_xyz,
                                    glm::quat plane_rot_must_include_default_rotation,
                                    glm::vec3 campos,
@@ -82,13 +82,13 @@ void PlaneRenderer::renderAirplane(const glm::mat3& P,
                                    std::string badge_text,
                                    CustomTextBillboard* customtext)
 {
+    internal_plane_prog->bind();
+
     mat4 scale_plane = scale(mat4(1), vec3(10));
     mat4 translate_plane = translate(mat4(1), position_xyz);
     mat4 plane_overall_rot = mat4(plane_rot_must_include_default_rotation);
     mat4 M = translate_plane * plane_overall_rot * scale_plane;
 
-log_debug("am i rendering?");
-    internal_plane_prog->bind();
 
     glUniformMatrix4fv(internal_plane_prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
     glUniformMatrix4fv(internal_plane_prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
@@ -99,5 +99,5 @@ log_debug("am i rendering?");
     plane->draw(internal_plane_prog);
     internal_plane_prog->unbind();
 
-    // customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 20, 0), tint_color, badge_text);
+    customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 20, 0), tint_color, badge_text);
 }

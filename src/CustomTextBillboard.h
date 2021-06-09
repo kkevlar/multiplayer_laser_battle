@@ -25,8 +25,8 @@ class CustomTextBillboard
     void initGeom(const std::string& resDir);
     void initProgram(const std::string& resourceDirectory);
     void initTexture(const std::string& resourceDirectory, ImageLoader loader);
-    void renderCustomText(const glm::mat4& P,
-                          const glm::mat4& V,
+    void renderCustomText(glm::mat4& P,
+                          glm::mat4& V,
                           glm::vec3 campos,
                           glm::vec3 position_xyz,
                           glm::vec3 modify_color,

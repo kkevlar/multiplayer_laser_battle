@@ -743,7 +743,7 @@ int main(int argc, char** argv)
     uint32_t timediff_unused;
 
     application->my_username = my_username;
-    log_info("My username is %s", application->my_username);
+    log_info("My username is %s", application->my_username.c_str());
     application->network.PlanesNetworkedSetup(my_username, hostname, &ucid_from_server, &timediff_unused);
 
     application->my_allocated_color_from_server = global_plane_color_allocation[ucid_from_server % GLOBAL_COLOR_COUNT];

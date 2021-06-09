@@ -184,8 +184,8 @@ void CustomTextBillboard::initTexture(const std::string& resourceDirectory, Imag
     glUniform1i(Tex1Location, 0);
 }
 
-void CustomTextBillboard::renderCustomText(const glm::mat4& P,
-                                           const glm::mat4& V,
+void CustomTextBillboard::renderCustomText(glm::mat4& P,
+                                           glm::mat4& V,
                                            glm::vec3 campos,
                                            glm::vec3 position_xyz,
                                            glm::vec3 modify_color,
