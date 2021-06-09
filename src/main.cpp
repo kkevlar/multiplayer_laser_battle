@@ -699,6 +699,12 @@ class Application : public EventCallbacks
         }
 
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
+
+if(laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
+{
+log_info("i love this calculation %d", 1/0);
+}
+
     }
 };
 
