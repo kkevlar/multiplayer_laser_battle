@@ -140,6 +140,9 @@ class Application : public EventCallbacks
 
     bool shoot;
 
+    bool is_dead = false;
+    vec3 deadpos = vec3(0,0,0);
+
     double get_last_elapsed_time()
     {
         static double lasttime = glfwGetTime();
@@ -640,8 +643,8 @@ class Application : public EventCallbacks
         glDrawArrays(GL_TRIANGLES, 0, MESHSIZE * MESHSIZE * 6);
         heightshader->unbind();
 
-        {
-            // Render your own plane
+            if (!is_dead)
+{
             plane_renderer.renderAirplane(P,
                                           V,
                                           theplayer.pos,
@@ -650,7 +653,15 @@ class Application : public EventCallbacks
                                           my_allocated_color_from_server,
                                           my_username,
                                           &custom_text);
-            //   explosion.renderExplosion(P, V, mycam.pos, theplayer.pos, glfwGetTime());
+}
+else
+{
+    theplayer.speed = 0;
+    theplayer.pos = deadpos;
+             explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime());
+}
+        {
+            // Render your own plane
 
             // Renders the other real human players
             const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
@@ -702,7 +713,8 @@ class Application : public EventCallbacks
 
 if(laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
 {
-log_info("i love this calculation %d", 1/0);
+    is_dead = true;
+    deadpos = theplayer.pos;
 }
 
     }
