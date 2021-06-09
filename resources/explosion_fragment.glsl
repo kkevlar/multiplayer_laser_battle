@@ -25,7 +25,7 @@ vec4 bruhmoment(int frame)
     bruh += topleft_start_coords;
 
     vec4 tcol;
-        tcol = texture(tex, bruh);
+    tcol = texture(tex, bruh);
 
     if (tcol.a < 0.2) tcol.rgba = vec4(0);
     return tcol;
@@ -45,8 +45,10 @@ void main()
     oof = (1 - interp) * bruhmoment(treatframe % int(frames_height * frames_width));
     oof += (interp)*bruhmoment((treatframe + 1) % int(frames_height * frames_width));
 
-    if (oof.r < 0.01 && oof.b < 0.01 && oof.g < 0.01)
-    { oof.a = 0; }
+    if (oof.r < 0.2 && oof.b < 0.2 && oof.g < 0.2)
+    {
+        oof.a = 0;
+    }
 
     color = oof;
 }

@@ -135,7 +135,8 @@ void Explosion::initProgram(const std::string& resourceDirectory)
 {
     prog = std::make_shared<Program>();
     prog->setVerbose(true);
-    prog->setShaderNames(resourceDirectory + "/" + "explosion_vertex.glsl", resourceDirectory + +"/" + "explosion_fragment.glsl");
+    prog->setShaderNames(resourceDirectory + "/" + "explosion_vertex.glsl",
+                         resourceDirectory + +"/" + "explosion_fragment.glsl");
     if (!prog->init())
     {
         std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
@@ -182,13 +183,9 @@ void Explosion::initTexture(const std::string& resourceDirectory, ImageLoader lo
     glUniform1i(Tex1Location, 0);
 }
 
-    void Explosion::renderExplosion(glm::mat4& P,
-                     glm::mat4& V,
-                     glm::vec3 campos,
-                     glm::vec3 position_xyz,
-                     float time)
-                     {
-     // Draw the box using GLSL.
+void Explosion::renderExplosion(glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, float time)
+{
+    // Draw the box using GLSL.
     prog->bind();
 
     // send the matrices to the shaders

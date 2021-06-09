@@ -63,8 +63,7 @@ again:
     }
 }
 
-void LaserManager::renderLasers(
-    glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, LaserRenderer* laser)
+void LaserManager::renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, LaserRenderer* laser)
 {
     for (auto& info : this->internal->lasers)
     {

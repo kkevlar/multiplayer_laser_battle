@@ -10,12 +10,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <thread>
 
-#include "LaserRenderer.h"
 #include "CustomTextBillboard.h"
+#include "Explosion.h"
 #include "GLSL.h"
 #include "LaserManager.h"
+#include "LaserRenderer.h"
 #include "PlaneRenderer.h"
-#include "Explosion.h"
 #include "Planes.h"
 #include "PlanesNetworked.h"
 #include "Program.h"
@@ -650,7 +650,7 @@ class Application : public EventCallbacks
                                           my_allocated_color_from_server,
                                           my_username,
                                           &custom_text);
-                                          explosion.renderExplosion(P, V, mycam.pos, theplayer.pos, glfwGetTime());
+            //   explosion.renderExplosion(P, V, mycam.pos, theplayer.pos, glfwGetTime());
 
             // Renders the other real human players
             const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());

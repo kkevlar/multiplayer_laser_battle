@@ -89,7 +89,6 @@ void PlaneRenderer::renderAirplane(glm::mat4& P,
     mat4 plane_overall_rot = mat4(plane_rot_must_include_default_rotation);
     mat4 M = translate_plane * plane_overall_rot * scale_plane;
 
-
     glUniformMatrix4fv(internal_plane_prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
     glUniformMatrix4fv(internal_plane_prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
     glUniformMatrix4fv(internal_plane_prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);

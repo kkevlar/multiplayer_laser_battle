@@ -21,8 +21,8 @@ resources/shader_fragment.glsl
 resources/shader_vertex.glsl
 resources/sky_fragment.glsl
 resources/sky_vertex.glsl
-src/AnimTextureBillboard.cpp
-src/AnimTextureBillboard.h
+src/LaserRenderer.cpp
+src/LaserRenderer.h
 src/byte_order.h
 src/compat.cpp
 src/compat.h

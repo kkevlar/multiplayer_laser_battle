@@ -185,12 +185,8 @@ void CustomTextBillboard::initTexture(const std::string& resourceDirectory, Imag
     glUniform1i(Tex1Location, 0);
 }
 
-void CustomTextBillboard::renderCustomText(glm::mat4& P,
-                                           glm::mat4& V,
-                                           glm::vec3 campos,
-                                           glm::vec3 position_xyz,
-                                           glm::vec3 modify_color,
-                                           std::string text)
+void CustomTextBillboard::renderCustomText(
+    glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, glm::vec3 modify_color, std::string text)
 {
     // Draw the box using GLSL.
     prog->bind();
@@ -223,8 +219,6 @@ void CustomTextBillboard::renderCustomText(glm::mat4& P,
         }
         index += 1;
     }
-
-
 
     // send the matrices to the shaders
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);

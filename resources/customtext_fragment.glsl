@@ -79,8 +79,7 @@ void main()
         }
     }
 
-    if (oof.a > 0.1)
-    oof.rgb = modify_color;
+    if (oof.a > 0.1) oof.rgb = modify_color;
 
     color = oof;
 }
