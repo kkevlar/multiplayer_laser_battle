@@ -184,46 +184,43 @@ void CustomTextBillboard::initTexture(const std::string& resourceDirectory, Imag
     glUniform1i(Tex1Location, 0);
 }
 
-void CustomTextBillboard::renderCustomText(
-    glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, glm::vec3 modify_color, std::string text)
+void CustomTextBillboard::renderCustomText(const glm::mat4& P,
+                                           const glm::mat4& V,
+                                           glm::vec3 campos,
+                                           glm::vec3 position_xyz,
+                                           glm::vec3 modify_color,
+                                           std::string text)
 {
     // Draw the box using GLSL.
     prog->bind();
 
-int count,index=0;
+    int count, index = 0;
     mat4 letterselect;
-while(count < 10 && index < text.size())
-{
-    char c = text.at(index)  ;
-   if (
-       (c >= 'a' && c <= 'z')
-   )
-   {
-       letterselect[count/4][count % 4] = ((int) c - 'a');
-       count +=1;
-       
-   }
-   else if (
-       (c >= 'A' && c <= 'Z')
-   )
-   {
-       letterselect[count/4][count % 4] = ((int) c - 'Z');
-       count +=1;
-   }
-   else if
-       (c >= '0' && c <= '9')
-       {
-       letterselect[count/4][count % 4] = ((int) c - '0') + ((int) 'z'-'a') + 2;
-       count +=1;
-       }
-       else if (c == ' ' || c == '_')
-       {
-       letterselect[count/4][count % 4] = ((int) 'z'-'a') + 1;
-       count +=1;
-           
-       }
-       index += 1;
-}
+    while (count < 10 && index < text.size())
+    {
+        char c = text.at(index);
+        if ((c >= 'a' && c <= 'z'))
+        {
+            letterselect[count / 4][count % 4] = ((int)c - 'a');
+            count += 1;
+        }
+        else if ((c >= 'A' && c <= 'Z'))
+        {
+            letterselect[count / 4][count % 4] = ((int)c - 'Z');
+            count += 1;
+        }
+        else if (c >= '0' && c <= '9')
+        {
+            letterselect[count / 4][count % 4] = ((int)c - '0') + ((int)'z' - 'a') + 2;
+            count += 1;
+        }
+        else if (c == ' ' || c == '_')
+        {
+            letterselect[count / 4][count % 4] = ((int)'z' - 'a') + 1;
+            count += 1;
+        }
+        index += 1;
+    }
 
     // send the matrices to the shaders
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
@@ -234,7 +231,7 @@ while(count < 10 && index < text.size())
     glUniform2f(prog->getUniform("botright_end_coords"), 1.0f, 1.0f);
     glUniform1f(prog->getUniform("frames_width"), 37);
     glUniform1f(prog->getUniform("frames_height"), 1);
-    glUniform1i(prog->getUniform("numletters"), 8);
+    glUniform1i(prog->getUniform("numletters"), count);
     glUniformMatrix4fv(prog->getUniform("letterselect"), 1, GL_FALSE, &letterselect[0][0]);
 
     glBindVertexArray(VertexArrayID);

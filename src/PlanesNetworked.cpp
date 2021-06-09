@@ -293,13 +293,8 @@ std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPl
         vec3 pos = trunc_v4(element.second.pdu.position) + difftime * trunc_v4(element.second.pdu.velocity);
         quat rot = element.second.pdu.orientation;
 
-        if (sizeof(NetworkedInterpolatedPlanePositionInfo) != sizeof(vec3) + sizeof(quat) + sizeof(vec3))
-        {
-            log_warn("Theres been a regression. Check this line asap.");
-        }
-
         vec3 color = trunc_v4(element.second.pdu.color);
-        NetworkedInterpolatedPlanePositionInfo interpinfo = {pos, rot, color};
+        NetworkedInterpolatedPlanePositionInfo interpinfo = {pos, rot, color, element.first};
         ret.push_back(interpinfo);
     }
 

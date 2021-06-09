@@ -25,7 +25,7 @@ vec4 bruhmoment(vec2 incoming_tex_corods, int row, int col, vec3 color)
     bruh += topleft_start_coords;
 
     vec4 tcol;
-        tcol = texture(tex, bruh);
+    tcol = texture(tex, bruh);
 
     if (tcol.a < 0.2) tcol.rgba = vec4(0);
     if (tcol.r > 0.01 || tcol.g > 0.01 || tcol.r > 0.01)

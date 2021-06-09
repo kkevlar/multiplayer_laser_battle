@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "Program.h"
 #include "CustomTextBillboard.h"
+#include "Program.h"
 #include "Shape.h"
 
 typedef unsigned char*(PlaneImageLoader)(char const*, int*, int*, int*, int);
@@ -33,7 +33,6 @@ class PlaneRenderer
                         glm::quat plane_rot_must_include_default_rotation,
                         glm::vec3 campos,
                         glm::vec3 tint_color,
-                        std::string badge_text, 
-                        CustomTextBillboard* customtext
-                        );
+                        std::string badge_text,
+                        CustomTextBillboard* customtext);
 };
