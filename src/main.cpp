@@ -604,7 +604,7 @@ class Application : public EventCallbacks
 
         quat q = quat(plane_overall_rot);
         network.BroadcastSelfPosition(
-            glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
+            glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server, is_dead);
         network.PollIncoming(glfwGetTime());
 
         // Special scope for netlaser
@@ -667,8 +667,10 @@ else
             const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
             for (const auto& estimate : estimates)
             {
-                plane_renderer.renderAirplane(
-                    P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text);
+                if(!estimate.is_dead)
+                { plane_renderer.renderAirplane( P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text); }
+                    else
+             { explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime()); }
             }
 
             // draw the bots
