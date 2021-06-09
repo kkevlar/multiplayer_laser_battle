@@ -15,6 +15,7 @@ typedef struct
     glm::vec3 pos;
     glm::quat rot;
     glm::vec3 color;
+    std::string username;
 
 } NetworkedInterpolatedPlanePositionInfo;
 

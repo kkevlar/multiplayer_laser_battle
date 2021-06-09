@@ -126,6 +126,7 @@ class Application : public EventCallbacks
     GLuint Texture, AudioTex, AudioTexBuf;
     GLuint Texture2, HeightTex;
 
+    std::string my_username;
     player theplayer;
     AnimTextureBillboard laser;
     PlaneRenderer plane_renderer;
@@ -635,17 +636,22 @@ class Application : public EventCallbacks
         heightshader->unbind();
 
         {
-            plane_renderer.bindPlaneProgram();
-
             // Render your own plane
-            plane_renderer.renderAirplane(
-                P, V, theplayer.pos, plane_overall_rot, mycam.pos, my_allocated_color_from_server);
+            plane_renderer.renderAirplane(P,
+                                          V,
+                                          theplayer.pos,
+                                          plane_overall_rot,
+                                          mycam.pos,
+                                          my_allocated_color_from_server,
+                                          my_username,
+                                          &custom_text);
 
             // Renders the other real human players
             const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
             for (const auto& estimate : estimates)
             {
-                plane_renderer.renderAirplane(P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color);
+                plane_renderer.renderAirplane(
+                    P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text);
             }
 
             // draw the bots
@@ -665,7 +671,6 @@ class Application : public EventCallbacks
             //     glBindTexture(GL_TEXTURE_2D, Texture2);
             //     plane->draw(pplane);  // render!!!!!!
             // }
-            plane_renderer.unBindPlaneProgram();
         }
 
         if (shoot)
@@ -736,6 +741,9 @@ int main(int argc, char** argv)
 
     uint16_t ucid_from_server;
     uint32_t timediff_unused;
+
+    application->my_username = my_username;
+    log_info("My username is %s", application->my_username.c_str());
     application->network.PlanesNetworkedSetup(my_username, hostname, &ucid_from_server, &timediff_unused);
 
     application->my_allocated_color_from_server = global_plane_color_allocation[ucid_from_server % GLOBAL_COLOR_COUNT];

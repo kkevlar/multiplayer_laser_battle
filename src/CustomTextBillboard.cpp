@@ -8,6 +8,7 @@ using namespace std;
 using namespace glm;
 #include "CustomTextBillboard.h"
 #include "Program.h"
+#include "log.h"
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
@@ -149,7 +150,6 @@ void CustomTextBillboard::initProgram(const std::string& resourceDirectory)
     prog->addUniform("botright_end_coords");
     prog->addUniform("frames_height");
     prog->addUniform("frames_width");
-    prog->addUniform("ratio_texslice_show");
     prog->addUniform("modify_color");
     prog->addUniform("numletters");
     prog->addUniform("letterselect");
@@ -185,33 +185,57 @@ void CustomTextBillboard::initTexture(const std::string& resourceDirectory, Imag
     glUniform1i(Tex1Location, 0);
 }
 
-void CustomTextBillboard::renderCustomText(
-    glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, glm::vec3 modify_color, float time)
+void CustomTextBillboard::renderCustomText(glm::mat4& P,
+                                           glm::mat4& V,
+                                           glm::vec3 campos,
+                                           glm::vec3 position_xyz,
+                                           glm::vec3 modify_color,
+                                           std::string text)
 {
     // Draw the box using GLSL.
     prog->bind();
 
-    mat4 letterselect;
-    letterselect[0][0] = 1;
-    letterselect[0][1] = 'u' - 'a';
-    letterselect[0][2] = 's' - 'a';
-    letterselect[0][3] = 't' - 'a';
-    letterselect[1][0] = 'e' - 'a';
-    letterselect[1][1] = 'r' - 'a';
-    letterselect[1][2] = 'z' - 'a' + 1;
-    letterselect[1][3] = 'z' - 'a' + 3;
+    int count = 0;
+    int index = 0;
+    mat4 letterselect = mat4(1);
+    while (count < 10 && index < text.size())
+    {
+        char c = text.at(index);
+        if ((c >= 'a' && c <= 'z'))
+        {
+            letterselect[count / 4][count % 4] = ((int)c - 'a');
+            count += 1;
+        }
+        else if ((c >= 'A' && c <= 'Z'))
+        {
+            letterselect[count / 4][count % 4] = ((int)c - 'A');
+            count += 1;
+        }
+        else if (c >= '0' && c <= '9')
+        {
+            letterselect[count / 4][count % 4] = ((int)c - '0') + ((int)'z' - 'a') + 2;
+            count += 1;
+        }
+        else if (c == ' ' || c == '_')
+        {
+            letterselect[count / 4][count % 4] = ((int)'z' - 'a') + 1;
+            count += 1;
+        }
+        index += 1;
+    }
+
+
 
     // send the matrices to the shaders
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
     glUniform3fv(prog->getUniform("campos"), 1, &campos[0]);
-    glUniform3fv(prog->getUniform("modify_color"), 1, &modify_color[0]);
     glUniform2f(prog->getUniform("topleft_start_coords"), 0, 0);
     glUniform2f(prog->getUniform("botright_end_coords"), 1.0f, 1.0f);
-    glUniform2f(prog->getUniform("ratio_texslice_show"), time * 14, 1.0f);
     glUniform1f(prog->getUniform("frames_width"), 37);
     glUniform1f(prog->getUniform("frames_height"), 1);
-    glUniform1i(prog->getUniform("numletters"), 8);
+    glUniform1i(prog->getUniform("numletters"), count);
+    glUniform3fv(prog->getUniform("modify_color"), 1, &modify_color[0]);
     glUniformMatrix4fv(prog->getUniform("letterselect"), 1, GL_FALSE, &letterselect[0][0]);
 
     glBindVertexArray(VertexArrayID);
@@ -225,7 +249,7 @@ void CustomTextBillboard::renderCustomText(
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Texture);
 
-    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(30, 5, 1));
+    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(10, 3, 1));
     glm::mat4 TransCaller = glm::translate(glm::mat4(1.0f), position_xyz);
 
     glm::mat4 M;

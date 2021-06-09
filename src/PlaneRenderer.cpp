@@ -1,3 +1,4 @@
+#include "PlaneRenderer.h"
 
 #include <glad/glad.h>
 
@@ -6,7 +7,6 @@
 #include <iostream>
 using namespace std;
 using namespace glm;
-#include "PlaneRenderer.h"
 #include "Program.h"
 #include "Shape.h"
 #include "log.h"
@@ -15,7 +15,6 @@ PlaneRenderer::PlaneRenderer()
 {
     this->init_geom = false;
     this->init_program = false;
-    this->is_bound = false;
 }
 
 void PlaneRenderer::initGeom(const std::string& resDir, PlaneImageLoader loader)
@@ -74,72 +73,22 @@ void PlaneRenderer::initProgram(const std::string& resourceDirectory)
     this->init_program = true;
 }
 
-void PlaneRenderer::bindPlaneProgram()
-{
-    if (!this->init_program)
-    {
-        log_fatal("bad user");
-        exit(3);
-    }
-    if (!this->init_geom)
-    {
-        log_fatal("bad user");
-        exit(3);
-    }
-    if (this->is_bound)
-    {
-        log_fatal("Rebinding bound program");
-        exit(6);
-    }
-    else
-    {
-        internal_plane_prog->bind();
-        this->is_bound = true;
-    }
-}
-
-void PlaneRenderer::unBindPlaneProgram()
-{
-    if (!this->init_program)
-    {
-        log_fatal("bad user");
-        exit(3);
-    }
-    if (!this->init_geom)
-    {
-        log_fatal("bad user");
-        exit(3);
-    }
-
-    if (!this->is_bound)
-    {
-        log_fatal("Unbinding unbound program");
-        exit(6);
-    }
-    else
-    {
-        internal_plane_prog->unbind();
-        this->is_bound = false;
-    }
-}
-
-void PlaneRenderer::renderAirplane(const glm::mat4& P,
-                                   const glm::mat4& V,
+void PlaneRenderer::renderAirplane(glm::mat4& P,
+                                   glm::mat4& V,
                                    glm::vec3 position_xyz,
                                    glm::quat plane_rot_must_include_default_rotation,
                                    glm::vec3 campos,
-                                   glm::vec3 tint_color)
+                                   glm::vec3 tint_color,
+                                   std::string badge_text,
+                                   CustomTextBillboard* customtext)
 {
-    if (!this->is_bound)
-    {
-        log_fatal("how u expect me to render if unbound");
-        exit(3);
-    }
+    internal_plane_prog->bind();
 
     mat4 scale_plane = scale(mat4(1), vec3(10));
     mat4 translate_plane = translate(mat4(1), position_xyz);
     mat4 plane_overall_rot = mat4(plane_rot_must_include_default_rotation);
     mat4 M = translate_plane * plane_overall_rot * scale_plane;
+
 
     glUniformMatrix4fv(internal_plane_prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
     glUniformMatrix4fv(internal_plane_prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
@@ -148,4 +97,7 @@ void PlaneRenderer::renderAirplane(const glm::mat4& P,
     glUniform3fv(internal_plane_prog->getUniform("tint_color"), 1, &tint_color[0]);
     glActiveTexture(GL_TEXTURE0);
     plane->draw(internal_plane_prog);
+    internal_plane_prog->unbind();
+
+    customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 5, 0), tint_color, badge_text);
 }
