@@ -38,11 +38,11 @@ void main()
     vec3 ld = normalize(vertex_pos - lp);
     float diffuse = dot(n, ld);
 
-    int treatframe = int(frame_select);
+    int treatframe =  int(frame_select);
     float interp = frame_select - int(frame_select);
 
-    vec4 oof;
-    if(treatframe > frames_width * frames_height)
+    vec4 oof = vec4(0,0,0,0);
+    if(false &&treatframe > 14)
     {
         oof = vec4(0,0,0,0);
     }

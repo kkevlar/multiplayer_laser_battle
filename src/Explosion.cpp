@@ -8,6 +8,7 @@ using namespace std;
 using namespace glm;
 
 #include "Explosion.h"
+#include "log.h"
 #include "Program.h"
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
@@ -196,7 +197,8 @@ void Explosion::renderExplosion(glm::mat4& P, glm::mat4& V, glm::vec3 campos, gl
     glUniform2f(prog->getUniform("botright_end_coords"), 1.0f, 1.0f);
     glUniform1f(prog->getUniform("frames_width"), 4);
     glUniform1f(prog->getUniform("frames_height"), 4);
-    glUniform1f(prog->getUniform("frame_select"), time * 3);
+    glUniform1f(prog->getUniform("frame_select"), time * 10 );
+    log_info("%f", time*10);
 
     glBindVertexArray(VertexArrayID);
     // actually draw from vertex 0, 3 vertices
