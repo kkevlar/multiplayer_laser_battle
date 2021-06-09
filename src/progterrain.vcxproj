@@ -33,6 +33,8 @@
     <ClCompile Include="message.cpp" />
     <ClCompile Include="networks.c" />
     <ClCompile Include="packet.c" />
+    <ClCompile Include="PlaneRenderer.cpp" />
+    <ClCompile Include="Planes.cpp" />
     <ClCompile Include="PlanesNetworked.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Shape.cpp" />
@@ -56,6 +58,8 @@
     <ClInclude Include="netcontext.h" />
     <ClInclude Include="networks.h" />
     <ClInclude Include="packet.h" />
+    <ClInclude Include="PlaneRenderer.h" />
+    <ClInclude Include="Planes.h" />
     <ClInclude Include="PlanesNetworked.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="Shape.h" />
