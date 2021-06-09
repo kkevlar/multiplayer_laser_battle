@@ -30,7 +30,7 @@ typedef struct
     quat orientation;
     vec4 color;
     uint8_t magic;
-    uint8_t pad_unused1;
+    uint8_t bool_is_dead;
     uint8_t pad_unused2;
     uint8_t magic2;
 } PlanePositionInfoPDU;
@@ -213,7 +213,7 @@ void PlanesNetworked::PlanesNetworkedSetup(const char* username,
 }
 
 void PlanesNetworked::BroadcastSelfPosition(
-    float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color)
+    float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color, bool is_dead)
 {
     NULLCHECK(this->internal);
     if (time - this->internal->last_broadcast_time > (1.0f / FASTEST_BROADCAST_FREQ_ALLOWED_HZ))
@@ -224,6 +224,7 @@ void PlanesNetworked::BroadcastSelfPosition(
         pp.position = vec4(pos, 0);
         pp.velocity = vec4(velocity, 0);
         pp.color = vec4(color, 0);
+        pp.bool_is_dead = is_dead;
         pp.magic = PLANES_POS_MAGIC_VALUE1;
         pp.magic2 = PLANES_POS_MAGIC_VALUE2;
 
@@ -288,13 +289,21 @@ std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPl
     vector<NetworkedInterpolatedPlanePositionInfo> ret;
     for (const pair<string, PlanePositionInfoWithTime>& element : this->internal->position_map)
     {
+        vec3 velocity = vec3(0);
+
         float difftime = time - element.second.timeUpdated;
 
-        vec3 pos = trunc_v4(element.second.pdu.position) + difftime * trunc_v4(element.second.pdu.velocity);
+        if (!element.second.pdu.bool_is_dead)
+        {
+            velocity = trunc_v4(element.second.pdu.velocity);
+        }
+
+        vec3 pos = trunc_v4(element.second.pdu.position) + difftime * velocity;
         quat rot = element.second.pdu.orientation;
 
         vec3 color = trunc_v4(element.second.pdu.color);
-        NetworkedInterpolatedPlanePositionInfo interpinfo = {pos, rot, color, element.first};
+        NetworkedInterpolatedPlanePositionInfo interpinfo = {
+            pos, rot, color, element.first, (bool)element.second.pdu.bool_is_dead};
         ret.push_back(interpinfo);
     }
 

@@ -10,10 +10,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <thread>
 
-#include "AnimTextureBillboard.h"
 #include "CustomTextBillboard.h"
+#include "Explosion.h"
 #include "GLSL.h"
 #include "LaserManager.h"
+#include "LaserRenderer.h"
 #include "PlaneRenderer.h"
 #include "Planes.h"
 #include "PlanesNetworked.h"
@@ -128,7 +129,8 @@ class Application : public EventCallbacks
 
     std::string my_username;
     player theplayer;
-    AnimTextureBillboard laser;
+    Explosion explosion;
+    LaserRenderer laser;
     PlaneRenderer plane_renderer;
     CustomTextBillboard custom_text;
     LaserManager laser_manager;
@@ -137,6 +139,9 @@ class Application : public EventCallbacks
     vec3 my_allocated_color_from_server = vec3(0, 0, 0);
 
     bool shoot;
+
+    bool is_dead = false;
+    vec3 deadpos = vec3(0, 0, 0);
 
     double get_last_elapsed_time()
     {
@@ -285,6 +290,7 @@ class Application : public EventCallbacks
         init_mesh();
 
         laser.initGeom(resourceDirectory);
+        explosion.initGeom(resourceDirectory);
         custom_text.initGeom(resourceDirectory);
 
         // Initialize mesh.
@@ -387,6 +393,7 @@ class Application : public EventCallbacks
                         */
 
         laser.initTexture(resourceDirectory, "laser.png", stbi_load);
+        explosion.initTexture(resourceDirectory, stbi_load);
         custom_text.initTexture(resourceDirectory, stbi_load);
 
         glEnable(GL_BLEND);
@@ -479,6 +486,7 @@ class Application : public EventCallbacks
         linesshader->addUniform("bgcolor");
 
         plane_renderer.initProgram(resourceDirectory);
+        explosion.initProgram(resourceDirectory);
         laser.initProgram(resourceDirectory, "laser_vertex.glsl", "laser_fragment.glsl");
         custom_text.initProgram(resourceDirectory);
     }
@@ -596,7 +604,7 @@ class Application : public EventCallbacks
 
         quat q = quat(plane_overall_rot);
         network.BroadcastSelfPosition(
-            glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server);
+            glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server, is_dead);
         network.PollIncoming(glfwGetTime());
 
         // Special scope for netlaser
@@ -635,43 +643,61 @@ class Application : public EventCallbacks
         glDrawArrays(GL_TRIANGLES, 0, MESHSIZE * MESHSIZE * 6);
         heightshader->unbind();
 
+        plane_renderer.renderAirplane(P,
+                                      V,
+                                      theplayer.pos,
+                                      plane_overall_rot,
+                                      mycam.pos,
+                                      my_allocated_color_from_server,
+                                      my_username,
+                                      &custom_text,
+                                      is_dead);
+
+        if (is_dead)
         {
-            // Render your own plane
+            theplayer.speed = 0;
+            theplayer.pos = deadpos;
+            explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime());
+        }
+
+        // Render your own plane
+
+        // Renders the other real human players
+        const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
+        for (const auto& estimate : estimates)
+        {
             plane_renderer.renderAirplane(P,
                                           V,
-                                          theplayer.pos,
-                                          plane_overall_rot,
+                                          estimate.pos,
+                                          estimate.rot,
                                           mycam.pos,
-                                          my_allocated_color_from_server,
-                                          my_username,
-                                          &custom_text);
-
-            // Renders the other real human players
-            const auto estimates = network.GiveOtherPlaneEstimates(glfwGetTime());
-            for (const auto& estimate : estimates)
+                                          estimate.color,
+                                          estimate.username,
+                                          &custom_text,
+                                          estimate.is_dead);
+            if (estimate.is_dead)
             {
-                plane_renderer.renderAirplane(
-                    P, V, estimate.pos, estimate.rot, mycam.pos, estimate.color, estimate.username, &custom_text);
+                explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime());
             }
-
-            // draw the bots
-
-            // TODO TODO
-            // for (int i = 0; i < thebots.size(); i++)
-            // {
-            //     // scale_plane = scale(mat4(1), vec3(10));
-            //     rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
-            //     translate_plane = translate(mat4(1), thebots[i].pos);
-            //     plane_overall_rot = rotate_plane * rotate_default_plane;
-            //     M = translate_plane * plane_overall_rot * scale_plane;
-
-            //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-            //     glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
-            //     glActiveTexture(GL_TEXTURE0);
-            //     glBindTexture(GL_TEXTURE_2D, Texture2);
-            //     plane->draw(pplane);  // render!!!!!!
-            // }
         }
+
+        // draw the bots
+
+        // TODO TODO
+        // for (int i = 0; i < thebots.size(); i++)
+        // {
+        //     // scale_plane = scale(mat4(1), vec3(10));
+        //     rotate_plane = safe_lookat(thebots[i].pos, thebots[i].pos + thebots[i].forward, thebots[i].up);
+        //     translate_plane = translate(mat4(1), thebots[i].pos);
+        //     plane_overall_rot = rotate_plane * rotate_default_plane;
+        //     M = translate_plane * plane_overall_rot * scale_plane;
+
+        //     glUniformMatrix4fv(pplane->getUniform("M"), 1, GL_FALSE, &M[0][0]);
+        //     glUniform3fv(pplane->getUniform("tint_color"), 1, &my_allocated_color_from_server[0]);
+        //     glActiveTexture(GL_TEXTURE0);
+        //     glBindTexture(GL_TEXTURE_2D, Texture2);
+        //     plane->draw(pplane);  // render!!!!!!
+        // }
 
         if (shoot)
         {
@@ -693,6 +719,12 @@ class Application : public EventCallbacks
         }
 
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
+
+        if (laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
+        {
+            is_dead = true;
+            deadpos = theplayer.pos;
+        }
     }
 };
 

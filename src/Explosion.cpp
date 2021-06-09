@@ -6,10 +6,9 @@
 #include <iostream>
 using namespace std;
 using namespace glm;
-#include "AnimTextureBillboard.h"
-#include "Program.h"
 
-// TODO RENAME TO LASER CLASS
+#include "Explosion.h"
+#include "Program.h"
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
@@ -38,7 +37,7 @@ static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
     return m1;
 }
 
-void AnimTextureBillboard::initGeom(const std::string& resourceDirectory)
+void Explosion::initGeom(const std::string& resourceDirectory)
 {
     // generate the VAO
     glGenVertexArrays(1, &VertexArrayID);
@@ -132,13 +131,12 @@ void AnimTextureBillboard::initGeom(const std::string& resourceDirectory)
     glBindVertexArray(0);
 }
 
-void AnimTextureBillboard::initProgram(const std::string& resourceDirectory,
-                                       const std::string& vert_shader_name,
-                                       const std::string& frag_shader_name)
+void Explosion::initProgram(const std::string& resourceDirectory)
 {
     prog = std::make_shared<Program>();
     prog->setVerbose(true);
-    prog->setShaderNames(resourceDirectory + "/" + vert_shader_name, resourceDirectory + +"/" + frag_shader_name);
+    prog->setShaderNames(resourceDirectory + "/" + "explosion_vertex.glsl",
+                         resourceDirectory + +"/" + "explosion_fragment.glsl");
     if (!prog->init())
     {
         std::cerr << "One or more shaders failed to compile... exiting!" << std::endl;
@@ -152,23 +150,19 @@ void AnimTextureBillboard::initProgram(const std::string& resourceDirectory,
     prog->addUniform("botright_end_coords");
     prog->addUniform("frames_height");
     prog->addUniform("frames_width");
-    prog->addUniform("ratio_texslice_show");
     prog->addUniform("frame_select");
-    prog->addUniform("modify_color");
     prog->addAttribute("vertPos");
     prog->addAttribute("vertNor");
     prog->addAttribute("vertTex");
 }
 
-void AnimTextureBillboard::initTexture(const std::string& resourceDirectory,
-                                       const std::string& tex_name,
-                                       ImageLoader loader)
+void Explosion::initTexture(const std::string& resourceDirectory, ImageLoader loader)
 {
     int width, height, channels;
     char filepath[1000];
 
     // texture 1
-    string str = resourceDirectory + "/" + tex_name;
+    string str = resourceDirectory + "/" + "explosion.jpg";
     strcpy(filepath, str.c_str());
     unsigned char* data = loader(filepath, &width, &height, &channels, 4);
     glGenTextures(1, &Texture);
@@ -189,13 +183,7 @@ void AnimTextureBillboard::initTexture(const std::string& resourceDirectory,
     glUniform1i(Tex1Location, 0);
 }
 
-void AnimTextureBillboard::renderLaser(glm::mat4& P,
-                                       glm::mat4& V,
-                                       glm::vec3 campos,
-                                       glm::vec3 position_xyz,
-                                       glm::vec3 where_to_look,
-                                       glm::vec3 modify_color,
-                                       float time)
+void Explosion::renderExplosion(glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, float time)
 {
     // Draw the box using GLSL.
     prog->bind();
@@ -204,12 +192,10 @@ void AnimTextureBillboard::renderLaser(glm::mat4& P,
     glUniformMatrix4fv(prog->getUniform("P"), 1, GL_FALSE, &P[0][0]);
     glUniformMatrix4fv(prog->getUniform("V"), 1, GL_FALSE, &V[0][0]);
     glUniform3fv(prog->getUniform("campos"), 1, &campos[0]);
-    glUniform3fv(prog->getUniform("modify_color"), 1, &modify_color[0]);
     glUniform2f(prog->getUniform("topleft_start_coords"), 0, 0);
     glUniform2f(prog->getUniform("botright_end_coords"), 1.0f, 1.0f);
-    glUniform2f(prog->getUniform("ratio_texslice_show"), time * 14, 1.0f);
-    glUniform1f(prog->getUniform("frames_width"), 1);
-    glUniform1f(prog->getUniform("frames_height"), 11);
+    glUniform1f(prog->getUniform("frames_width"), 4);
+    glUniform1f(prog->getUniform("frames_height"), 4);
     glUniform1f(prog->getUniform("frame_select"), time * 10);
 
     glBindVertexArray(VertexArrayID);
@@ -223,24 +209,13 @@ void AnimTextureBillboard::renderLaser(glm::mat4& P,
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, Texture);
 
-    float scaleydiff = sin(time * 50);
-    vec2 scalexy = vec2(40, 2.5 + 1 * scaleydiff);
-    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(scalexy.x, scalexy.y, 1));
+    glm::mat4 S = glm::scale(glm::mat4(1.0f), vec3(10));
     glm::mat4 TransCaller = glm::translate(glm::mat4(1.0f), position_xyz);
 
-    glm::mat4 rr = safe_lookat(position_xyz, where_to_look, vec3(0, 1, 0));
-
-    glm::mat4 yyy = rotate(mat4(1), 3.14159265f / 2, vec3(0, -1, 0));
-    float xrot = 3.14159265 / 2.0f;
-    glm::mat4 xxx = rotate(mat4(1), xrot, vec3(1, 0, 0));
-
     glm::mat4 M;
-    M = TransCaller * rr * yyy * xxx * S;
+    M = TransCaller * Vi * S;
     glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)0);
-    // M =  TransZ *  rr * zzz *yyy *    S;
-    // glUniformMatrix4fv(prog->getUniform("M"), 1, GL_FALSE, &M[0][0]);
-    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)0);
 
     glBindVertexArray(0);
 

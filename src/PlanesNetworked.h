@@ -16,6 +16,7 @@ typedef struct
     glm::quat rot;
     glm::vec3 color;
     std::string username;
+    bool is_dead;
 
 } NetworkedInterpolatedPlanePositionInfo;
 
@@ -26,7 +27,8 @@ class PlanesNetworked
     PlanesNetworked();
     ~PlanesNetworked();
     void PlanesNetworkedSetup(const char* username, const char* hostname, uint16_t* out_ucid, uint32_t* out_ms_elapsed);
-    void BroadcastSelfPosition(float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color);
+    void BroadcastSelfPosition(
+        float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color, bool is_dead);
     void BroadcastNewLaser(NewShotLaserInfo* laser);
     void PollIncoming(float time);
     bool MaybePopIncomingNetworkedLaser(NewShotLaserInfo* laser);

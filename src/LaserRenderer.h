@@ -11,7 +11,7 @@
 
 typedef unsigned char*(ImageLoader)(char const*, int*, int*, int*, int);
 
-class AnimTextureBillboard
+class LaserRenderer
 {
    private:
     GLuint VertexArrayID;

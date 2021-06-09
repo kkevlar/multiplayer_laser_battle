@@ -4,6 +4,8 @@ net/serversrc/incoming.cpp
 net/serversrc/incoming.h
 net/serversrc/main_server.cpp
 resources/geometry.glsl
+resources/explosion_fragment.glsl
+resources/explosion_vertex.glsl
 resources/height_frag.glsl
 resources/height_vertex.glsl
 resources/laser_fragment.glsl
@@ -19,13 +21,15 @@ resources/shader_fragment.glsl
 resources/shader_vertex.glsl
 resources/sky_fragment.glsl
 resources/sky_vertex.glsl
-src/AnimTextureBillboard.cpp
-src/AnimTextureBillboard.h
+src/LaserRenderer.cpp
+src/LaserRenderer.h
 src/byte_order.h
 src/compat.cpp
 src/compat.h
 src/CustomTextBillboard.cpp
 src/CustomTextBillboard.h
+src/Explosion.cpp
+src/Explosion.h
 src/fdselect.cpp
 src/fdselect.h
 src/fromserver_client.cpp

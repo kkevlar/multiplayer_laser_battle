@@ -63,8 +63,7 @@ again:
     }
 }
 
-void LaserManager::renderLasers(
-    glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, AnimTextureBillboard* laser)
+void LaserManager::renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, LaserRenderer* laser)
 {
     for (auto& info : this->internal->lasers)
     {
@@ -83,4 +82,22 @@ void LaserManager::renderLasers(
             }
         }
     }
+}
+
+bool LaserManager::shouldDie(glm::vec3 pos, glm::vec3 color, float currentTime)
+{
+    for (auto& info : this->internal->lasers)
+    {
+        glm::vec3 along_route = info.info.position_target - info.info.position_source;
+        float ratio_to_target = (currentTime - info.info.start_time) * info.info.speed;
+        glm::vec3 where = info.info.position_source + ratio_to_target * along_route;
+
+        if (info.valid && length(info.info.color - color) > 0.01 && length(where - pos) < 10)
+        {
+            info.valid = false;
+            this->internal->has_invalid = true;
+            return true;
+        }
+    }
+    return false;
 }
