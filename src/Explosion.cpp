@@ -9,6 +9,7 @@ using namespace glm;
 
 #include "Explosion.h"
 #include "Program.h"
+#include "log.h"
 
 static mat4 safe_lookat(vec3 me, vec3 target, vec3 up)
 {
@@ -220,4 +221,5 @@ void Explosion::renderExplosion(glm::mat4& P, glm::mat4& V, glm::vec3 campos, gl
     glBindVertexArray(0);
 
     prog->unbind();
+
 }

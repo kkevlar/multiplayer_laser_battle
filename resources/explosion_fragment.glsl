@@ -41,14 +41,20 @@ void main()
     int treatframe = int(frame_select);
     float interp = frame_select - int(frame_select);
 
-    vec4 oof;
-    oof = (1 - interp) * bruhmoment(treatframe % int(frames_height * frames_width));
-    oof += (interp)*bruhmoment((treatframe + 1) % int(frames_height * frames_width));
-
-    if (oof.r < 0.2 && oof.b < 0.2 && oof.g < 0.2)
+    vec4 oof = vec4(0, 0, 0, 0);
+    if (false && treatframe > 14)
     {
-        oof.a = 0;
+        oof = vec4(0, 0, 0, 0);
     }
+    else
+    {
+        oof = (1 - interp) * bruhmoment(treatframe % int(frames_height * frames_width));
+        oof += (interp)*bruhmoment((treatframe + 1) % int(frames_height * frames_width));
 
+        if (oof.r < 0.2 && oof.b < 0.2 && oof.g < 0.2)
+        {
+            oof.a = 0;
+        }
+    }
     color = oof;
 }
