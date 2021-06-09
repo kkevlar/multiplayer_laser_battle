@@ -8,7 +8,6 @@ uniform vec3 campos;
 uniform vec3 modify_color;
 uniform vec2 topleft_start_coords;
 uniform vec2 botright_end_coords;
-uniform vec2 ratio_texslice_show;
 uniform float frames_height;
 uniform float frames_width;
 uniform float frame_select;
@@ -26,14 +25,7 @@ vec4 bruhmoment(vec2 incoming_tex_corods, int row, int col, vec3 color)
     bruh += topleft_start_coords;
 
     vec4 tcol;
-    if (bruh.x > ratio_texslice_show.x || bruh.y > ratio_texslice_show.y)
-    {
-        tcol = vec4(0, 0, 0, 0);
-    }
-    else
-    {
         tcol = texture(tex, bruh);
-    }
 
     if (tcol.a < 0.2) tcol.rgba = vec4(0);
     if (tcol.r > 0.01 || tcol.g > 0.01 || tcol.r > 0.01)

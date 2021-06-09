@@ -9,6 +9,7 @@
 #include <string>
 
 #include "Program.h"
+#include "CustomTextBillboard.h"
 #include "Shape.h"
 
 typedef unsigned char*(PlaneImageLoader)(char const*, int*, int*, int*, int);
@@ -18,7 +19,6 @@ class PlaneRenderer
    private:
     std::shared_ptr<Program> internal_plane_prog;
     std::shared_ptr<Shape> plane;
-    bool is_bound = false;
     bool init_geom = false;
     bool init_program = false;
 
@@ -27,14 +27,13 @@ class PlaneRenderer
     void initGeom(const std::string& resDir, PlaneImageLoader loader);
     void initProgram(const std::string& resourceDirectory);
 
-    void bindPlaneProgram();
-
-    void unBindPlaneProgram();
-
-    void renderAirplane(const glm::mat4& P,
+    void renderAirplane(const glm::mat3& P,
                         const glm::mat4& V,
                         glm::vec3 position_xyz,
                         glm::quat plane_rot_must_include_default_rotation,
                         glm::vec3 campos,
-                        glm::vec3 tint_color);
+                        glm::vec3 tint_color,
+                        std::string badge_text, 
+                        CustomTextBillboard* customtext
+                        );
 };

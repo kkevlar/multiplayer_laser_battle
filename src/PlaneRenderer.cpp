@@ -74,67 +74,17 @@ void PlaneRenderer::initProgram(const std::string& resourceDirectory)
     this->init_program = true;
 }
 
-void PlaneRenderer::bindPlaneProgram()
-{
-    if (!this->init_program)
-    {
-        log_fatal("bad user");
-        exit(3);
-    }
-    if (!this->init_geom)
-    {
-        log_fatal("bad user");
-        exit(3);
-    }
-    if (this->is_bound)
-    {
-        log_fatal("Rebinding bound program");
-        exit(6);
-    }
-    else
-    {
-        internal_plane_prog->bind();
-        this->is_bound = true;
-    }
-}
 
-void PlaneRenderer::unBindPlaneProgram()
+    void PlaneRenderer::renderAirplane(const glm::mat3& P,
+                        const glm::mat4& V,
+                        glm::vec3 position_xyz,
+                        glm::quat plane_rot_must_include_default_rotation,
+                        glm::vec3 campos,
+                        glm::vec3 tint_color,
+                        std::string badge_text, 
+                        CustomTextBillboard* customtext
+                        )
 {
-    if (!this->init_program)
-    {
-        log_fatal("bad user");
-        exit(3);
-    }
-    if (!this->init_geom)
-    {
-        log_fatal("bad user");
-        exit(3);
-    }
-
-    if (!this->is_bound)
-    {
-        log_fatal("Unbinding unbound program");
-        exit(6);
-    }
-    else
-    {
-        internal_plane_prog->unbind();
-        this->is_bound = false;
-    }
-}
-
-void PlaneRenderer::renderAirplane(const glm::mat4& P,
-                                   const glm::mat4& V,
-                                   glm::vec3 position_xyz,
-                                   glm::quat plane_rot_must_include_default_rotation,
-                                   glm::vec3 campos,
-                                   glm::vec3 tint_color)
-{
-    if (!this->is_bound)
-    {
-        log_fatal("how u expect me to render if unbound");
-        exit(3);
-    }
 
     mat4 scale_plane = scale(mat4(1), vec3(10));
     mat4 translate_plane = translate(mat4(1), position_xyz);
