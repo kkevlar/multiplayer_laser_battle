@@ -38,24 +38,23 @@ void main()
     vec3 ld = normalize(vertex_pos - lp);
     float diffuse = dot(n, ld);
 
-    int treatframe =  int(frame_select);
+    int treatframe = int(frame_select);
     float interp = frame_select - int(frame_select);
 
-    vec4 oof = vec4(0,0,0,0);
-    if(false &&treatframe > 14)
+    vec4 oof = vec4(0, 0, 0, 0);
+    if (false && treatframe > 14)
     {
-        oof = vec4(0,0,0,0);
+        oof = vec4(0, 0, 0, 0);
     }
     else
     {
+        oof = (1 - interp) * bruhmoment(treatframe % int(frames_height * frames_width));
+        oof += (interp)*bruhmoment((treatframe + 1) % int(frames_height * frames_width));
 
-    oof = (1 - interp) * bruhmoment(treatframe % int(frames_height * frames_width));
-    oof += (interp)*bruhmoment((treatframe + 1) % int(frames_height * frames_width));
-
-    if (oof.r < 0.2 && oof.b < 0.2 && oof.g < 0.2)
-    {
-        oof.a = 0;
-    }
+        if (oof.r < 0.2 && oof.b < 0.2 && oof.g < 0.2)
+        {
+            oof.a = 0;
+        }
     }
     color = oof;
 }

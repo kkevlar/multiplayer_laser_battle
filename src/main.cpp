@@ -143,7 +143,7 @@ class Application : public EventCallbacks
 
     bool is_dead = false;
     vec3 deadpos = vec3(0, 0, 0);
-    float dietime =0;
+    float dietime = 0;
 
     double get_last_elapsed_time()
     {
@@ -660,7 +660,7 @@ class Application : public EventCallbacks
         {
             theplayer.speed = 0;
             theplayer.pos = deadpos;
-            explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime() -dietime);
+            explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime() - dietime);
         }
 
         // Render your own plane
@@ -723,19 +723,20 @@ class Application : public EventCallbacks
 
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
 
-        if (external_key_to_die || laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
+        if (external_key_to_die ||
+            laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
         {
             is_dead = true;
             deadpos = theplayer.pos;
             dietime = glfwGetTime();
-           external_key_to_die = false;
+            external_key_to_die = false;
         }
-        if( is_dead && glfwGetTime() - dietime > 10)
+        if (is_dead && glfwGetTime() - dietime > 10)
         {
             theplayer = player();
-is_dead = false;
-deadpos = vec3(0);
-dietime = 0;
+            is_dead = false;
+            deadpos = vec3(0);
+            dietime = 0;
         }
     }
 };
