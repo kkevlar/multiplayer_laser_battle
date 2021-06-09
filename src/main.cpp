@@ -688,7 +688,7 @@ class Application : public EventCallbacks
                                           &scores,
                                           theplayer.score,
                                           10,
-                                          estimate.is_dead
+                                          estimate.is_dead,
                                           true);
             if (estimate.is_dead)
             {
