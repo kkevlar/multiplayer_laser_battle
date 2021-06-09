@@ -221,3 +221,5 @@ void Explosion::renderExplosion(glm::mat4& P, glm::mat4& V, glm::vec3 campos, gl
     glBindVertexArray(0);
 
     prog->unbind();
+
+}
