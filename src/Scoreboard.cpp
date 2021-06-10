@@ -232,7 +232,7 @@ void Scoreboard::renderCustomText( int frombot,  glm::vec3 modify_color, std::st
   
     glBindTexture(GL_TEXTURE_2D, Texture);
 
-    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(0.3, 0.1, 1));
+    glm::mat4 S = glm::scale(glm::mat4(1.0f), glm::vec3(0.4, 0.1, 1));
     glm::mat4 TransCaller = glm::translate(glm::mat4(1.0f), vec3(-0.8, -0.8 + frombot * 0.1, 0.0f));
 
     glm::mat4 M;

@@ -23,6 +23,8 @@ resources/sky_fragment.glsl
 resources/sky_vertex.glsl
 src/LaserRenderer.cpp
 src/LaserRenderer.h
+src/ScoreManager.cpp
+src/ScoreManager.h
 src/byte_order.h
 src/compat.cpp
 src/compat.h

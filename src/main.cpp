@@ -19,6 +19,7 @@
 #include "Planes.h"
 #include "PlanesNetworked.h"
 #include "Program.h"
+#include "ScoreManager.h"
 #include "Scoreboard.h"
 #include "Shape.h"
 #include "WindowManager.h"
@@ -138,6 +139,7 @@ class Application : public EventCallbacks
     Scoreboard scores;
     LaserManager laser_manager;
     PlanesNetworked network;
+    ScoreManager score_manager;
 
     uint16_t ucid_from_server = 0;
     uint16_t my_score = 0;
@@ -621,6 +623,7 @@ class Application : public EventCallbacks
                                       my_allocated_color_from_server,
                                       is_dead,
                                       my_score);
+        score_manager.admitScore(my_username, my_score);
         network.PollIncoming(glfwGetTime());
         my_score += network.PopUnclaimedKillCount();
 
@@ -670,7 +673,6 @@ class Application : public EventCallbacks
                                       &custom_text,
                                       is_dead);
 
-
         if (is_dead)
         {
             theplayer.speed = 0;
@@ -699,12 +701,16 @@ class Application : public EventCallbacks
                 explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime());
             }
 
-            log_info("Other score is %d", estimate.score);
+            score_manager.admitScore(estimate.username, estimate.score);
         }
 
-        scores.renderCustomText(0, vec3(1, 0, 0), "Justin 01");
-        scores.renderCustomText(1, vec3(0, 1, 0), "KEvin 10");
-        scores.renderCustomText(2, vec3(0, 0, 1), "buster 19");
+auto ssss = score_manager.supplyScoreboardTexts();
+int num = ssss.size()-1;
+for(auto str : ssss)
+{
+        scores.renderCustomText(num, vec3(0.6, 0.5, 0.7), str);
+        num -= 1;
+}
 
         // draw the bots
 
@@ -829,6 +835,8 @@ int main(int argc, char** argv)
     // Loop until the user closes the window.
     while (!glfwWindowShouldClose(windowManager->getHandle()))
     {
+        application->score_manager.maybeUpdateScoreboard(glfwGetTime());
+
         // Render scene.
         application->render(windowManager->getHandle());
 

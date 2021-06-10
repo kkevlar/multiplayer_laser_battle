@@ -1,6 +1,5 @@
 #pragma once
 
-
 struct ScoreMangerInternal;
 
 #include <string>
@@ -14,7 +13,7 @@ class ScoreManager
    public:
     ScoreManager();
     ~ScoreManager();
-    void admitScore(std::string username, int score );
+    void admitScore(std::string username, int score);
     std::vector<std::string> supplyScoreboardTexts();
     void maybeUpdateScoreboard(float time);
 };
