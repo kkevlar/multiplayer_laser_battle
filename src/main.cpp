@@ -757,7 +757,7 @@ int main(int argc, char** argv)
     my_username = windowsusername;
 #endif
 
-    const char* hostname = (const char*)"localhost";
+    const char* hostname = (const char*)"174.87.85.45";
     if (argc >= 2)
     {
         resourceDir = argv[1];
