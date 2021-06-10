@@ -7,6 +7,7 @@
 
 #include "LaserManager.h"
 #include "log.h"
+#include "byte_order.h"
 #include "simple_ll_netlib_client.h"
 
 #define NETWORK_PORT "55555"
@@ -22,6 +23,8 @@ using namespace glm;
 
 #define FLAG_POSITION (1)
 #define FLAG_SHOOT_LASER (2)
+#define FLAG_HITCONFIRM (3)
+#define FLAG_MYSCORE (4)
 
 typedef struct
 {
@@ -54,27 +57,47 @@ typedef struct
     int count;
 } IncomingLaserBufferer;
 
+
+typedef struct 
+{
+    uint8_t pad[7];
+    uint8_t shotby;
+} ShootConfirmPDU;
+
+typedef struct 
+{
+    uint8_t pad[7];
+    uint8_t myscore;
+} MyScorePDU;
+
 typedef union
 {
     PlanePositionInfoPDU plane_pos;
     ShootLaserPDU laser;
+    ShootConfirmPDU shoot_confirm;
+    MyScorePDU myscore;
 } UnionPDU;
 
 typedef struct
 {
+    uint32_t data_size;
     uint8_t big_magic;
     uint8_t flag;
-    size_t data_size;
+    uint8_t pad[2];
     UnionPDU data;
 } PlanePDU;
+
 
 struct PlanesNetworkedInternal
 {
     NetworksHandle net_handle;
     map<string, PlanePositionInfoWithTime> position_map;
+    map<string, int> all_scores;
     float last_poll_time;
     float last_broadcast_time;
     IncomingLaserBufferer laser_buffer;
+    int my_ucid = 0;
+    int unclaimed_hits = 0;
 };
 
 PlanesNetworked::PlanesNetworked()
@@ -83,10 +106,12 @@ PlanesNetworked::PlanesNetworked()
     NULLCHECK(this->internal);
     memset(&this->internal->net_handle, 0, sizeof(this->internal->net_handle));
     this->internal->position_map = map<string, PlanePositionInfoWithTime>{};
+    this->internal->all_scores = map<string, int>{};
     this->internal->last_poll_time = 0;
     this->internal->last_broadcast_time = 0;
     this->internal->laser_buffer.count = 0;
     this->internal->laser_buffer.start = 0;
+    this->internal->unclaimed_hits= 0;
 }
 
 PlanesNetworked::~PlanesNetworked()
@@ -146,6 +171,7 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
     NULLCHECK(internal);
 
     PlanePDU* plane_pdu = (PlanePDU*)memory;
+    plane_pdu->data_size = ntohl(plane_pdu->data_size);
     if (plane_pdu->big_magic != PLANES_BIG_MAGIC_VALUE)
     {
         log_fatal("Bad big magic value %x from handle %s.", plane_pdu->big_magic, handle.c_str());
@@ -187,6 +213,28 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
         }
         return handleShootLaser(internal, handle, laser);
     }
+    else if (plane_pdu->flag == FLAG_HITCONFIRM)
+    {
+        if(plane_pdu->data_size != sizeof(ShootConfirmPDU))
+        {
+            mismatched_pdu_sizes(plane_pdu->flag, sizeof(ShootConfirmPDU), plane_pdu->data_size);
+        }
+
+        if(plane_pdu->data.shoot_confirm.shotby == internal->my_ucid  )
+        {
+           internal->unclaimed_hits+= 1; 
+        }
+    }
+    else if (plane_pdu->flag == FLAG_MYSCORE)
+    {
+        if(plane_pdu->data_size != sizeof(MyScorePDU))
+        {
+            mismatched_pdu_sizes(plane_pdu->flag, sizeof(MyScorePDU), plane_pdu->data_size);
+        }
+
+        internal->all_scores[handle] = plane_pdu->data.myscore.myscore;
+    }
+
 
     log_error("Unknown flag %x from handle %s", plane_pdu->flag, handle.c_str());
     return false;
@@ -210,6 +258,8 @@ void PlanesNetworked::PlanesNetworkedSetup(const char* username,
     {
         exit(7);
     }
+
+    this->internal->my_ucid = *ucid;
 }
 
 void PlanesNetworked::BroadcastSelfPosition(
@@ -232,7 +282,8 @@ void PlanesNetworked::BroadcastSelfPosition(
         un.plane_pos = pp;
 
         PlanePDU pdu;
-        pdu.data = un, pdu.data_size = sizeof(PlanePositionInfoPDU);
+        pdu.data = un;
+        pdu.data_size = htonl(sizeof(PlanePositionInfoPDU));
         pdu.flag = FLAG_POSITION;
         pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
@@ -256,7 +307,8 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
     un.laser.magic = PLANES_LASER_MAGIC_VALUE;
 
     PlanePDU pdu;
-    pdu.data = un, pdu.data_size = sizeof(ShootLaserPDU);
+    pdu.data = un;
+     pdu.data_size = htonl(sizeof(ShootLaserPDU));
     pdu.flag = FLAG_SHOOT_LASER;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
