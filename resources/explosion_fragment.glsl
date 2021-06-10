@@ -50,5 +50,5 @@ void main()
         {
             oof.a = 0;
         }
-    color = oof;
-}
+        color = oof;
+    }
