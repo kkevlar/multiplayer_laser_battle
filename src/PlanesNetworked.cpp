@@ -6,15 +6,14 @@
 #include <vector>
 
 #include "LaserManager.h"
-#include "log.h"
 #include "byte_order.h"
+#include "log.h"
 #include "simple_ll_netlib_client.h"
 
 #define NETWORK_PORT "55555"
 #define FASTEST_BROADCAST_FREQ_ALLOWED_HZ (10.0f)
 #define PLANES_BIG_MAGIC_VALUE (0x75)
 #define PLANES_POS_MAGIC_VALUE1 (0x9b)
-#define PLANES_POS_MAGIC_VALUE2 (0x2e)
 #define PLANES_LASER_MAGIC_VALUE (0xbf)
 #define MAX_LASERS_TO_BUFFER (64)
 
@@ -24,7 +23,6 @@ using namespace glm;
 #define FLAG_POSITION (1)
 #define FLAG_SHOOT_LASER (2)
 #define FLAG_HITCONFIRM (3)
-#define FLAG_MYSCORE (4)
 
 typedef struct
 {
@@ -34,8 +32,7 @@ typedef struct
     vec4 color;
     uint8_t magic;
     uint8_t bool_is_dead;
-    uint8_t my_score;
-    uint8_t magic2;
+    uint16_t my_score_check_endianness;
 } PlanePositionInfoPDU;
 
 typedef struct
@@ -57,36 +54,33 @@ typedef struct
     int count;
 } IncomingLaserBufferer;
 
-
-typedef struct 
+typedef struct
 {
-    uint8_t pad[7];
-    uint8_t shotby;
+    uint8_t pad[6];
+    uint16_t shotby;
 } ShootConfirmPDU;
-
-typedef struct 
-{
-    uint8_t pad[7];
-    uint8_t myscore;
-} MyScorePDU;
 
 typedef union
 {
     PlanePositionInfoPDU plane_pos;
     ShootLaserPDU laser;
     ShootConfirmPDU shoot_confirm;
-    MyScorePDU myscore;
 } UnionPDU;
 
 typedef struct
 {
-    uint32_t data_size;
+    uint32_t data_size_check_endianess;
     uint8_t big_magic;
     uint8_t flag;
     uint8_t pad[2];
     UnionPDU data;
 } PlanePDU;
 
+typedef struct
+{
+    glm::vec4 color;
+    int score;
+} CachedScoreInfo;
 
 struct PlanesNetworkedInternal
 {
@@ -111,7 +105,7 @@ PlanesNetworked::PlanesNetworked()
     this->internal->last_broadcast_time = 0;
     this->internal->laser_buffer.count = 0;
     this->internal->laser_buffer.start = 0;
-    this->internal->unclaimed_hits= 0;
+    this->internal->unclaimed_hits = 0;
 }
 
 PlanesNetworked::~PlanesNetworked()
@@ -171,7 +165,8 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
     NULLCHECK(internal);
 
     PlanePDU* plane_pdu = (PlanePDU*)memory;
-    plane_pdu->data_size = ntohl(plane_pdu->data_size);
+    const uint32_t safe_data_size = ntohl(plane_pdu->data_size_check_endianess);
+
     if (plane_pdu->big_magic != PLANES_BIG_MAGIC_VALUE)
     {
         log_fatal("Bad big magic value %x from handle %s.", plane_pdu->big_magic, handle.c_str());
@@ -180,9 +175,9 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
 
     if (plane_pdu->flag == FLAG_POSITION)
     {
-        if (plane_pdu->data_size != sizeof(PlanePositionInfoPDU))
+        if (safe_data_size != sizeof(PlanePositionInfoPDU))
         {
-            mismatched_pdu_sizes(plane_pdu->flag, sizeof(PlanePositionInfoPDU), plane_pdu->data_size);
+            mismatched_pdu_sizes(plane_pdu->flag, sizeof(PlanePositionInfoPDU), safe_data_size);
         }
 
         PlanePositionInfoPDU* planepos = &plane_pdu->data.plane_pos;
@@ -191,18 +186,13 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
             log_fatal("Bad pos magic1 value %x from handle %s.", planepos->magic, handle.c_str());
             exit(8);
         }
-        if (planepos->magic2 != PLANES_POS_MAGIC_VALUE2)
-        {
-            log_fatal("Bad pos magic1 value %x from handle %s.", planepos->magic2, handle.c_str());
-            exit(8);
-        }
         return handlePositionUpdate(internal, handle, planepos);
     }
     else if (plane_pdu->flag == FLAG_SHOOT_LASER)
     {
-        if (plane_pdu->data_size != sizeof(ShootLaserPDU))
+        if (safe_data_size != sizeof(ShootLaserPDU))
         {
-            mismatched_pdu_sizes(plane_pdu->flag, sizeof(ShootLaserPDU), plane_pdu->data_size);
+            mismatched_pdu_sizes(plane_pdu->flag, sizeof(ShootLaserPDU), safe_data_size);
         }
 
         ShootLaserPDU* laser = &plane_pdu->data.laser;
@@ -215,26 +205,16 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
     }
     else if (plane_pdu->flag == FLAG_HITCONFIRM)
     {
-        if(plane_pdu->data_size != sizeof(ShootConfirmPDU))
+        if (safe_data_size != sizeof(ShootConfirmPDU))
         {
-            mismatched_pdu_sizes(plane_pdu->flag, sizeof(ShootConfirmPDU), plane_pdu->data_size);
+            mismatched_pdu_sizes(plane_pdu->flag, sizeof(ShootConfirmPDU), safe_data_size);
         }
 
-        if(plane_pdu->data.shoot_confirm.shotby == internal->my_ucid  )
+        if (plane_pdu->data.shoot_confirm.shotby == internal->my_ucid)
         {
-           internal->unclaimed_hits+= 1; 
+            internal->unclaimed_hits += 1;
         }
     }
-    else if (plane_pdu->flag == FLAG_MYSCORE)
-    {
-        if(plane_pdu->data_size != sizeof(MyScorePDU))
-        {
-            mismatched_pdu_sizes(plane_pdu->flag, sizeof(MyScorePDU), plane_pdu->data_size);
-        }
-
-        internal->all_scores[handle] = plane_pdu->data.myscore.myscore;
-    }
-
 
     log_error("Unknown flag %x from handle %s", plane_pdu->flag, handle.c_str());
     return false;
@@ -263,7 +243,7 @@ void PlanesNetworked::PlanesNetworkedSetup(const char* username,
 }
 
 void PlanesNetworked::BroadcastSelfPosition(
-    float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color, bool is_dead)
+    float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color, bool is_dead, uint16_t score)
 {
     NULLCHECK(this->internal);
     if (time - this->internal->last_broadcast_time > (1.0f / FASTEST_BROADCAST_FREQ_ALLOWED_HZ))
@@ -276,14 +256,14 @@ void PlanesNetworked::BroadcastSelfPosition(
         pp.color = vec4(color, 0);
         pp.bool_is_dead = is_dead;
         pp.magic = PLANES_POS_MAGIC_VALUE1;
-        pp.magic2 = PLANES_POS_MAGIC_VALUE2;
+        pp.my_score_check_endianness = htons(score);
 
         UnionPDU un;
         un.plane_pos = pp;
 
         PlanePDU pdu;
         pdu.data = un;
-        pdu.data_size = htonl(sizeof(PlanePositionInfoPDU));
+        pdu.data_size_check_endianess = htonl(sizeof(PlanePositionInfoPDU));
         pdu.flag = FLAG_POSITION;
         pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
@@ -308,7 +288,7 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
 
     PlanePDU pdu;
     pdu.data = un;
-     pdu.data_size = htonl(sizeof(ShootLaserPDU));
+    pdu.data_size_check_endianess = htonl(sizeof(ShootLaserPDU));
     pdu.flag = FLAG_SHOOT_LASER;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 

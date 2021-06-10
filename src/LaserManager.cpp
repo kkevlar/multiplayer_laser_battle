@@ -6,8 +6,9 @@
 #include <iostream>
 #include <vector>
 
-#include "log.h"
 #include "PlanesNetworked.h"
+#include "byte_order.h"
+#include "log.h"
 
 typedef struct
 {
@@ -70,11 +71,16 @@ void LaserManager::renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, fl
     {
         if (info.valid)
         {
-            glm::vec3 along_route = trunc_v4 (info.info.position_target) - trunc_v4(info.info.position_source);
+            glm::vec3 along_route = trunc_v4(info.info.position_target) - trunc_v4(info.info.position_source);
             float ratio_to_target = (currentTime - info.info.start_time) * info.info.speed;
             glm::vec3 where = trunc_v4(info.info.position_source) + ratio_to_target * along_route;
-            laser->renderLaser(
-                P, V, campos, where, info.info.position_target, trunc_v4(info.info.color), currentTime - info.info.start_time);
+            laser->renderLaser(P,
+                               V,
+                               campos,
+                               where,
+                               info.info.position_target,
+                               trunc_v4(info.info.color),
+                               currentTime - info.info.start_time);
 
             if (ratio_to_target > 1.0f)
             {
@@ -85,18 +91,23 @@ void LaserManager::renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, fl
     }
 }
 
-bool LaserManager::shouldDie(glm::vec3 pos, uint8_t my_ucid, float currentTime)
+bool LaserManager::shouldDie(glm::vec3 pos, uint8_t my_ucid, float currentTime, uint16_t* killer_ucid)
 {
+    NULLCHECK(killer_ucid);
+
     for (auto& info : this->internal->lasers)
     {
         glm::vec3 along_route = trunc_v4(info.info.position_target) - trunc_v4(info.info.position_source);
         float ratio_to_target = (currentTime - info.info.start_time) * info.info.speed;
         glm::vec3 where = trunc_v4(info.info.position_source) + ratio_to_target * along_route;
 
-        if (info.valid && my_ucid != info.info.ucid_shooter && length(where - pos) < 10)
+        const uint16_t safe_laser_ucid = ntohs(info.info.ucid_shooter_check_endianness);
+
+        if (info.valid && my_ucid != safe_laser_ucid && length(where - pos) < 10)
         {
             info.valid = false;
             this->internal->has_invalid = true;
+            *killer_ucid = safe_laser_ucid;
             return true;
         }
     }

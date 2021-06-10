@@ -73,16 +73,15 @@ void PlaneRenderer::initProgram(const std::string& resourceDirectory)
     this->init_program = true;
 }
 
-    void PlaneRenderer::renderAirplane(glm::mat4& P,
-                        glm::mat4& V,
-                        glm::vec3 position_xyz,
-                        glm::quat plane_rot_must_include_default_rotation,
-                        glm::vec3 campos,
-                        glm::vec3 tint_color,
-                        std::string badge_text,
-                        CustomTextBillboard* customtext,
-                        bool textonly
-                        )
+void PlaneRenderer::renderAirplane(glm::mat4& P,
+                                   glm::mat4& V,
+                                   glm::vec3 position_xyz,
+                                   glm::quat plane_rot_must_include_default_rotation,
+                                   glm::vec3 campos,
+                                   glm::vec3 tint_color,
+                                   std::string badge_text,
+                                   CustomTextBillboard* customtext,
+                                   bool textonly)
 {
     if (!textonly)
     {
@@ -104,5 +103,4 @@ void PlaneRenderer::initProgram(const std::string& resourceDirectory)
     }
 
     customtext->renderCustomText(P, V, campos, position_xyz + vec3(0, 5, 0), tint_color, badge_text);
-
 }

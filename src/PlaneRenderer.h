@@ -9,8 +9,8 @@
 #include <string>
 
 #include "CustomTextBillboard.h"
-#include "Scoreboard.h"
 #include "Program.h"
+#include "Scoreboard.h"
 #include "Shape.h"
 
 typedef unsigned char*(PlaneImageLoader)(char const*, int*, int*, int*, int);
@@ -36,6 +36,5 @@ class PlaneRenderer
                         glm::vec3 tint_color,
                         std::string badge_text,
                         CustomTextBillboard* customtext,
-                        bool textonly
-                        );
+                        bool textonly);
 };

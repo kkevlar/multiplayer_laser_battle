@@ -14,7 +14,6 @@ class player
     vec3 forward, up, right;
     float speed;
     bool w, a, s, d;
-    int score;
 
     player();
     void update(float ftime, float xangle, float yangle);

@@ -11,7 +11,6 @@
 #include <thread>
 
 #include "CustomTextBillboard.h"
-#include "Scoreboard.h"
 #include "Explosion.h"
 #include "GLSL.h"
 #include "LaserManager.h"
@@ -20,8 +19,10 @@
 #include "Planes.h"
 #include "PlanesNetworked.h"
 #include "Program.h"
+#include "Scoreboard.h"
 #include "Shape.h"
 #include "WindowManager.h"
+#include "byte_order.h"
 #include "log.h"
 #include "stb_image.h"
 
@@ -139,6 +140,7 @@ class Application : public EventCallbacks
     PlanesNetworked network;
 
     uint16_t ucid_from_server = 0;
+    uint16_t my_score = 0;
 
     vec3 my_allocated_color_from_server = vec3(0, 0, 0);
 
@@ -612,8 +614,13 @@ class Application : public EventCallbacks
         mat4 plane_overall_rot = rotate_plane * rotate_default_plane;
 
         quat q = quat(plane_overall_rot);
-        network.BroadcastSelfPosition(
-            glfwGetTime(), theplayer.pos, theplayer.velocity_cached, q, my_allocated_color_from_server, is_dead);
+        network.BroadcastSelfPosition(glfwGetTime(),
+                                      theplayer.pos,
+                                      theplayer.velocity_cached,
+                                      q,
+                                      my_allocated_color_from_server,
+                                      is_dead,
+                                      my_score);
         network.PollIncoming(glfwGetTime());
 
         // Special scope for netlaser
@@ -662,15 +669,16 @@ class Application : public EventCallbacks
                                       &custom_text,
                                       is_dead);
 
-        scores.renderCustomText(0, vec3(1,0,0), "Justin 01");
-        scores.renderCustomText(1, vec3(0,1,0), "KEvin 10");
-        scores.renderCustomText(2, vec3(0,0,1), "buster 19");
+        scores.renderCustomText(0, vec3(1, 0, 0), "Justin 01");
+        scores.renderCustomText(1, vec3(0, 1, 0), "KEvin 10");
+        scores.renderCustomText(2, vec3(0, 0, 1), "buster 19");
 
         if (is_dead)
         {
             theplayer.speed = 0;
             theplayer.pos = deadpos;
             explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime());
+            my_score = 0;
         }
 
         // Render your own plane
@@ -717,16 +725,18 @@ class Application : public EventCallbacks
             NewShotLaserInfo newlaser;
             vec3 rightvec = normalize(theplayer.right) * 6.0f;
             vec3 othervec = theplayer.pos + theplayer.up * -2.0f + theplayer.forward * -2.0f;
-            newlaser.position_source = vec4(rightvec + othervec,0);
-            newlaser.position_target = vec4(vec3(((normalize(theplayer.forward) * 1000.0f) + trunc_v4( newlaser.position_source))),0);
+            newlaser.position_source = vec4(rightvec + othervec, 0);
+            newlaser.position_target =
+                vec4(vec3(((normalize(theplayer.forward) * 1000.0f) + trunc_v4(newlaser.position_source))), 0);
             newlaser.start_time = glfwGetTime();
             newlaser.speed = 0.25;
-            newlaser.color = vec4(my_allocated_color_from_server,0);
-            newlaser.ucid_shooter = ucid_from_server;
+            newlaser.color = vec4(my_allocated_color_from_server, 0);
+            newlaser.ucid_shooter_check_endianness = htons(ucid_from_server);
             laser_manager.admitLaser(&newlaser);
             network.BroadcastNewLaser(&newlaser);
-            newlaser.position_source = vec4(-rightvec + othervec,0);
-            newlaser.position_target = vec4(((normalize(theplayer.forward) * 1000.0f) +trunc_v4(  newlaser.position_source)),0);
+            newlaser.position_source = vec4(-rightvec + othervec, 0);
+            newlaser.position_target =
+                vec4(((normalize(theplayer.forward) * 1000.0f) + trunc_v4(newlaser.position_source)), 0);
             laser_manager.admitLaser(&newlaser);
             network.BroadcastNewLaser(&newlaser);
             shoot = false;
@@ -734,7 +744,7 @@ class Application : public EventCallbacks
 
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
 
-        if (laser_manager.shouldDie(theplayer.pos, ucid_from_server, glfwGetTime()))
+        if (laser_manager.shouldDieMaybeSendKillConfirmation(theplayer.pos, ucid_from_server, glfwGetTime()))
         {
             is_dead = true;
             deadpos = theplayer.pos;
