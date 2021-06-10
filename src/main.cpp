@@ -670,9 +670,6 @@ class Application : public EventCallbacks
                                       &custom_text,
                                       is_dead);
 
-        scores.renderCustomText(0, vec3(1, 0, 0), "Justin 01");
-        scores.renderCustomText(1, vec3(0, 1, 0), "KEvin 10");
-        scores.renderCustomText(2, vec3(0, 0, 1), "buster 19");
 
         if (is_dead)
         {
@@ -704,6 +701,10 @@ class Application : public EventCallbacks
 
             log_info("Other score is %d", estimate.score);
         }
+
+        scores.renderCustomText(0, vec3(1, 0, 0), "Justin 01");
+        scores.renderCustomText(1, vec3(0, 1, 0), "KEvin 10");
+        scores.renderCustomText(2, vec3(0, 0, 1), "buster 19");
 
         // draw the bots
 
