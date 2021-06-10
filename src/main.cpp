@@ -147,6 +147,11 @@ class Application : public EventCallbacks
     vec3 my_allocated_color_from_server = vec3(0, 0, 0);
 
     bool shoot;
+    bool external_key_to_die;
+
+    bool is_dead = false;
+    vec3 deadpos = vec3(0, 0, 0);
+    float dietime = 0;
 
     bool is_dead = false;
     vec3 deadpos = vec3(0, 0, 0);
@@ -180,6 +185,7 @@ class Application : public EventCallbacks
         if (key == GLFW_KEY_D && action == GLFW_RELEASE) theplayer.d = false;
 
         if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) shoot = true;
+        if (key == GLFW_KEY_K && action == GLFW_PRESS) external_key_to_die = true;
 
         if (key == GLFW_KEY_F && action == GLFW_RELEASE)
         {
@@ -760,6 +766,20 @@ for(auto str : ssss)
             is_dead = true;
             deadpos = theplayer.pos;
             network.BroadcastKillConfirmation(ucid_of_my_killer);
+        if (external_key_to_die ||
+            laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
+        {
+            is_dead = true;
+            deadpos = theplayer.pos;
+            dietime = glfwGetTime();
+            external_key_to_die = false;
+        }
+        if (is_dead && glfwGetTime() - dietime > 10)
+        {
+            theplayer = player();
+            is_dead = false;
+            deadpos = vec3(0);
+            dietime = 0;
         }
     }
 };
