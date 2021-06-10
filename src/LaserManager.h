@@ -6,11 +6,13 @@ struct LaserMangerInternal;
 
 typedef struct
 {
-    glm::vec3 position_source;
-    glm::vec3 position_target;
-    glm::vec3 color;
+    glm::vec4 position_source;
+    glm::vec4 position_target;
+    glm::vec4 color;
     float speed;
     float start_time;
+    uint8_t ucid_shooter;
+    uint8_t pad[3];
 } NewShotLaserInfo;
 
 class LaserManager
@@ -23,5 +25,5 @@ class LaserManager
     ~LaserManager();
     void admitLaser(NewShotLaserInfo* info);
     void renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, float currentTime, LaserRenderer* laser);
-    bool shouldDie(glm::vec3 pos, glm::vec3 color, float currentTime);
+bool shouldDie(glm::vec3 pos, uint8_t my_ucid, float currentTime);
 };

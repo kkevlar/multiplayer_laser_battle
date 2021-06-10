@@ -278,7 +278,7 @@ void PlanesNetworked::PollIncoming(float time)
     }
 }
 
-static inline glm::vec3 trunc_v4(glm::vec4 four)
+glm::vec3 trunc_v4(glm::vec4 four)
 {
     return vec3(four.x, four.y, four.z);
 }

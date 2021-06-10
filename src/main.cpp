@@ -138,6 +138,8 @@ class Application : public EventCallbacks
     LaserManager laser_manager;
     PlanesNetworked network;
 
+    uint16_t ucid_from_server = 0;
+
     vec3 my_allocated_color_from_server = vec3(0, 0, 0);
 
     bool shoot;
@@ -715,15 +717,16 @@ class Application : public EventCallbacks
             NewShotLaserInfo newlaser;
             vec3 rightvec = normalize(theplayer.right) * 6.0f;
             vec3 othervec = theplayer.pos + theplayer.up * -2.0f + theplayer.forward * -2.0f;
-            newlaser.position_source = rightvec + othervec;
-            newlaser.position_target = ((normalize(theplayer.forward) * 1000.0f) + newlaser.position_source);
+            newlaser.position_source = vec4(rightvec + othervec,0);
+            newlaser.position_target = vec4(vec3(((normalize(theplayer.forward) * 1000.0f) + trunc_v4( newlaser.position_source))),0);
             newlaser.start_time = glfwGetTime();
             newlaser.speed = 0.25;
-            newlaser.color = my_allocated_color_from_server;
+            newlaser.color = vec4(my_allocated_color_from_server,0);
+            newlaser.ucid_shooter = ucid_from_server;
             laser_manager.admitLaser(&newlaser);
             network.BroadcastNewLaser(&newlaser);
-            newlaser.position_source = -rightvec + othervec;
-            newlaser.position_target = ((normalize(theplayer.forward) * 1000.0f) + newlaser.position_source);
+            newlaser.position_source = vec4(-rightvec + othervec,0);
+            newlaser.position_target = vec4(((normalize(theplayer.forward) * 1000.0f) +trunc_v4(  newlaser.position_source)),0);
             laser_manager.admitLaser(&newlaser);
             network.BroadcastNewLaser(&newlaser);
             shoot = false;
@@ -731,7 +734,7 @@ class Application : public EventCallbacks
 
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
 
-        if (laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
+        if (laser_manager.shouldDie(theplayer.pos, ucid_from_server, glfwGetTime()))
         {
             is_dead = true;
             deadpos = theplayer.pos;
@@ -785,6 +788,7 @@ int main(int argc, char** argv)
     application->my_username = my_username;
     log_info("My username is %s", application->my_username.c_str());
     application->network.PlanesNetworkedSetup(my_username, hostname, &ucid_from_server, &timediff_unused);
+    application->ucid_from_server = ucid_from_server;
 
     application->my_allocated_color_from_server = global_plane_color_allocation[ucid_from_server % GLOBAL_COLOR_COUNT];
     log_info("My UCID is %d", ucid_from_server);

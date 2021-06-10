@@ -35,3 +35,5 @@ class PlanesNetworked
 
     std::vector<NetworkedInterpolatedPlanePositionInfo> GiveOtherPlaneEstimates(float time);
 };
+
+glm::vec3 trunc_v4(glm::vec4 four);

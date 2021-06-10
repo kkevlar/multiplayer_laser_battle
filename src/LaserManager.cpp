@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "log.h"
+#include "PlanesNetworked.h"
 
 typedef struct
 {
@@ -69,11 +70,11 @@ void LaserManager::renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, fl
     {
         if (info.valid)
         {
-            glm::vec3 along_route = info.info.position_target - info.info.position_source;
+            glm::vec3 along_route = trunc_v4 (info.info.position_target) - trunc_v4(info.info.position_source);
             float ratio_to_target = (currentTime - info.info.start_time) * info.info.speed;
-            glm::vec3 where = info.info.position_source + ratio_to_target * along_route;
+            glm::vec3 where = trunc_v4(info.info.position_source) + ratio_to_target * along_route;
             laser->renderLaser(
-                P, V, campos, where, info.info.position_target, info.info.color, currentTime - info.info.start_time);
+                P, V, campos, where, info.info.position_target, trunc_v4(info.info.color), currentTime - info.info.start_time);
 
             if (ratio_to_target > 1.0f)
             {
@@ -84,15 +85,15 @@ void LaserManager::renderLasers(glm::mat4& P, glm::mat4& V, glm::vec3 campos, fl
     }
 }
 
-bool LaserManager::shouldDie(glm::vec3 pos, glm::vec3 color, float currentTime)
+bool LaserManager::shouldDie(glm::vec3 pos, uint8_t my_ucid, float currentTime)
 {
     for (auto& info : this->internal->lasers)
     {
-        glm::vec3 along_route = info.info.position_target - info.info.position_source;
+        glm::vec3 along_route = trunc_v4(info.info.position_target) - trunc_v4(info.info.position_source);
         float ratio_to_target = (currentTime - info.info.start_time) * info.info.speed;
-        glm::vec3 where = info.info.position_source + ratio_to_target * along_route;
+        glm::vec3 where = trunc_v4(info.info.position_source) + ratio_to_target * along_route;
 
-        if (info.valid && length(info.info.color - color) > 0.01 && length(where - pos) < 10)
+        if (info.valid && my_ucid != info.info.ucid_shooter && length(where - pos) < 10)
         {
             info.valid = false;
             this->internal->has_invalid = true;
