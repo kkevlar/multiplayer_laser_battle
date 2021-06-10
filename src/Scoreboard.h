@@ -25,6 +25,5 @@ class Scoreboard
     void initGeom(const std::string& resDir);
     void initProgram(const std::string& resourceDirectory);
     void initTexture(const std::string& resourceDirectory, ImageLoader loader);
-    void renderCustomText(
-        glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, glm::vec3 modify_color, std::string text);
+void renderCustomText( int frombot,  glm::vec3 modify_color, std::string text);
 };

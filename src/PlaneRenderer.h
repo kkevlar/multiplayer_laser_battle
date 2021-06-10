@@ -36,9 +36,6 @@ class PlaneRenderer
                         glm::vec3 tint_color,
                         std::string badge_text,
                         CustomTextBillboard* customtext,
-                        Scoreboard* score_text,
-                        int myscore,
-                        int bestscore,
-                        bool textonly,
-                        bool notme);
+                        bool textonly
+                        );
 };

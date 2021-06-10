@@ -658,11 +658,11 @@ class Application : public EventCallbacks
                                       my_allocated_color_from_server,
                                       my_username,
                                       &custom_text,
-                                      &scores,
-                                      theplayer.score,
-                                      10,
-                                      is_dead,
-                                      false);
+                                      is_dead);
+
+        scores.renderCustomText(0, vec3(1,0,0), "Justin 01");
+        scores.renderCustomText(1, vec3(0,1,0), "KEvin 10");
+        scores.renderCustomText(2, vec3(0,0,1), "buster 19");
 
         if (is_dead)
         {
@@ -685,11 +685,7 @@ class Application : public EventCallbacks
                                           estimate.color,
                                           estimate.username,
                                           &custom_text,
-                                          &scores,
-                                          theplayer.score,
-                                          10,
-                                          estimate.is_dead,
-                                          true);
+                                          estimate.is_dead);
             if (estimate.is_dead)
             {
                 explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime());
