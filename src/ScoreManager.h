@@ -16,5 +16,5 @@ class ScoreManager
     ~ScoreManager();
     void admitScore(std::string username, int score );
     std::vector<std::string> supplyScoreboardTexts();
-    void maybeUpdateScoreboard();
+    void maybeUpdateScoreboard(float time);
 };
