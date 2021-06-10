@@ -7,7 +7,7 @@
 
 #include "Program.h"
 
-typedef unsigned char*(ImageLoader)(char const*, int*, int*, int*, int);
+typedef unsigned char*(ImageLoaderr)(char const*, int*, int*, int*, int);
 
 class Explosion
 {
@@ -23,6 +23,6 @@ class Explosion
    public:
     void initGeom(const std::string& resDir);
     void initProgram(const std::string& resourceDirectory);
-    void initTexture(const std::string& resourceDirectory, ImageLoader loader);
+    void initTexture(const std::string& resourceDirectory, ImageLoaderr loader);
     void renderExplosion(glm::mat4& P, glm::mat4& V, glm::vec3 campos, glm::vec3 position_xyz, float time);
 };

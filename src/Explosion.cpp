@@ -156,7 +156,7 @@ void Explosion::initProgram(const std::string& resourceDirectory)
     prog->addAttribute("vertTex");
 }
 
-void Explosion::initTexture(const std::string& resourceDirectory, ImageLoader loader)
+void Explosion::initTexture(const std::string& resourceDirectory, ImageLoaderr loader)
 {
     int width, height, channels;
     char filepath[1000];
