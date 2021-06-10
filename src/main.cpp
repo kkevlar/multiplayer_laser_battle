@@ -761,18 +761,15 @@ for(auto str : ssss)
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
 
         uint16_t ucid_of_my_killer = 0;
-        if (!is_dead && laser_manager.shouldDie(theplayer.pos, ucid_from_server, glfwGetTime(), &ucid_of_my_killer))
-        {
-            is_dead = true;
-            deadpos = theplayer.pos;
-            network.BroadcastKillConfirmation(ucid_of_my_killer);
-        if (external_key_to_die ||
-            laser_manager.shouldDie(theplayer.pos, my_allocated_color_from_server, glfwGetTime()))
+bool otherplayerkill = laser_manager.shouldDie(theplayer.pos, ucid_from_server, glfwGetTime(), &ucid_of_my_killer) ;
+        if (!is_dead && (otherplayerkill || external_key_to_die)  )
         {
             is_dead = true;
             deadpos = theplayer.pos;
             dietime = glfwGetTime();
             external_key_to_die = false;
+            if(otherplayerkill)
+            { network.BroadcastKillConfirmation(ucid_of_my_killer); }
         }
         if (is_dead && glfwGetTime() - dietime > 10)
         {
