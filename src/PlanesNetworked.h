@@ -17,7 +17,7 @@ typedef struct
     glm::vec3 color;
     std::string username;
     bool is_dead;
-
+    int score;
 } NetworkedInterpolatedPlanePositionInfo;
 
 class PlanesNetworked

@@ -622,6 +622,7 @@ class Application : public EventCallbacks
                                       is_dead,
                                       my_score);
         network.PollIncoming(glfwGetTime());
+        my_score += network.PopUnclaimedKillCount();
 
         // Special scope for netlaser
         {
@@ -749,6 +750,7 @@ class Application : public EventCallbacks
         {
             is_dead = true;
             deadpos = theplayer.pos;
+            network.BroadcastKillConfirmation(ucid_of_my_killer);
         }
     }
 };

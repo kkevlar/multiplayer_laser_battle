@@ -355,8 +355,12 @@ std::vector<NetworkedInterpolatedPlanePositionInfo> PlanesNetworked::GiveOtherPl
         quat rot = element.second.pdu.orientation;
 
         vec3 color = trunc_v4(element.second.pdu.color);
-        NetworkedInterpolatedPlanePositionInfo interpinfo = {
-            pos, rot, color, element.first, (bool)element.second.pdu.bool_is_dead};
+        NetworkedInterpolatedPlanePositionInfo interpinfo = {pos,
+                                                             rot,
+                                                             color,
+                                                             element.first,
+                                                             (bool)element.second.pdu.bool_is_dead,
+                                                             ntohs(element.second.pdu.my_score_check_endianness)};
         ret.push_back(interpinfo);
     }
 
