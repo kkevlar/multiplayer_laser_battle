@@ -701,6 +701,8 @@ class Application : public EventCallbacks
             {
                 explosion.renderExplosion(P, V, mycam.pos, estimate.pos, glfwGetTime());
             }
+
+            log_info("Other score is %d", estimate.score);
         }
 
         // draw the bots

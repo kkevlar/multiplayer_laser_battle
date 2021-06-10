@@ -29,7 +29,6 @@ player::player()
     forward = vec3(0, 0, 1);
     up = vec3(0, 1, 0);
     right = vec3(1, 0, 0);
-    score = 0;
 }
 
 void player::update(float ftime, float xangle, float yangle)
