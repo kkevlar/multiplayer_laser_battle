@@ -57,14 +57,14 @@ typedef struct
 typedef struct
 {
     uint8_t pad[6];
-    uint16_t shotby;
-} ShootConfirmPDU;
+    uint16_t shotby_check_endianess;
+} KillConfirmPDU;
 
 typedef union
 {
     PlanePositionInfoPDU plane_pos;
     ShootLaserPDU laser;
-    ShootConfirmPDU shoot_confirm;
+    KillConfirmPDU shoot_confirm;
 } UnionPDU;
 
 typedef struct
@@ -205,12 +205,12 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
     }
     else if (plane_pdu->flag == FLAG_HITCONFIRM)
     {
-        if (safe_data_size != sizeof(ShootConfirmPDU))
+        if (safe_data_size != sizeof(KillConfirmPDU))
         {
-            mismatched_pdu_sizes(plane_pdu->flag, sizeof(ShootConfirmPDU), safe_data_size);
+            mismatched_pdu_sizes(plane_pdu->flag, sizeof(KillConfirmPDU), safe_data_size);
         }
 
-        if (plane_pdu->data.shoot_confirm.shotby == internal->my_ucid)
+        if (ntohs(plane_pdu->data.shoot_confirm.shotby_check_endianess) == internal->my_ucid)
         {
             internal->unclaimed_hits += 1;
         }
@@ -299,6 +299,27 @@ void PlanesNetworked::BroadcastNewLaser(NewShotLaserInfo* laser)
     }
 }
 
+void PlanesNetworked::BroadcastKillConfirmation(uint16_t ucid_of_killer_host_order)
+{
+    NULLCHECK(this->internal);
+
+    KillConfirmPDU killpdu;
+    memset(&killpdu, 0, sizeof(killpdu));
+    killpdu.shotby_check_endianess = htons(ucid_of_killer_host_order);
+
+    PlanePDU pdu;
+    pdu.data.shoot_confirm = killpdu;
+    pdu.data_size_check_endianess = htonl(sizeof(KillConfirmPDU));
+    pdu.flag = FLAG_HITCONFIRM;
+    pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
+
+    if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
+    {
+        log_fatal("Failed to broadcast outgoing");
+        exit(-1);
+    }
+}
+
 void PlanesNetworked::PollIncoming(float time)
 {
     NULLCHECK(this->internal);
@@ -364,4 +385,14 @@ bool PlanesNetworked::MaybePopIncomingNetworkedLaser(NewShotLaserInfo* laser)
 
         return true;
     }
+}
+
+int PlanesNetworked::PopUnclaimedKillCount()
+{
+    NULLCHECK(this->internal);
+
+    int ret = this->internal->unclaimed_hits;
+
+    this->internal->unclaimed_hits = 0;
+    return ret;
 }

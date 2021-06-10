@@ -3,11 +3,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-// TODO
 #define MAX_SPD 240.0f
-#define MIN_SPD 100.0f
-// #define MAX_SPD 2.0f
-// #define MIN_SPD 0.5f
+#define MIN_SPD 000.0f
+// TODO replace spped
+// #define MIN_SPD 100.0f
 #define MED_SPD (MAX_SPD + MIN_SPD) / 2.0f
 
 #define MAP_X_MAX_BOUND 1000.0f

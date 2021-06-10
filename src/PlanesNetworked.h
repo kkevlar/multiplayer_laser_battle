@@ -30,8 +30,10 @@ class PlanesNetworked
     void BroadcastSelfPosition(
         float time, glm::vec3 pos, glm::vec3 velocity, glm::quat rot, glm::vec3 color, bool is_dead, uint16_t score);
     void BroadcastNewLaser(NewShotLaserInfo* laser);
+    void BroadcastKillConfirmation(uint16_t ucid_of_killer_host_order);
     void PollIncoming(float time);
     bool MaybePopIncomingNetworkedLaser(NewShotLaserInfo* laser);
+    int PopUnclaimedKillCount();
 
     std::vector<NetworkedInterpolatedPlanePositionInfo> GiveOtherPlaneEstimates(float time);
 };
