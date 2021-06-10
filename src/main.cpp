@@ -153,8 +153,6 @@ class Application : public EventCallbacks
     vec3 deadpos = vec3(0, 0, 0);
     float dietime = 0;
 
-    bool is_dead = false;
-    vec3 deadpos = vec3(0, 0, 0);
 
     double get_last_elapsed_time()
     {
