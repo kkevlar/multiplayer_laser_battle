@@ -748,7 +748,7 @@ class Application : public EventCallbacks
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
 
         uint16_t ucid_of_my_killer = 0;
-        if (laser_manager.shouldDie(theplayer.pos, ucid_from_server, glfwGetTime(), &ucid_of_my_killer))
+        if (!is_dead && laser_manager.shouldDie(theplayer.pos, ucid_from_server, glfwGetTime(), &ucid_of_my_killer))
         {
             is_dead = true;
             deadpos = theplayer.pos;
