@@ -710,13 +710,13 @@ class Application : public EventCallbacks
             score_manager.admitScore(estimate.username, estimate.score);
         }
 
-auto ssss = score_manager.supplyScoreboardTexts();
-int num = ssss.size()-1;
-for(auto str : ssss)
-{
-        scores.renderCustomText(num, vec3(0.6, 0.5, 0.7), str);
-        num -= 1;
-}
+        auto ssss = score_manager.supplyScoreboardTexts();
+        int num = ssss.size() - 1;
+        for (auto str : ssss)
+        {
+            scores.renderCustomText(num, vec3(0.6, 0.5, 0.7), str);
+            num -= 1;
+        }
 
         // draw the bots
 
@@ -761,15 +761,18 @@ for(auto str : ssss)
         laser_manager.renderLasers(P, V, campos, glfwGetTime(), &laser);
 
         uint16_t ucid_of_my_killer = 0;
-bool otherplayerkill = laser_manager.shouldDie(theplayer.pos, ucid_from_server, glfwGetTime(), &ucid_of_my_killer) ;
-        if (!is_dead && (otherplayerkill || external_key_to_die)  )
+        bool otherplayerkill =
+            laser_manager.shouldDie(theplayer.pos, ucid_from_server, glfwGetTime(), &ucid_of_my_killer);
+        if (!is_dead && (otherplayerkill || external_key_to_die))
         {
             is_dead = true;
             deadpos = theplayer.pos;
             dietime = glfwGetTime();
             external_key_to_die = false;
-            if(otherplayerkill)
-            { network.BroadcastKillConfirmation(ucid_of_my_killer); }
+            if (otherplayerkill)
+            {
+                network.BroadcastKillConfirmation(ucid_of_my_killer);
+            }
         }
         if (is_dead && glfwGetTime() - dietime > 10)
         {
