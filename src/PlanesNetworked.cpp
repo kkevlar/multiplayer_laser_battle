@@ -214,6 +214,7 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
         {
             internal->unclaimed_hits += 1;
         }
+        return true;
     }
 
     log_error("Unknown flag %x from handle %s", plane_pdu->flag, handle.c_str());

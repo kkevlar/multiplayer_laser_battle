@@ -686,8 +686,6 @@ class Application : public EventCallbacks
             theplayer.speed = 0;
             theplayer.pos = deadpos;
             explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime());
-            if(my_score != 0)
-        {   my_score -= 1;}
         }
 
         // Render your own plane
@@ -776,6 +774,11 @@ class Application : public EventCallbacks
             {
                 network.BroadcastKillConfirmation(ucid_of_my_killer);
             }
+
+            if(my_score != 0)
+        { 
+              my_score -= 1;
+        }
         }
         if (is_dead && glfwGetTime() - dietime > 10)
         {
