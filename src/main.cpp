@@ -1,3 +1,6 @@
+//YOU MUST PICK A USERNAME
+#define USERNAME ((const char*)"INVALID")
+
 #include <glad/glad.h>
 
 #include <fstream>
@@ -26,6 +29,7 @@
 #include "byte_order.h"
 #include "log.h"
 #include "stb_image.h"
+
 
 using namespace std;
 using namespace glm;
@@ -682,7 +686,8 @@ class Application : public EventCallbacks
             theplayer.speed = 0;
             theplayer.pos = deadpos;
             explosion.renderExplosion(P, V, mycam.pos, deadpos, glfwGetTime());
-            my_score = 0;
+            if(my_score != 0)
+        {   my_score -= 1;}
         }
 
         // Render your own plane
@@ -791,14 +796,7 @@ class Application : public EventCallbacks
 int main(int argc, char** argv)
 {
     std::string resourceDir = "../resources";  // Where the resources are loaded from
-    const char* my_username = (const char*)"INVALID";
-
-#ifdef _MSC_VER
-    char windowsusername[UNLEN + 1];
-    DWORD username_len = UNLEN + 1;
-    GetUserName(windowsusername, &username_len);
-    my_username = windowsusername;
-#endif
+    const char* my_username = USERNAME;
 
     const char* hostname = (const char*)"174.87.85.45";
     if (argc >= 2)
@@ -818,7 +816,7 @@ int main(int argc, char** argv)
 
     if (strcmp(my_username, "INVALID") == 0)
     {
-        log_fatal("Please choose a real username, not %s", my_username);
+        log_fatal("Please choose username. Usage: ./program1 ../resources YOUR_NAME_HERE");
         return 96;
     }
 
