@@ -22,7 +22,7 @@ using namespace glm;
 player::player()
 {
     w = a = s = d = false;
-    pos = vec3(0 + (rand() -0.5f ) * 100 , 180+ (rand() -0.5f ) * 100, 20+ (rand() -0.5f ) * 100);
+    pos = vec3(0 + (rand() -0.5f ) * 10 , 180, 20+ (rand() -0.5f ) * 20);
     speed = MIN_SPD;
 
     forward = vec3(0, 0, 1);
