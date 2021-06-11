@@ -33,7 +33,7 @@ bool winTcpClientSetup(const char* serverName, const char* port, CompatSocket* c
     hints.ai_protocol = IPPROTO_TCP;
 
     // Resolve the server address and port
-    iResult = getaddrinfo("localhost", port, &hints, &result);
+    iResult = getaddrinfo(serverName, port, &hints, &result);
     if (iResult != 0)
     {
         printf("getaddrinfo failed with error: %d\n", iResult);
