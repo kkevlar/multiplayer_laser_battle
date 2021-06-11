@@ -802,6 +802,9 @@ int main(int argc, char** argv)
     const char* my_username = USERNAME;
 
     const char* hostname = (const char*)"174.87.85.45";
+
+    srand((int) my_username[0]);
+
     if (argc >= 2)
     {
         resourceDir = argv[1];

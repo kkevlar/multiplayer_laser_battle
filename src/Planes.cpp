@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stdlib.h>
 
 #define MAX_SPD 240.0f
 #define MIN_SPD 100.0f
@@ -21,7 +22,7 @@ using namespace glm;
 player::player()
 {
     w = a = s = d = false;
-    pos = vec3(0, 180, 20);
+    pos = vec3(0 + (rand() -0.5f ) * 100 , 180+ (rand() -0.5f ) * 100, 20+ (rand() -0.5f ) * 100);
     speed = MIN_SPD;
 
     forward = vec3(0, 0, 1);
