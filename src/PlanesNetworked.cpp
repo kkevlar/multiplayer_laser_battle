@@ -22,7 +22,7 @@ using namespace glm;
 
 #define FLAG_POSITION (1)
 #define FLAG_SHOOT_LASER (2)
-#define FLAG_HITCONFIRM (3)
+#define FLAG_HITCONFIRM (4)
 
 typedef struct
 {
@@ -203,7 +203,7 @@ static bool internal_callback(void* context, std::string handle, const uint8_t* 
         }
         return handleShootLaser(internal, handle, laser);
     }
-    else if (plane_pdu->flag == FLAG_HITCONFIRM)
+    else if (((uint8_t)plane_pdu->flag) == ((uint8_t)FLAG_HITCONFIRM))
     {
         if (safe_data_size != sizeof(KillConfirmPDU))
         {
@@ -310,7 +310,7 @@ void PlanesNetworked::BroadcastKillConfirmation(uint16_t ucid_of_killer_host_ord
     PlanePDU pdu;
     pdu.data.shoot_confirm = killpdu;
     pdu.data_size_check_endianess = htonl(sizeof(KillConfirmPDU));
-    pdu.flag = FLAG_HITCONFIRM;
+    pdu.flag = (uint8_t) FLAG_HITCONFIRM;
     pdu.big_magic = PLANES_BIG_MAGIC_VALUE;
 
     if (!publicBroadcastOutgoing(&this->internal->net_handle, (uint8_t*)&pdu, sizeof(pdu)))
