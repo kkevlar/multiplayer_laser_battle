@@ -39,6 +39,7 @@
     <ClCompile Include="PlanesNetworked.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Scoreboard.cpp" />
+    <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="simple_ll_netlib_client.cpp" />
     <ClCompile Include="WindowManager.cpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="PlanesNetworked.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="Scoreboard.h" />
+    <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="simple_ll_netlib_client.h" />
     <ClInclude Include="stb_image.h" />
